@@ -52,7 +52,7 @@ jobs:
         fail_ci_if_error: false
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: success() || failure()
       with:
         name: test-results
@@ -65,7 +65,7 @@ jobs:
       run: dotnet pack Embedly.SDK/Embedly.SDK.csproj --no-build --configuration Release --output ./packages
     
     - name: Upload packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
         path: ./packages/*.nupkg

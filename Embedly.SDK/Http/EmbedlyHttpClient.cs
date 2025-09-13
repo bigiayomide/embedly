@@ -182,9 +182,6 @@ internal sealed class EmbedlyHttpClient : IEmbedlyHttpClient, IDisposable
     {
         using var request = new HttpRequestMessage(method, endpoint);
         
-        // Add authentication header
-        request.Headers.Add("Authorization", $"Bearer {_options.ApiKey}");
-        
         if (content != null)
         {
             var json = JsonSerializer.Serialize(content, _jsonOptions);

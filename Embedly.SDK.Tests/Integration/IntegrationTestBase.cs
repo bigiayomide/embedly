@@ -67,7 +67,7 @@ public abstract class IntegrationTestBase
             options.EnableLogging = true;
             options.LogRequestBodies = true; // Enable for debugging
             // options.LogResponseBodies = true; // Property doesn't exist - removed for now
-            options.Timeout = TimeSpan.FromMinutes(5); // Longer timeout for integration tests
+            options.Timeout = TimeSpan.FromSeconds(120); // Longer timeout for integration tests
         });
 
         ServiceProvider = services.BuildServiceProvider();

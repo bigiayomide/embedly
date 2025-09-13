@@ -150,12 +150,12 @@ public class SecurityComplianceTests : ServiceTestBase
             FirstName = "John",
             LastName = "Doe",
             EmailAddress = "john.doe@example.com",
-            MobileNumber = "+2348012345678",
+            MobileNumber = "08012345678",
             DateOfBirth = DateTime.UtcNow.AddYears(-25),
             Address = "123 Private Street, Lagos, Nigeria",
             City = "Lagos",
-            CountryId = CreateTestGuid(),
-            CustomerTypeId = CreateTestGuid(),
+            CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
+            CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
             CustomerTierId = 1,
             OrganizationId = CreateTestGuid()
         };
@@ -165,14 +165,14 @@ public class SecurityComplianceTests : ServiceTestBase
 
         // Assert - Verify PII is present (as expected in legitimate requests)
         serializedRequest.Should().Contain("john.doe@example.com");
-        serializedRequest.Should().Contain("+2348012345678");
+        serializedRequest.Should().Contain("08012345678");
 
         // In production, ensure PII is properly masked in logs
         var maskedEmail = MaskEmail(createRequest.EmailAddress!);
         var maskedPhone = MaskPhoneNumber(createRequest.MobileNumber!);
 
         maskedEmail.Should().Be("j***@example.com");
-        maskedPhone.Should().Be("+234801****678");
+        maskedPhone.Should().Be("08******678");
 
         TestContext.WriteLine($"✓ Email masking: {createRequest.EmailAddress} → {maskedEmail}");
         TestContext.WriteLine($"✓ Phone masking: {createRequest.MobileNumber} → {maskedPhone}");
@@ -197,8 +197,8 @@ public class SecurityComplianceTests : ServiceTestBase
             DateOfBirth = DateTime.UtcNow.AddYears(-25),
             Address = new string('S', 5000), // Very long street
             City = "Lagos",
-            CountryId = CreateTestGuid(),
-            CustomerTypeId = CreateTestGuid(),
+            CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
+            CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
             CustomerTierId = 1,
             OrganizationId = CreateTestGuid()
         };

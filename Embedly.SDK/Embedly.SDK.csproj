@@ -16,7 +16,7 @@
     <PackageTags>embedly;nigeria;fintech;banking;wallets;payments;cards;embedded-finance;api;sdk</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/embedly/embedly-dotnet-sdk</RepositoryUrl>
+    <RepositoryUrl>https://github.com/bigiayomide/embedly</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://developer.embedly.ng</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>

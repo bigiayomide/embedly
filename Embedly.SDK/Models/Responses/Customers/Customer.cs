@@ -79,7 +79,7 @@ public sealed class Customer
     /// Gets or sets the customer's address.
     /// </summary>
     [JsonPropertyName("address")]
-    public Address? Address { get; set; }
+    public string? Address { get; set; }
     
     /// <summary>
     /// Gets or sets the customer status.

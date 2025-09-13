@@ -162,7 +162,7 @@ jobs:
         nuget list source || echo "NuGet CLI not available, skipping detailed validation"
     
     - name: Upload package artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
         path: ./packages/*.nupkg

@@ -368,10 +368,10 @@ public class WalletServiceTests : ServiceTestBase
     {
         return new CreateWalletRequest
         {
-            CustomerId = CreateTestGuid(),
-            CurrencyId = CreateTestGuid(),
-            WalletClassificationId = CreateTestGuid(),
-            CustomerTypeId = CreateTestGuid(),
+            CustomerId = CreateTestGuid().ToString(),
+            CurrencyId = "fd5e474d-bb42-4db1-ab74-e8d2a01047e9",
+            WalletClassificationId = CreateTestGuid().ToString(),
+            CustomerTypeId = "f671da57-e281-4b40-965f-a96f4205405e",
             IsInternal = false,
             IsDefault = true,
             Name = "Test Wallet"
@@ -382,7 +382,7 @@ public class WalletServiceTests : ServiceTestBase
     {
         return new CreateCorporateWalletRequest
         {
-            CurrencyId = CreateTestGuid(),
+            CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
             Name = "Corporate Test Wallet",
             VirtualAccount = new WalletVirtualAccount
             {
@@ -422,14 +422,14 @@ public class WalletServiceTests : ServiceTestBase
             Id = CreateTestGuid(),
             CustomerId = CreateTestGuid(),
             Name = "Test Wallet",
-            CurrencyId = CreateTestGuid(),
+            CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
             LedgerBalance = 50000.00,
             AvailableBalance = 45000.00,
             IsDefault = true,
             VirtualAccount = CreateTestVirtualAccount(),
             WalletGroupId = CreateTestGuid(),
             WalletClassificationId = CreateTestGuid(),
-            CustomerTypeId = CreateTestGuid(),
+            CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
             IsInternal = false
         };
     }

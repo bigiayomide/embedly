@@ -31,10 +31,10 @@ public class WalletExamples(
 
             var request = new CreateWalletRequest
             {
-                CustomerId = customerGuid,
-                CurrencyId = currencyId,
-                WalletClassificationId = walletClassificationId,
-                CustomerTypeId = customerTypeId,
+                CustomerId = customerGuid.ToString(),
+                CurrencyId = currencyId.ToString(),
+                WalletClassificationId = walletClassificationId.ToString(),
+                CustomerTypeId = customerTypeId.ToString(),
                 IsDefault = true,
                 Name = "Primary Wallet"
             };

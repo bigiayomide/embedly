@@ -514,7 +514,7 @@ public class PayoutServiceTests : ServiceTestBase
     {
         return new AddGlobalPayoutLimitRequest
         {
-            CurrencyId = CreateTestGuid(),
+            CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
             DailyTransactionLimit = 1000000.0,
             DailyTransactionCount = 100,
             DailyTransactionLimitStatus = true,
@@ -536,7 +536,7 @@ public class PayoutServiceTests : ServiceTestBase
         return new GlobalPayoutLimit
         {
             GlobalLimitId = CreateTestGuid(),
-            CurrencyId = CreateTestGuid(),
+            CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
             DailyTransactionLimit = 1000000.0,
             DailyTransactionCount = 100,
             DailyTransactionLimitStatus = true,

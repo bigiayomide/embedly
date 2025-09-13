@@ -182,16 +182,14 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         const int cardCount = 3;
         var cardSetups = new (Guid customerId, Guid walletId, string cardNumber)[cardCount];
 
-        for (int i = 0; i < cardCount; i++)
+        for (var i = 0; i < cardCount; i++)
         {
             var (customerId, walletId, accountNumber) = await CreateCustomerWalletSetup($"Concurrent{i}");
-            if (!string.IsNullOrEmpty(accountNumber))
+            if (string.IsNullOrEmpty(accountNumber)) continue;
+            var cardNumber = await IssueAndActivateCard(accountNumber, $"000{i}");
+            if (!string.IsNullOrEmpty(cardNumber))
             {
-                var cardNumber = await IssueAndActivateCard(accountNumber, $"000{i}");
-                if (!string.IsNullOrEmpty(cardNumber))
-                {
-                    cardSetups[i] = (customerId, walletId, cardNumber);
-                }
+                cardSetups[i] = (customerId, walletId, cardNumber);
             }
         }
 
@@ -199,7 +197,7 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         LogStep("Testing concurrent PIN checks");
         var pinCheckTasks = new Task[cardCount];
 
-        for (int i = 0; i < cardCount; i++)
+        for (var i = 0; i < cardCount; i++)
         {
             if (!string.IsNullOrEmpty(cardSetups[i].cardNumber))
             {
@@ -241,14 +239,14 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             var customerRequest = new CreateCustomerRequest
             {
                 FirstName = namePrefix,
-                LastName = $"PinTest{CreateTestId()}",
+                LastName = $"PinTest",
                 EmailAddress = CreateTestEmail($"{namePrefix.ToLower()}-pin"),
                 MobileNumber = CreateTestPhoneNumber(),
                 DateOfBirth = DateTime.UtcNow.AddYears(-30),
                 Address = "123 PIN Test Street",
                 City = "Lagos",
-                CountryId = CreateTestGuid(),
-                CustomerTypeId = CreateTestGuid(),
+                CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
+                CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
                 CustomerTierId = 1,
                 OrganizationId = CreateTestGuid()
             };
@@ -265,10 +263,10 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             // Create wallet
             var walletRequest = new CreateWalletRequest
             {
-                CustomerId = customerId,
-                CurrencyId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"), // Test currency
-                WalletClassificationId = Guid.NewGuid(),
-                CustomerTypeId = Guid.NewGuid(),
+                CustomerId = customerId.ToString(),
+                CurrencyId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000").ToString(), // Test currency
+                WalletClassificationId = Guid.NewGuid().ToString(),
+                CustomerTypeId = Guid.Parse("0ed8b99b-8097-4e49-bd4c-ff0410c57d27").ToString(),
                 IsInternal = false,
                 IsDefault = true,
                 Name = $"{namePrefix} PIN Test Wallet"

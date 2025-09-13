@@ -107,6 +107,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IProductLimitService, ProductLimitService>();
         services.TryAddScoped<ICheckoutService, CheckoutService>();
         services.TryAddScoped<IPayoutService, PayoutService>();
+        services.TryAddScoped<IPinEncryptionService, PinEncryptionService>();
         services.TryAddScoped<ICardService, CardService>();
         services.TryAddScoped<IUtilityService, UtilityService>();
         

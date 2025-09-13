@@ -15,34 +15,34 @@ public sealed class CreateWalletRequest
     /// </summary>
     [Required(ErrorMessage = "Customer ID is required")]
     [JsonPropertyName("customerId")]
-    public Guid CustomerId { get; set; }
+    public string? CustomerId { get; set; }
     
     /// <summary>
     /// Gets or sets the currency ID for the wallet.
     /// </summary>
     [Required(ErrorMessage = "Currency ID is required")]
     [JsonPropertyName("currencyId")]
-    public Guid CurrencyId { get; set; }
+    public string? CurrencyId { get; set; }
     
     /// <summary>
     /// Gets or sets the wallet classification ID.
     /// </summary>
     [Required(ErrorMessage = "Wallet classification ID is required")]
     [JsonPropertyName("walletClassificationId")]
-    public Guid WalletClassificationId { get; set; }
+    public string? WalletClassificationId { get; set; }
     
     /// <summary>
     /// Gets or sets the customer type ID.
     /// </summary>
     [Required(ErrorMessage = "Customer type ID is required")]
     [JsonPropertyName("customerTypeId")]
-    public Guid CustomerTypeId { get; set; }
+    public string? CustomerTypeId { get; set; }
     
     /// <summary>
     /// Gets or sets the wallet group ID.
     /// </summary>
     [JsonPropertyName("walletGroupId")]
-    public Guid? WalletGroupId { get; set; }
+    public string? WalletGroupId { get; set; }
     
     /// <summary>
     /// Gets or sets whether the wallet is internal.

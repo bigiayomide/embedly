@@ -453,8 +453,8 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             DateOfBirth = DateTime.UtcNow.AddYears(-25), // 25 years old
             Address = "123 Test Integration Street, Lagos, Lagos State, Nigeria",
             City = "Lagos",
-            CountryId = CreateTestGuid(),
-            CustomerTypeId = CreateTestGuid(),
+            CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
+            CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
             CustomerTierId = 1,
             OrganizationId = CreateTestGuid()
         };

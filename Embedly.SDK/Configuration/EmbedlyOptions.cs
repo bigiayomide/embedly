@@ -29,7 +29,6 @@ public sealed class EmbedlyOptions
     /// <summary>
     /// Gets or sets the HTTP request timeout.
     /// </summary>
-    [Range(5, 300, ErrorMessage = "Timeout must be between 5 and 300 seconds")]
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
@@ -101,6 +100,12 @@ public sealed class EmbedlyOptions
         if (string.IsNullOrWhiteSpace(ApiKey))
         {
             throw new InvalidOperationException("Embedly API key cannot be empty or whitespace");
+        }
+
+        // Validate Timeout separately since Range attribute doesn't work with TimeSpan
+        if (Timeout.TotalSeconds < 5 || Timeout.TotalSeconds > 300)
+        {
+            throw new InvalidOperationException("Timeout must be between 5 and 300 seconds");
         }
     }
 }
