@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run unit tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./coverage
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: test-results
+        path: '**/*.trx'
+    
+    - name: Build Examples
+      run: dotnet build Examples/Examples.csproj --configuration Release
+    
+    - name: Package SDK
+      run: dotnet pack Embedly.SDK/Embedly.SDK.csproj --no-build --configuration Release --output ./packages
+    
+    - name: Upload packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./packages/*.nupkg
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Run security scan
+      run: |
+        dotnet list package --vulnerable --include-transitive 2>&1 | tee security-scan.txt
+        
+        # Check if vulnerabilities were found
+        if grep -q "has the following vulnerable packages" security-scan.txt; then
+          echo "❌ Security vulnerabilities found!"
+          cat security-scan.txt
+          exit 1
+        else
+          echo "✅ No security vulnerabilities found"
+        fi
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run integration tests
+      env:
+        EMBEDLY_API_KEY: ${{ secrets.EMBEDLY_STAGING_API_KEY }}
+        EMBEDLY_ORGANIZATION_ID: ${{ secrets.EMBEDLY_STAGING_ORG_ID }}
+      run: |
+        if [ -n "$EMBEDLY_API_KEY" ]; then
+          dotnet test Embedly.SDK.Tests/Embedly.SDK.Tests.csproj --filter Category=Integration --configuration Release --verbosity normal
+        else
+          echo "⚠️ Skipping integration tests - API credentials not available"
+        fi
+
+  quality-gate:
+    runs-on: ubuntu-latest
+    name: Quality Gate
+    needs: [test, security-scan]
+    
+    steps:
+    - name: Quality Gate Summary
+      run: |
+        echo "✅ All quality checks passed!"
+        echo "- Build: Successful"
+        echo "- Tests: Passed"
+        echo "- Security: No vulnerabilities"
+        echo "- Ready for deployment"

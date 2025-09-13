@@ -1,0 +1,354 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate Release
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # Check if this is a prerelease (contains alpha, beta, rc, or has more than 3 parts)
+        if [[ $VERSION =~ (alpha|beta|rc) ]] || [[ $(echo $VERSION | tr '.' '\n' | wc -l) -gt 3 ]]; then
+          echo "prerelease=true" >> $GITHUB_OUTPUT
+          echo "This is a prerelease version: $VERSION"
+        else
+          echo "prerelease=false" >> $GITHUB_OUTPUT
+          echo "This is a stable release version: $VERSION"
+        fi
+    
+    - name: Validate version format
+      run: |
+        VERSION="${{ steps.version.outputs.version }}"
+        if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: major.minor.patch[-prerelease][+build]"
+          exit 1
+        fi
+        echo "✅ Valid version format: $VERSION"
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Validate project builds
+      run: |
+        dotnet restore
+        dotnet build --no-restore --configuration Release
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build and Test for Release
+    needs: validate
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run all tests
+      run: dotnet test --no-build --configuration Release --verbosity normal
+    
+    - name: Security scan
+      run: |
+        dotnet list package --vulnerable --include-transitive 2>&1 | tee security-scan.txt
+        if grep -q "has the following vulnerable packages" security-scan.txt; then
+          echo "❌ Security vulnerabilities found - blocking release!"
+          cat security-scan.txt
+          exit 1
+        fi
+
+  package:
+    runs-on: ubuntu-latest
+    name: Package NuGet
+    needs: [validate, build-and-test]
+    outputs:
+      package-version: ${{ steps.package.outputs.version }}
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Update version in project files
+      id: package
+      run: |
+        VERSION="${{ needs.validate.outputs.version }}"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # Update SDK project version
+        sed -i "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/" Embedly.SDK/Embedly.SDK.csproj
+        sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/" Embedly.SDK/Embedly.SDK.csproj
+        sed -i "s/<FileVersion>.*<\/FileVersion>/<FileVersion>$VERSION<\/FileVersion>/" Embedly.SDK/Embedly.SDK.csproj
+        
+        echo "Updated version to: $VERSION"
+        grep -A 5 -B 5 "<Version>" Embedly.SDK/Embedly.SDK.csproj
+    
+    - name: Build release
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Package NuGet
+      run: |
+        dotnet pack Embedly.SDK/Embedly.SDK.csproj \
+          --configuration Release \
+          --no-build \
+          --output ./packages \
+          --include-symbols \
+          --include-source
+    
+    - name: Validate package
+      run: |
+        # Check if package was created
+        PACKAGE_FILE=$(find ./packages -name "Embedly.SDK.${{ needs.validate.outputs.version }}.nupkg")
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "❌ Package file not found!"
+          ls -la ./packages/
+          exit 1
+        fi
+        
+        echo "✅ Package created successfully: $PACKAGE_FILE"
+        
+        # Show package contents
+        dotnet nuget locals global-packages --clear
+        nuget list source || echo "NuGet CLI not available, skipping detailed validation"
+    
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./packages/*.nupkg
+        retention-days: 90
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    name: Publish to NuGet
+    needs: [validate, package]
+    environment: nuget-production
+    
+    steps:
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./packages
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Publish to NuGet.org
+      run: |
+        PACKAGE_FILE="./packages/Embedly.SDK.${{ needs.validate.outputs.version }}.nupkg"
+        
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "❌ Package file not found: $PACKAGE_FILE"
+          ls -la ./packages/
+          exit 1
+        fi
+        
+        echo "📦 Publishing package: $PACKAGE_FILE"
+        
+        dotnet nuget push "$PACKAGE_FILE" \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate \
+          --no-symbols
+        
+        echo "✅ Package published successfully!"
+    
+    - name: Wait for package availability
+      run: |
+        echo "⏳ Waiting for package to become available on NuGet.org..."
+        PACKAGE_NAME="Embedly.SDK"
+        VERSION="${{ needs.validate.outputs.version }}"
+        MAX_ATTEMPTS=30
+        ATTEMPT=1
+        
+        while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+          echo "Checking availability (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
+          
+          if dotnet add package $PACKAGE_NAME --version $VERSION --dry-run --source https://api.nuget.org/v3/index.json 2>/dev/null; then
+            echo "✅ Package is available on NuGet.org!"
+            break
+          fi
+          
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "⚠️  Package may not be immediately available, but publish completed successfully"
+            break
+          fi
+          
+          sleep 30
+          ((ATTEMPT++))
+        done
+
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create GitHub Release
+    needs: [validate, package, publish-nuget]
+    permissions:
+      contents: write
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./packages
+    
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        VERSION="${{ needs.validate.outputs.version }}"
+        PRERELEASE="${{ needs.validate.outputs.prerelease }}"
+        
+        # Get the previous tag
+        PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -v "v$VERSION" | head -n 1)
+        
+        echo "Generating release notes for version $VERSION"
+        echo "Previous tag: $PREVIOUS_TAG"
+        
+        # Generate changelog
+        cat > release-notes.md << EOF
+        # Embedly .NET SDK v$VERSION
+        
+        ## 📦 Installation
+        
+        \`\`\`bash
+        dotnet add package Embedly.SDK --version $VERSION
+        \`\`\`
+        
+        ## 🔗 NuGet Package
+        
+        - **Package**: [Embedly.SDK v$VERSION](https://www.nuget.org/packages/Embedly.SDK/$VERSION)
+        - **Framework**: .NET 8.0+
+        - **License**: MIT
+        
+        ## 📋 What's Changed
+        
+        EOF
+        
+        if [ -n "$PREVIOUS_TAG" ]; then
+          # Add commit messages since last tag
+          echo "### Commits since $PREVIOUS_TAG:" >> release-notes.md
+          git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD >> release-notes.md
+        else
+          echo "- Initial release of Embedly .NET SDK" >> release-notes.md
+          echo "- Complete implementation of Embedly WaaS, Cards, Checkout, and Payout APIs" >> release-notes.md
+          echo "- Comprehensive examples and documentation" >> release-notes.md
+          echo "- Full webhook support with ASP.NET Core integration" >> release-notes.md
+          echo "- Advanced patterns: Circuit Breaker, CQRS, Event Sourcing" >> release-notes.md
+          echo "- Production-ready error handling and resilience" >> release-notes.md
+        fi
+        
+        cat >> release-notes.md << EOF
+        
+        ## 🚀 Key Features
+        
+        - **Customer Management**: Complete KYC workflows, BVN/NIN verification
+        - **Wallet Operations**: Multi-currency wallets, transfers, transaction history
+        - **Card Issuing**: Virtual and physical cards with Afrigo integration
+        - **Payouts**: Bank transfers, mobile money, account verification
+        - **Webhooks**: Secure event handling with signature validation
+        - **Advanced Patterns**: Circuit breakers, retry logic, bulk operations
+        - **Examples**: Comprehensive demo application with 200+ examples
+        
+        ## 📚 Documentation
+        
+        - [GitHub Repository](https://github.com/your-username/embedly-dotnet-sdk)
+        - [API Reference](https://docs.embedly.ng)
+        - [Examples](./Examples/)
+        
+        ## 🛡️ Security
+        
+        - RSA encryption for sensitive data
+        - Webhook signature validation
+        - Secure credential management
+        - No security vulnerabilities detected
+        
+        ---
+        
+        **Full Changelog**: https://github.com/your-username/embedly-dotnet-sdk/compare/$PREVIOUS_TAG...v$VERSION
+        EOF
+        
+        cat release-notes.md
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ needs.validate.outputs.version }}
+        name: Embedly .NET SDK v${{ needs.validate.outputs.version }}
+        body_path: release-notes.md
+        prerelease: ${{ needs.validate.outputs.prerelease == 'true' }}
+        files: |
+          ./packages/*.nupkg
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Announce release
+      run: |
+        VERSION="${{ needs.validate.outputs.version }}"
+        PRERELEASE="${{ needs.validate.outputs.prerelease }}"
+        
+        if [ "$PRERELEASE" == "true" ]; then
+          echo "🎉 Prerelease v$VERSION published successfully!"
+        else
+          echo "🚀 Stable release v$VERSION published successfully!"
+        fi
+        
+        echo "📦 NuGet: https://www.nuget.org/packages/Embedly.SDK/$VERSION"
+        echo "📋 Release: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"

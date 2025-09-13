@@ -1,0 +1,301 @@
+name: Prerelease
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  calculate-version:
+    runs-on: ubuntu-latest
+    name: Calculate Version
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_release: ${{ steps.version.outputs.should_release }}
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Calculate next version
+      id: version
+      run: |
+        # Get the latest tag
+        LATEST_TAG=$(git tag --sort=-version:refname | head -n 1 || echo "v0.0.0")
+        echo "Latest tag: $LATEST_TAG"
+        
+        # Remove 'v' prefix if present
+        VERSION=${LATEST_TAG#v}
+        
+        # Parse version parts
+        IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+        MAJOR=${VERSION_PARTS[0]:-0}
+        MINOR=${VERSION_PARTS[1]:-0}
+        PATCH=${VERSION_PARTS[2]:-0}
+        
+        # Remove any prerelease suffix from patch version
+        PATCH=$(echo $PATCH | cut -d'-' -f1)
+        
+        echo "Current version: $MAJOR.$MINOR.$PATCH"
+        
+        # Determine version bump type
+        BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+        if [ -z "$BUMP_TYPE" ]; then
+          BUMP_TYPE="patch"
+        fi
+        
+        echo "Bump type: $BUMP_TYPE"
+        
+        # Calculate new version
+        case $BUMP_TYPE in
+          "major")
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+            ;;
+          "minor")
+            MINOR=$((MINOR + 1))
+            PATCH=0
+            ;;
+          "patch")
+            PATCH=$((PATCH + 1))
+            ;;
+        esac
+        
+        # Generate prerelease version
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        TIMESTAMP=$(date +%Y%m%d%H%M)
+        NEW_VERSION="$MAJOR.$MINOR.$PATCH-beta.$TIMESTAMP+$COMMIT_SHA"
+        
+        echo "New version: $NEW_VERSION"
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        # Check if there are changes since last tag
+        if git diff --quiet $LATEST_TAG..HEAD; then
+          echo "No changes since last tag - skipping release"
+          echo "should_release=false" >> $GITHUB_OUTPUT
+        else
+          echo "Changes detected since last tag - proceeding with prerelease"
+          echo "should_release=true" >> $GITHUB_OUTPUT
+        fi
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    needs: calculate-version
+    if: needs.calculate-version.outputs.should_release == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run tests
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+  package-prerelease:
+    runs-on: ubuntu-latest
+    name: Package Prerelease
+    needs: [calculate-version, build-and-test]
+    if: needs.calculate-version.outputs.should_release == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Update version in project files
+      run: |
+        VERSION="${{ needs.calculate-version.outputs.version }}"
+        echo "Updating version to: $VERSION"
+        
+        # Update SDK project version
+        sed -i "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/" Embedly.SDK/Embedly.SDK.csproj
+        sed -i "s/<AssemblyVersion>.*<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/" Embedly.SDK/Embedly.SDK.csproj
+        sed -i "s/<FileVersion>.*<\/FileVersion>/<FileVersion>$VERSION<\/FileVersion>/" Embedly.SDK/Embedly.SDK.csproj
+        
+        # Verify changes
+        grep -A 3 -B 3 "<Version>" Embedly.SDK/Embedly.SDK.csproj
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build release
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Package NuGet
+      run: |
+        dotnet pack Embedly.SDK/Embedly.SDK.csproj \
+          --configuration Release \
+          --no-build \
+          --output ./packages \
+          --include-symbols \
+          --include-source
+    
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: prerelease-packages
+        path: ./packages/*.nupkg
+        retention-days: 30
+
+  publish-prerelease:
+    runs-on: ubuntu-latest
+    name: Publish Prerelease
+    needs: [calculate-version, package-prerelease]
+    if: needs.calculate-version.outputs.should_release == 'true'
+    environment: nuget-prerelease
+    
+    steps:
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: prerelease-packages
+        path: ./packages
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Publish to NuGet.org (Prerelease)
+      run: |
+        VERSION="${{ needs.calculate-version.outputs.version }}"
+        PACKAGE_FILE="./packages/Embedly.SDK.$VERSION.nupkg"
+        
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "❌ Package file not found: $PACKAGE_FILE"
+          ls -la ./packages/
+          exit 1
+        fi
+        
+        echo "📦 Publishing prerelease package: $PACKAGE_FILE"
+        
+        dotnet nuget push "$PACKAGE_FILE" \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate \
+          --no-symbols
+        
+        echo "✅ Prerelease package published successfully!"
+        echo "📦 Version: $VERSION"
+        echo "🔗 URL: https://www.nuget.org/packages/Embedly.SDK/$VERSION"
+
+  create-prerelease-notes:
+    runs-on: ubuntu-latest
+    name: Create Prerelease Notes
+    needs: [calculate-version, publish-prerelease]
+    if: needs.calculate-version.outputs.should_release == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Generate prerelease summary
+      run: |
+        VERSION="${{ needs.calculate-version.outputs.version }}"
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        
+        echo "## 🧪 Prerelease v$VERSION Published"
+        echo ""
+        echo "A new prerelease version has been automatically published from the \`$BRANCH_NAME\` branch."
+        echo ""
+        echo "### 📦 Installation"
+        echo ""
+        echo "\`\`\`bash"
+        echo "dotnet add package Embedly.SDK --version $VERSION"
+        echo "\`\`\`"
+        echo ""
+        echo "### 📋 Details"
+        echo ""
+        echo "- **Version**: $VERSION"
+        echo "- **Branch**: $BRANCH_NAME"
+        echo "- **Commit**: $COMMIT_SHA"
+        echo "- **NuGet**: https://www.nuget.org/packages/Embedly.SDK/$VERSION"
+        echo ""
+        echo "### ⚠️ Prerelease Notice"
+        echo ""
+        echo "This is a prerelease version intended for testing and development."
+        echo "It may contain experimental features and should not be used in production."
+        echo ""
+        echo "### 🔄 Recent Changes"
+        echo ""
+        
+        # Get recent commits
+        LATEST_TAG=$(git tag --sort=-version:refname | head -n 1 || echo "HEAD~10")
+        git log --pretty=format:"- %s (%h)" $LATEST_TAG..HEAD | head -20
+        
+        echo ""
+        echo "---"
+        echo "*This prerelease was automatically generated by GitHub Actions*"
+
+  notify-team:
+    runs-on: ubuntu-latest
+    name: Notify Team
+    needs: [calculate-version, publish-prerelease]
+    if: needs.calculate-version.outputs.should_release == 'true'
+    
+    steps:
+    - name: Summary
+      run: |
+        VERSION="${{ needs.calculate-version.outputs.version }}"
+        echo "🎉 Prerelease Deployment Successful!"
+        echo ""
+        echo "📦 **Package**: Embedly.SDK v$VERSION"
+        echo "🔗 **NuGet**: https://www.nuget.org/packages/Embedly.SDK/$VERSION"
+        echo "🌟 **Status**: Available for testing"
+        echo ""
+        echo "### Next Steps"
+        echo "1. Test the prerelease package"
+        echo "2. Report any issues found"
+        echo "3. When ready, create a release tag for stable version"
+        echo ""
+        echo "### Create Stable Release"
+        echo "To create a stable release from this prerelease:"
+        echo "\`\`\`bash"
+        echo "git tag v1.0.0  # Use appropriate version number"
+        echo "git push origin v1.0.0"
+        echo "\`\`\`"

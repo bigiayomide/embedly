@@ -1,0 +1,167 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using NUnit.Framework;
+using Embedly.SDK.Models.Requests.Checkout;
+using Embedly.SDK.Models.Responses.Checkout;
+using Embedly.SDK.Models.Responses.Common;
+using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Tests.Testing;
+
+namespace Embedly.SDK.Tests.Services;
+
+/// <summary>
+/// Unit tests for CheckoutService following SDK patterns.
+/// Tests checkout wallet generation and management operations.
+/// </summary>
+[TestFixture]
+public class CheckoutServiceTests : ServiceTestBase
+{
+    private CheckoutService _checkoutService = null!;
+
+    protected override void OnSetUp()
+    {
+        _checkoutService = new CheckoutService(MockHttpClient.Object, MockOptions.Object);
+    }
+
+    #region Checkout Wallet Generation Tests
+
+    [Test]
+    public async Task GenerateCheckoutWalletAsync_WithValidRequest_ReturnsCheckoutWallet()
+    {
+        // Arrange
+        var request = CreateValidGenerateCheckoutWalletRequest();
+        var expectedWallet = CreateTestCheckoutWallet();
+        var apiResponse = CreateSuccessfulApiResponse(expectedWallet);
+
+        MockHttpClient
+            .Setup(x => x.PostAsync<GenerateCheckoutWalletRequest, CheckoutWallet>(
+                It.IsAny<string>(),
+                request,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        var result = await _checkoutService.GenerateCheckoutWalletAsync(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Id.Should().Be(expectedWallet.Id);
+        result.Data.ExpectedAmount.Should().Be(expectedWallet.ExpectedAmount);
+    }
+
+    [Test]
+    public void GenerateCheckoutWalletAsync_WithNullRequest_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentNullException>(
+            () => _checkoutService.GenerateCheckoutWalletAsync(null!));
+    }
+
+    #endregion
+
+    #region Checkout Wallet Retrieval Tests
+
+    [Test]
+    public async Task GetCheckoutWalletsAsync_WithValidRequest_ReturnsWalletList()
+    {
+        // Arrange
+        var request = CreateValidGetCheckoutWalletsRequest();
+        var expectedWallets = new List<CheckoutWallet> { CreateTestCheckoutWallet() };
+        var apiResponse = CreateSuccessfulApiResponse(expectedWallets);
+
+        MockHttpClient
+            .Setup(x => x.GetAsync<List<CheckoutWallet>>(
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        var result = await _checkoutService.GetCheckoutWalletsAsync(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Should().HaveCount(1);
+    }
+
+    [Test]
+    public async Task GetCheckoutWalletWithTransactionsAsync_WithValidIds_ReturnsWalletWithTransactions()
+    {
+        // Arrange
+        var walletId = CreateTestGuid();
+        var organizationId = CreateTestGuid();
+        var expectedWallet = CreateTestCheckoutWallet();
+        var apiResponse = CreateSuccessfulApiResponse(expectedWallet);
+
+        MockHttpClient
+            .Setup(x => x.GetAsync<CheckoutWallet>(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(apiResponse);
+
+        // Act
+        var result = await _checkoutService.GetCheckoutWalletWithTransactionsAsync(walletId, organizationId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Id.Should().Be(expectedWallet.Id);
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private GenerateCheckoutWalletRequest CreateValidGenerateCheckoutWalletRequest()
+    {
+        return new GenerateCheckoutWalletRequest
+        {
+            OrganizationId = CreateTestGuid(),
+            ExpectedAmount = 2000,
+            OrganizationPrefixMappingId = default
+        };
+    }
+
+    private GetCheckoutWalletsRequest CreateValidGetCheckoutWalletsRequest()
+    {
+        return new GetCheckoutWalletsRequest
+        {
+            Page = 1,
+            PageSize = 10,
+            Status = null
+        };
+    }
+
+    private CheckoutWallet CreateTestCheckoutWallet()
+    {
+        return new CheckoutWallet
+        {
+            Id = CreateTestGuid(),
+            OrganizationId = CreateTestGuid(),
+            OrganizationPrefixMappingId = CreateTestGuid(),
+            WalletName = null,
+            WalletNumber = null,
+            PrimaryPrefix = null,
+            SecondaryPrefix = null,
+            AutoGeneratedSuffix = null,
+            ExpectedAmount = 20000,
+            Status = null,
+            CreatedAt = default,
+            ExpiresAt = default,
+            UsedAt = null,
+            ExpiredAt = CreateTestTimestamp().AddHours(24).DateTime,
+            ReactivatedAt = CreateTestTimestamp().DateTime
+        };
+    }
+
+    #endregion
+}

@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:developer.embedly.ng)",
+      "WebFetch(domain:waas-staging.embedly.ng)",
+      "Bash(mkdir:*)",
+      "Bash(dotnet sln add:*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet build:*)",
+      "Bash(timeout:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:docs.embedly.ng)",
+      "Bash(dotnet user-secrets:*)",
+      "WebFetch(domain:payout-staging.embedly.ng)",
+      "WebFetch(domain:checkout-staging.embedly.ng)",
+      "WebFetch(domain:waas-card-middleware-api-staging.embedly.ng)",
+      "Bash(rm:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(sed:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
