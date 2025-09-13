@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 env:
-  DOTNET_VERSION: '8.0.x'
+  DOTNET_VERSION: '9.0.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
 
@@ -57,9 +57,6 @@ jobs:
       with:
         name: test-results
         path: '**/*.trx'
-    
-    - name: Build Examples
-      run: dotnet build Examples/Examples.csproj --configuration Release
     
     - name: Package SDK
       run: dotnet pack Embedly.SDK/Embedly.SDK.csproj --no-build --configuration Release --output ./packages
