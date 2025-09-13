@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <None Include="Resources\icon.png" Pack="true" PackagePath="\" Condition="Exists('Resources\icon.png')" />
-    <None Update="Resources\icon.png">
+    <None Update="README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
