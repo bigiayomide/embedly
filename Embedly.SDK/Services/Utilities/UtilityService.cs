@@ -44,7 +44,7 @@ internal sealed class UtilityService : BaseService, IUtilityService
     /// <inheritdoc />
     public async Task<ApiResponse<Currency>> CreateCurrencyAsync(CreateCurrencyRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl("api/v1/currencies/add");
         return await HttpClient.PostAsync<CreateCurrencyRequest, Currency>(url, request, cancellationToken);
@@ -67,7 +67,7 @@ internal sealed class UtilityService : BaseService, IUtilityService
     /// <inheritdoc />
     public async Task<ApiResponse<Country>> CreateCountryAsync(CreateCountryRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl("api/v1/countries/add");
         return await HttpClient.PostAsync<CreateCountryRequest, Country>(url, request, cancellationToken);
@@ -76,8 +76,8 @@ internal sealed class UtilityService : BaseService, IUtilityService
     /// <inheritdoc />
     public async Task<ApiResponse<FileUploadResponse>> UploadFileAsync(Stream fileStream, string fileName, string contentType = "application/octet-stream", CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(fileStream);
-        Guard.ThrowIfNullOrWhiteSpace(fileName);
+        Guard.ThrowIfNull(fileStream, nameof(fileStream));
+        Guard.ThrowIfNullOrWhiteSpace(fileName, nameof(fileName));
         
         var url = BuildUrl("api/v1/utilities/upload");
         return await HttpClient.PostMultipartAsync<FileUploadResponse>(url, fileStream, fileName, contentType, cancellationToken);

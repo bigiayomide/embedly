@@ -153,31 +153,27 @@ public class PinEncryptionServiceTests : ServiceTestBase
     }
 
     [Test]
-    public void EncryptPin_WithValidLongPin_ReturnsEncryptedString()
+    public void EncryptPin_WithInvalidLongPin_ThrowsArgumentException()
     {
         // Arrange
-        var plainTextPin = "123456789012"; // 12-digit PIN
+        var plainTextPin = "123456789012"; // 12-digit PIN (invalid - exceeds 6 digits)
 
-        // Act
-        var encryptedPin = _pinEncryptionService.EncryptPin(plainTextPin);
-
-        // Assert
-        encryptedPin.Should().NotBeNullOrEmpty();
-        encryptedPin.Should().NotBe(plainTextPin);
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => _pinEncryptionService.EncryptPin(plainTextPin));
+        exception.Message.Should().Contain("PIN must be 4-6 digits");
+        exception.ParamName.Should().Be("plainTextPin");
     }
 
     [Test]
-    public void EncryptPin_WithSpecialCharacters_ReturnsEncryptedString()
+    public void EncryptPin_WithSpecialCharacters_ThrowsArgumentException()
     {
         // Arrange
-        var plainTextPin = "1@3#";
+        var plainTextPin = "1@3#"; // Invalid PIN with special characters
 
-        // Act
-        var encryptedPin = _pinEncryptionService.EncryptPin(plainTextPin);
-
-        // Assert
-        encryptedPin.Should().NotBeNullOrEmpty();
-        encryptedPin.Should().NotBe(plainTextPin);
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => _pinEncryptionService.EncryptPin(plainTextPin));
+        exception.Message.Should().Contain("PIN must be 4-6 digits");
+        exception.ParamName.Should().Be("plainTextPin");
     }
 
     #endregion

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,34 +12,22 @@ namespace Embedly.SDK.Webhooks;
 public sealed class WebhookEvent
 {
     /// <summary>
-    /// Gets or sets the event ID.
+    /// Gets or sets the event identifier.
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets or sets the event type.
     /// </summary>
     [JsonPropertyName("event")]
     public string Event { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets or sets the event timestamp.
-    /// </summary>
-    [JsonPropertyName("timestamp")]
-    public DateTimeOffset Timestamp { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the event data as a JSON element.
     /// </summary>
     [JsonPropertyName("data")]
     public JsonElement Data { get; set; }
-    
-    /// <summary>
-    /// Gets or sets additional event metadata.
-    /// </summary>
-    [JsonPropertyName("metadata")]
-    public Dictionary<string, object?>? Metadata { get; set; }
     
     /// <summary>
     /// Deserializes the event data to a specific type.
@@ -47,13 +36,37 @@ public sealed class WebhookEvent
     /// <returns>The deserialized data.</returns>
     public T? GetData<T>() where T : class
     {
-        if (Data.ValueKind == JsonValueKind.Null || Data.ValueKind == JsonValueKind.Undefined)
+        if (Data.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
             return null;
-            
-        return JsonSerializer.Deserialize<T>(Data.GetRawText(), new JsonSerializerOptions
+
+        var result = JsonSerializer.Deserialize<T>(Data.GetRawText(), new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
+
+        // Check if most properties are null (indicates poor type match)
+        if (result != null && IsPoorTypeMatch(result))
+            return null;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Checks if this is a poor type match (majority of properties are null).
+    /// </summary>
+    /// <typeparam name="T">The type to check.</typeparam>
+    /// <param name="obj">The object to check.</param>
+    /// <returns>True if most properties are null indicating poor type match, false otherwise.</returns>
+    private static bool IsPoorTypeMatch<T>(T obj) where T : class
+    {
+        var properties = typeof(T).GetProperties();
+        if (properties.Length == 0) return false;
+
+        var nullCount = properties.Count(prop => prop.GetValue(obj) == null);
+        var nullPercentage = (double)nullCount / properties.Length;
+
+        // If more than 75% of properties are null, consider it a poor type match
+        return nullPercentage > 0.75;
     }
 }
 

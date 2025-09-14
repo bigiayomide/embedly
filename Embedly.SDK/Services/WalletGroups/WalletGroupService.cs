@@ -29,7 +29,7 @@ internal sealed class WalletGroupService : BaseService, IWalletGroupService
     /// <inheritdoc />
     public async Task<ApiResponse<WalletGroup>> CreateWalletGroupAsync(CreateWalletGroupRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/walletgroups/add");
         return await HttpClient.PostAsync<CreateWalletGroupRequest, WalletGroup>(url, request, cancellationToken);
@@ -38,7 +38,7 @@ internal sealed class WalletGroupService : BaseService, IWalletGroupService
     /// <inheritdoc />
     public async Task<ApiResponse<WalletGroup>> GetWalletGroupAsync(string id, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(id);
+        Guard.ThrowIfNullOrWhiteSpace(id, nameof(id));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/walletgroups/get/{id}");
         return await HttpClient.GetAsync<WalletGroup>(url, cancellationToken);
@@ -54,7 +54,7 @@ internal sealed class WalletGroupService : BaseService, IWalletGroupService
     /// <inheritdoc />
     public async Task<ApiResponse<object>> AddWalletGroupFeatureAsync(AddWalletGroupFeatureRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/walletgroups/feature/add");
         return await HttpClient.PostAsync<AddWalletGroupFeatureRequest, object>(url, request, cancellationToken);
@@ -63,8 +63,8 @@ internal sealed class WalletGroupService : BaseService, IWalletGroupService
     /// <inheritdoc />
     public async Task<ApiResponse<object>> AddWalletToGroupAsync(string id, string walletId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(id);
-        Guard.ThrowIfNullOrWhiteSpace(walletId);
+        Guard.ThrowIfNullOrWhiteSpace(id, nameof(id));
+        Guard.ThrowIfNullOrWhiteSpace(walletId, nameof(walletId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/walletgroups/{id}/wallet/{walletId}/add");
         return await HttpClient.PostAsync<object, object>(url, new { }, cancellationToken);

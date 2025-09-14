@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using Embedly.SDK.Webhooks;
@@ -97,7 +98,7 @@ public class WebhookValidatorTests : TestBase
     {
         // Arrange
         var originalPayload = CreateTestWebhookPayload();
-        var tamperedPayload = originalPayload.Replace("\"event\":\"customer.created\"", "\"event\":\"customer.deleted\"");
+        var tamperedPayload = originalPayload.Replace("\"event\":\"payout\"", "\"event\":\"payout_failed\"");
         var signatureForOriginal = ComputeTestSignature(originalPayload);
 
         // Act
@@ -217,8 +218,7 @@ public class WebhookValidatorTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be("evt_12345");
-        result.Event.Should().Be("customer.created");
-        result.Timestamp.Should().Be(CreateTestTimestamp());
+        result.Event.Should().Be("payout");
         result.Data.Should().NotBeNull();
     }
 
@@ -266,9 +266,8 @@ public class WebhookValidatorTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be("evt_complex_12345");
-        result.Event.Should().Be("wallet.transaction.completed");
+        result!.Event.Should().Be("checkout.payment.success");
         result.Data.Should().NotBeNull();
-        result.Metadata.Should().NotBeNull();
     }
 
     #endregion
@@ -283,14 +282,14 @@ public class WebhookValidatorTests : TestBase
         var validSignature = ComputeTestSignature(payload);
 
         // Act
-        var result = _webhookValidator.ParseEventData<TestCustomerEventData>(payload, validSignature);
+        var result = _webhookValidator.ParseEventData<TestNipEventData>(payload, validSignature);
 
         // Assert
         result.Should().NotBeNull();
-        result!.CustomerId.Should().Be("cust_12345");
-        result.FirstName.Should().Be("John");
-        result.LastName.Should().Be("Doe");
-        result.Email.Should().Be("john.doe@example.com");
+        result!.AccountNumber.Should().Be("9710128903");
+        result.Reference.Should().Be("000001250630150523063421028600");
+        result.Amount.Should().Be(100.0m);
+        result.SenderName.Should().Be("OGHENETEGA KELVIN ESEDERE");
     }
 
     [Test]
@@ -302,7 +301,7 @@ public class WebhookValidatorTests : TestBase
 
         // Act & Assert
         var exception = Assert.Throws<InvalidOperationException>(
-            () => _webhookValidator.ParseEventData<TestCustomerEventData>(payload, invalidSignature));
+            () => _webhookValidator.ParseEventData<TestNipEventData>(payload, invalidSignature));
 
         exception.Should().NotBeNull();
         exception!.Message.Should().Contain("Invalid webhook signature");
@@ -311,12 +310,12 @@ public class WebhookValidatorTests : TestBase
     [Test]
     public void ParseEventData_WithWrongDataType_ReturnsNull()
     {
-        // Arrange
+        // Arrange - Create NIP event payload but try to deserialize as Payout data
         var payload = CreateCustomerEventPayload();
         var validSignature = ComputeTestSignature(payload);
 
         // Act
-        var result = _webhookValidator.ParseEventData<TestWalletEventData>(payload, validSignature);
+        var result = _webhookValidator.ParseEventData<TestPayoutEventData>(payload, validSignature);
 
         // Assert - Should return null when data doesn't match expected type structure
         result.Should().BeNull();
@@ -417,17 +416,22 @@ public class WebhookValidatorTests : TestBase
         return JsonSerializer.Serialize(new
         {
             id = "evt_12345",
-            @event = "customer.created",
-            created_at = CreateTestTimestamp(),
+            @event = "payout",
             data = new
             {
-                customer_id = "cust_12345",
-                name = "John Doe",
-                email = "john.doe@example.com"
+                sessionId = (string?)null,
+                debitAccountNumber = "0097411531",
+                creditAccountNumber = "0003433020",
+                debitAccountName = "Test User",
+                creditAccountName = "TEST RECIPIENT",
+                amount = 500.0,
+                currency = "NGN",
+                status = "Success",
+                paymentReference = "668931654633533785081478974241",
+                deliveryStatusMessage = (string?)null,
+                deliveryStatusCode = (string?)null,
+                dateOfTransaction = "0001-01-01T00:00:00"
             }
-        }, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
     }
 
@@ -436,25 +440,21 @@ public class WebhookValidatorTests : TestBase
         return JsonSerializer.Serialize(new
         {
             id = "evt_complex_12345",
-            @event = "wallet.transaction.completed",
-            created_at = CreateTestTimestamp(),
+            @event = "checkout.payment.success",
             data = new
             {
-                transaction_id = "txn_12345",
-                wallet_id = "wlt_12345",
-                amount = 100000,
-                currency = "NGN",
-                reference = "ref_12345"
-            },
-            metadata = new
-            {
-                source = "api",
-                version = "v1",
-                retry_count = 0
+                transactionId = "8d79fdc1-8e09-4914-85c4-4bc8e256b650",
+                walletId = "7f8ac489-a9e7-4fb5-a192-7ea859f9e4af",
+                checkoutRef = "CHK202507241246121093911",
+                amount = 3000,
+                status = "success",
+                senderAccountNumber = "0098960218",
+                senderName = "ME",
+                recipientAccountNumber = "0098960218",
+                recipientName = "Granular Press",
+                reference = "65738239gbdjd",
+                createdAt = "2025-07-24T15:48:10.6768368Z"
             }
-        }, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
     }
 
@@ -463,19 +463,18 @@ public class WebhookValidatorTests : TestBase
         return JsonSerializer.Serialize(new
         {
             id = "evt_customer_12345",
-            @event = "customer.created",
-            created_at = CreateTestTimestamp(),
+            @event = "nip",
             data = new
             {
-                customer_id = "cust_12345",
-                first_name = "John",
-                last_name = "Doe",
-                email = "john.doe@example.com",
-                phone_number = "+2348012345678"
+                accountNumber = "9710128903",
+                reference = "000001250630150523063421028600",
+                amount = 100.0,
+                fee = 0.0,
+                senderName = "OGHENETEGA KELVIN ESEDERE",
+                senderBank = "",
+                dateOfTransaction = "2025-06-30T14:07:14.4553594Z",
+                description = "TRF 9710128903 PAYREF: OneBank Transfer"
             }
-        }, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
     }
 
@@ -549,7 +548,7 @@ public class WebhookValidatorTests : TestBase
         var keyBytes = Encoding.UTF8.GetBytes(TestWebhookSecret);
         var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
-        using var hmac = new HMACSHA256(keyBytes);
+        using var hmac = new HMACSHA512(keyBytes);
         var hash = hmac.ComputeHash(payloadBytes);
         return Convert.ToHexString(hash).ToLowerInvariant();
     }
@@ -558,20 +557,40 @@ public class WebhookValidatorTests : TestBase
 
     #region Test Data Classes
 
-    private class TestCustomerEventData
+    private class TestNipEventData
     {
-        public string? CustomerId { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? PhoneNumber { get; set; }
+        [JsonPropertyName("accountNumber")]
+        public string? AccountNumber { get; set; }
+
+        [JsonPropertyName("reference")]
+        public string? Reference { get; set; }
+
+        [JsonPropertyName("amount")]
+        public decimal? Amount { get; set; }
+
+        [JsonPropertyName("senderName")]
+        public string? SenderName { get; set; }
+
+        [JsonPropertyName("description")]
+        public string? Description { get; set; }
     }
 
-    private class TestWalletEventData
+    private class TestPayoutEventData
     {
-        public string? WalletId { get; set; }
-        public decimal? Balance { get; set; }
+        [JsonPropertyName("debitAccountNumber")]
+        public string? DebitAccountNumber { get; set; }
+
+        [JsonPropertyName("creditAccountNumber")]
+        public string? CreditAccountNumber { get; set; }
+
+        [JsonPropertyName("amount")]
+        public decimal? Amount { get; set; }
+
+        [JsonPropertyName("currency")]
         public string? Currency { get; set; }
+
+        [JsonPropertyName("status")]
+        public string? Status { get; set; }
     }
 
     #endregion

@@ -74,6 +74,7 @@ public class ProductServiceTests : ServiceTestBase
             {
                 Page = 1,
                 PageSize = 10,
+                TotalItems = 2
             }
         };
 
@@ -108,9 +109,9 @@ public class ProductServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedProduct);
 
         MockHttpClient
-            .Setup(x => x.PutAsync<CreateProductRequest, Product>(
-                It.Is<string>(url => url.Contains(productId)),
-                request,
+            .Setup(x => x.PatchAsync<object, Product>(
+                It.IsAny<string>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 

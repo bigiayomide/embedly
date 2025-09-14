@@ -207,9 +207,11 @@ public class UtilityServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedResponse);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<FileUploadRequest, FileUploadResponse>(
+            .Setup(x => x.PostMultipartAsync<FileUploadResponse>(
                 It.IsAny<string>(),
-                It.IsAny<FileUploadRequest>(),
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 

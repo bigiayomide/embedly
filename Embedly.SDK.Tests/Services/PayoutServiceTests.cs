@@ -43,7 +43,6 @@ public class PayoutServiceTests : ServiceTestBase
         MockHttpClient
             .Setup(x => x.GetAsync<List<Bank>>(
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object?>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -71,7 +70,6 @@ public class PayoutServiceTests : ServiceTestBase
         MockHttpClient
             .Setup(x => x.GetAsync<List<Bank>>(
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object?>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -333,7 +331,6 @@ public class PayoutServiceTests : ServiceTestBase
         MockHttpClient
             .Setup(x => x.GetAsync<PaginatedResponse<GlobalPayoutLimit>>(
                 It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object?>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -384,7 +381,7 @@ public class PayoutServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimit);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<GlobalPayoutLimit>(
+            .Setup(x => x.PutAsync<object, GlobalPayoutLimit>(
                 It.IsAny<string>(),
                 It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))

@@ -104,6 +104,7 @@ public class CheckoutServiceTests : ServiceTestBase
         MockHttpClient
             .Setup(x => x.GetAsync<CheckoutWallet>(
                 It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 

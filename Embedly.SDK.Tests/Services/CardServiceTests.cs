@@ -129,9 +129,14 @@ public class CardServiceTests : ServiceTestBase
         result.Data.ActivatedAt.Should().NotBeNull();
 
         _mockPinEncryptionService.Verify(x => x.EncryptPin(request.Pin!), Times.Once);
-        VerifyHttpClientPostCall<ActivateAfrigoCardRequest, AfrigoCard>(
-            "api/v1/operations/cards/afrigo/activate",
-            It.Is<ActivateAfrigoCardRequest>(r => r.Pin == encryptedPin));
+
+        // Verify HTTP client was called with encrypted PIN
+        MockHttpClient.Verify(
+            x => x.PostAsync<ActivateAfrigoCardRequest, AfrigoCard>(
+                It.Is<string>(url => url.Contains("api/v1/operations/cards/afrigo/activate")),
+                It.Is<ActivateAfrigoCardRequest>(r => r.Pin == encryptedPin),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Test]

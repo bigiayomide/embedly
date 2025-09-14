@@ -41,6 +41,21 @@ public abstract class TestBase
     /// </summary>
     protected string TestApiKey => "test-api-key-12345";
 
+    /// <summary>
+    /// Test RSA public key for PIN encryption testing.
+    /// This is a valid 2048-bit RSA public key in PEM format following Embedly's specification.
+    /// Generated for testing purposes only - in production, use the key provided by Embedly.
+    /// </summary>
+    protected string TestRsaPublicKey => @"-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwmiv7kE9A5qR9B/qlAt2
+1IiPD8Jiqrvhe4el0qpmzWVnAha2ciKfEjdWIzxFaQ74WOUcbdy/f175Zu88i2aB
+EyvEncw+seLnYZzluruQ/B+QnF0hqnYTa9mkchlUMdsrp//9wCtQUnKyXmqjRStZ
+YDKcn9IYSMCymmpO1QNWdRUlNA++InKjd35Y9tIUkIpI5WfFPGJTkqXAWPR0N+HD
+Kb9TM+TB7U4/YueYAPCd2L+AkI1iKIJ9+K5/wDEblr0t4GLHCHam3OKwj/slRbg3
+SKJKb6csl3HkxiU7I5il3yfpYdBJ22clBKJp6KAqSO2x3gaIxILI/Y50BuqNr9yy
+nQIDAQAB
+-----END PUBLIC KEY-----";
+
     [SetUp]
     public virtual void SetUp()
     {
@@ -54,7 +69,8 @@ public abstract class TestBase
             OrganizationId = TestOrganizationId,
             Environment = EmbedlyEnvironment.Staging,
             EnableLogging = false,
-            Timeout = TimeSpan.FromSeconds(30)
+            Timeout = TimeSpan.FromSeconds(30),
+            RsaPublicKey = TestRsaPublicKey
         };
 
         // Setup mock options

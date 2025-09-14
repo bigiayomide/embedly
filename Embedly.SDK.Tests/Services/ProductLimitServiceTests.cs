@@ -153,6 +153,7 @@ public class ProductLimitServiceTests : ServiceTestBase
         MockHttpClient
             .Setup(x => x.GetAsync<List<ProductLimit>>(
                 It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -232,9 +233,9 @@ public class ProductLimitServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimit);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<ProductLimit>(
+            .Setup(x => x.PatchAsync<object, ProductLimit>(
                 It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -258,9 +259,9 @@ public class ProductLimitServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimit);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<ProductLimit>(
+            .Setup(x => x.PatchAsync<object, ProductLimit>(
                 It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -284,9 +285,9 @@ public class ProductLimitServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimit);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<ProductLimit>(
+            .Setup(x => x.PatchAsync<object, ProductLimit>(
                 It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 

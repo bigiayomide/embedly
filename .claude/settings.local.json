@@ -18,7 +18,10 @@
       "Bash(rm:*)",
       "Bash(dotnet clean:*)",
       "Bash(dotnet restore:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(dotnet test:*)",
+      "Bash(openssl genrsa:*)",
+      "Bash(openssl rsa:*)"
     ],
     "deny": [],
     "ask": []

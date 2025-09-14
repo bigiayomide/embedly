@@ -114,7 +114,7 @@ public class WalletGroupServiceTests : ServiceTestBase
         var expectedGroups = new List<WalletGroup>
         {
             CreateTestWalletGroup(),
-            CreateTestWalletGroup("group-2", "Premium Group")
+            CreateTestWalletGroup(CreateTestGuid().ToString(), "Premium Group")
         };
         var apiResponse = CreateSuccessfulApiResponse(expectedGroups);
 
@@ -208,9 +208,9 @@ public class WalletGroupServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(new object());
 
         MockHttpClient
-            .Setup(x => x.PostAsync<object>(
+            .Setup(x => x.PostAsync<object, object>(
                 It.IsAny<string>(),
-                It.IsAny<string>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 

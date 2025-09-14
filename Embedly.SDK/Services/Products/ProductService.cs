@@ -29,7 +29,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<Product>> CreateProductAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/products/add");
         return await HttpClient.PostAsync<CreateProductRequest, Product>(url, request, cancellationToken);
@@ -39,7 +39,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<PaginatedResponse<Product>>> GetProductsAsync(GetProductsRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/products/get");
         return await HttpClient.GetAsync<PaginatedResponse<Product>>(url, request.ToQueryParameters(), cancellationToken);
@@ -48,8 +48,8 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<Product>> UpdateProductAsync(string productId, CreateProductRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(productId);
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNullOrWhiteSpace(productId, nameof(productId));
+        Guard.ThrowIfNull(request, nameof(request));
         
         var requestWithId = new { productId, product = request };
         
@@ -60,7 +60,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<Product>> ActivateProductAsync(string productId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(productId);
+        Guard.ThrowIfNullOrWhiteSpace(productId, nameof(productId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/products/activate/{productId}");
         return await HttpClient.PatchAsync<object, Product>(url, new { }, cancellationToken);
@@ -69,7 +69,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<Product>> DeactivateProductAsync(string productId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(productId);
+        Guard.ThrowIfNullOrWhiteSpace(productId, nameof(productId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/products/deactivate/{productId}");
         return await HttpClient.PatchAsync<object, Product>(url, new { }, cancellationToken);
@@ -78,7 +78,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<object>> DeleteProductAsync(string productId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(productId);
+        Guard.ThrowIfNullOrWhiteSpace(productId, nameof(productId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/products/{productId}");
         return await HttpClient.DeleteAsync<object>(url, cancellationToken);
@@ -103,7 +103,7 @@ internal sealed class ProductService : BaseService, IProductService
     /// <inheritdoc />
     public async Task<ApiResponse<Models.Responses.Products.ProductLimits>> GetProductLimitsByCustomerAsync(Guid productId, Guid currencyId, string customerId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/limits/product/{productId}/currency/{currencyId}/customer/{customerId}");
         return await HttpClient.GetAsync<Models.Responses.Products.ProductLimits>(url, cancellationToken);

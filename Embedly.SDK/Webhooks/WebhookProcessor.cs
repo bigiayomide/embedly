@@ -58,7 +58,7 @@ public sealed class WebhookProcessor : IWebhookProcessor
             await _handler.HandleEventAsync(webhookEvent, cancellationToken);
             
             _logger?.LogInformation("Successfully processed webhook event: {EventId}", webhookEvent.Id);
-            
+
             return new WebhookProcessResult
             {
                 Success = true,

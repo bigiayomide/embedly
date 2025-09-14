@@ -20,13 +20,13 @@ public abstract class ServiceTestBase : TestBase
     /// <typeparam name="TResponse">The response type.</typeparam>
     /// <param name="serviceMethod">The service method to test.</param>
     protected static void AssertThrowsArgumentNullExceptionForNullRequest<TRequest, TResponse>(
-        Func<TRequest?, CancellationToken, Task<ApiResponse<TResponse>>> serviceMethod)
+        Func<TRequest, CancellationToken, Task<ApiResponse<TResponse>>> serviceMethod)
         where TRequest : class
         where TResponse : class
     {
         // Act & Assert
         var exception = Assert.ThrowsAsync<ArgumentNullException>(
-            () => serviceMethod(null, CancellationToken.None));
+            () => serviceMethod(null!, CancellationToken.None));
 
         exception.Should().NotBeNull();
         exception!.ParamName.Should().Be("request");

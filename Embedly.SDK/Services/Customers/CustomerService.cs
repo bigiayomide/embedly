@@ -30,7 +30,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> CreateAsync(CreateCustomerRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/add");
         return await HttpClient.PostAsync<CreateCustomerRequest, Customer>(url, request, cancellationToken);
@@ -39,7 +39,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> GetByIdAsync(string customerId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/get/id/{customerId}");
         return await HttpClient.GetAsync<Customer>(url, cancellationToken);
@@ -55,7 +55,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<IEnumerable<Customer>>> GetAllAsync(GetCustomersRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/get/all");
         var queryParams = request.ToQueryParameters();
@@ -77,9 +77,9 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> UpdateNameAsync(string customerId, string firstName, string lastName, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
-        Guard.ThrowIfNullOrWhiteSpace(firstName);
-        Guard.ThrowIfNullOrWhiteSpace(lastName);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
+        Guard.ThrowIfNullOrWhiteSpace(firstName, nameof(firstName));
+        Guard.ThrowIfNullOrWhiteSpace(lastName, nameof(lastName));
         
         var request = new UpdateCustomerNameRequest
         {
@@ -94,8 +94,8 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> UpdateNameAsync(UpdateCustomerNameRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
-        Guard.ThrowIfNullOrWhiteSpace(request.CustomerId);
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfNullOrWhiteSpace(request.CustomerId, nameof(request.CustomerId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer/{request.CustomerId}/updatename");
         return await HttpClient.PatchAsync<UpdateCustomerNameRequest, Customer>(url, request, cancellationToken);
@@ -104,7 +104,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<CustomerVerificationProperties>> GetVerificationPropertiesAsync(string customerId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer-verification-properties/{customerId}");
         return await HttpClient.GetAsync<CustomerVerificationProperties>(url, cancellationToken);
@@ -113,7 +113,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithNinAsync(NinKycUpgradeRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/kyc/customer/nin");
         return await HttpClient.PostAsync<NinKycUpgradeRequest, KycUpgradeResult>(url, request, cancellationToken);
@@ -122,8 +122,8 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithBvnAsync(BvnKycUpgradeRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
-        Guard.ThrowIfNullOrWhiteSpace(request.CustomerId);
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfNullOrWhiteSpace(request.CustomerId, nameof(request.CustomerId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/kyc/monnify/kyc/customer/{request.CustomerId}");
         return await HttpClient.PostAsync<BvnKycUpgradeRequest, KycUpgradeResult>(url, request, cancellationToken);
@@ -132,7 +132,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<AddressVerificationResult>> VerifyAddressAsync(AddressVerificationRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/kyc/address-verification");
         return await HttpClient.PostAsync<AddressVerificationRequest, AddressVerificationResult>(url, request, cancellationToken);
@@ -179,8 +179,8 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> UpdateCustomerTypeAsync(string customerId, string customerTypeId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
-        Guard.ThrowIfNullOrWhiteSpace(customerTypeId);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
+        Guard.ThrowIfNullOrWhiteSpace(customerTypeId, nameof(customerTypeId));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer/{customerId}/customertype/{customerTypeId}/update");
         return await HttpClient.PatchAsync<object, Customer>(url, new object(), cancellationToken);
@@ -189,8 +189,8 @@ internal sealed class CustomerService : BaseService, ICustomerService
     /// <inheritdoc />
     public async Task<ApiResponse<Customer>> UpdateContactAsync(string customerId, UpdateCustomerContactRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(customerId);
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer/{customerId}/updatecontact");
         return await HttpClient.PatchAsync<UpdateCustomerContactRequest, Customer>(url, request, cancellationToken);

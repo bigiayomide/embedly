@@ -30,7 +30,7 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
     /// <inheritdoc />
     public async Task<ApiResponse<CheckoutWallet>> GenerateCheckoutWalletAsync(GenerateCheckoutWalletRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Checkout, "api/v1/checkout-wallet");
         return await HttpClient.PostAsync<GenerateCheckoutWalletRequest, CheckoutWallet>(url, request, cancellationToken);
@@ -39,7 +39,7 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
     /// <inheritdoc />
     public async Task<ApiResponse<List<CheckoutWallet>>> GetCheckoutWalletsAsync(GetCheckoutWalletsRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Checkout, "api/v1/checkout-wallet");
         var queryParams = request.ToQueryParameters();

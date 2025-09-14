@@ -32,7 +32,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<AfrigoCard>> IssueAfrigoCardAsync(IssueAfrigoCardRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/issue-card");
         return await HttpClient.PostAsync<IssueAfrigoCardRequest, AfrigoCard>(url, request, cancellationToken);
@@ -41,7 +41,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<AfrigoCard>> ActivateAfrigoCardAsync(ActivateAfrigoCardRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         // Encrypt PIN if provided
         var processedRequest = request;
@@ -58,7 +58,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<AfrigoCard>> UpdateAfrigoCardAsync(UpdateAfrigoCardRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/update-card-info");
         return await HttpClient.PostAsync<UpdateAfrigoCardRequest, AfrigoCard>(url, request, cancellationToken);
@@ -67,7 +67,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<CardPinOperationResult>> ResetCardPinAsync(ResetCardPinRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         // Encrypt PIN if provided
         var processedRequest = request;
@@ -84,7 +84,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<CardPinOperationResult>> ChangeCardPinAsync(ChangeCardPinRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         // Encrypt both old and new PINs if provided
         var processedRequest = request;
@@ -108,7 +108,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<CardPinOperationResult>> CheckCardPinAsync(CheckCardPinRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         // Encrypt PIN if provided
         var processedRequest = request;
@@ -125,7 +125,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<AfrigoCard>> BlockCardAsync(BlockCardRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/block-card");
         return await HttpClient.PostAsync<BlockCardRequest, AfrigoCard>(url, request, cancellationToken);
@@ -134,7 +134,7 @@ internal sealed class CardService : BaseService, ICardService
     /// <inheritdoc />
     public async Task<ApiResponse<AfrigoCard>> UnblockCardAsync(UnblockCardRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/unblock-card");
         return await HttpClient.PostAsync<UnblockCardRequest, AfrigoCard>(url, request, cancellationToken);

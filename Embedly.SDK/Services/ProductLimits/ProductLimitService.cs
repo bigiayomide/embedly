@@ -29,7 +29,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> CreateProductLimitAsync(CreateProductLimitRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl("api/v1/product-limits");
         return await HttpClient.PostAsync<CreateProductLimitRequest, ProductLimit>(url, request, cancellationToken);
@@ -38,7 +38,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> GetProductLimitAsync(string limitId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}");
         return await HttpClient.GetAsync<ProductLimit>(url, cancellationToken);
@@ -47,7 +47,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<PaginatedResponse<ProductLimit>>> GetProductLimitsAsync(GetProductLimitsRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl("api/v1/product-limits");
         return await HttpClient.GetAsync<PaginatedResponse<ProductLimit>>(url, request.ToQueryParameters(), cancellationToken);
@@ -56,7 +56,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<List<ProductLimit>>> GetProductLimitsByProductAsync(string productId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(productId);
+        Guard.ThrowIfNullOrWhiteSpace(productId, nameof(productId));
         
         var queryParams = new Dictionary<string, object?>
         {
@@ -70,8 +70,8 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> UpdateProductLimitAsync(string limitId, CreateProductLimitRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
-        Guard.ThrowIfNull(request);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
+        Guard.ThrowIfNull(request, nameof(request));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}");
         return await HttpClient.PutAsync<CreateProductLimitRequest, ProductLimit>(url, request, cancellationToken);
@@ -80,7 +80,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> ActivateProductLimitAsync(string limitId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}/activate");
         return await HttpClient.PatchAsync<object, ProductLimit>(url, new { }, cancellationToken);
@@ -89,7 +89,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> DeactivateProductLimitAsync(string limitId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}/deactivate");
         return await HttpClient.PatchAsync<object, ProductLimit>(url, new { }, cancellationToken);
@@ -98,7 +98,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<ProductLimit>> ResetProductLimitUsageAsync(string limitId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}/reset");
         return await HttpClient.PatchAsync<object, ProductLimit>(url, new { }, cancellationToken);
@@ -107,7 +107,7 @@ internal sealed class ProductLimitService : BaseService, IProductLimitService
     /// <inheritdoc />
     public async Task<ApiResponse<object>> DeleteProductLimitAsync(string limitId, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(limitId);
+        Guard.ThrowIfNullOrWhiteSpace(limitId, nameof(limitId));
         
         var url = BuildUrl($"api/v1/product-limits/{limitId}");
         return await HttpClient.DeleteAsync<object>(url, cancellationToken);
