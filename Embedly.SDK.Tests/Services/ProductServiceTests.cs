@@ -69,7 +69,7 @@ public class ProductServiceTests : ServiceTestBase
         var request = CreateValidGetProductsRequest();
         var expectedProducts = new PaginatedResponse<Product>
         {
-            Items = [CreateTestProduct(), CreateTestProduct()],
+            Items = new List<Product> { CreateTestProduct(), CreateTestProduct() },
             Pagination = new PaginationInfo
             {
                 Page = 1,
