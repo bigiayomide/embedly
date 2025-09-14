@@ -172,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish to NuGet
     needs: [validate, package]
-    environment: nuget-production
+    environment: staging
     
     steps:
     - name: Download package artifacts
