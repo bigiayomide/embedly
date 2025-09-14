@@ -6,7 +6,7 @@ using Embedly.SDK.Models.Requests.Customers;
 namespace Embedly.Examples.Examples;
 
 /// <summary>
-/// Real working examples for customer management operations.
+///     Real working examples for customer management operations.
 /// </summary>
 public class CustomerExamples(
     IEmbedlyClient embedlyClient,
@@ -15,7 +15,7 @@ public class CustomerExamples(
     IRetryService retryService)
 {
     /// <summary>
-    /// Example: Create a customer with proper error handling.
+    ///     Example: Create a customer with proper error handling.
     /// </summary>
     public async Task<Result<string>> CreateCustomerAsync()
     {
@@ -50,20 +50,17 @@ public class CustomerExamples(
             var response = await embedlyClient.Customers.CreateAsync(request);
 
             if (!response.Success || response.Data == null)
-            {
                 throw new InvalidOperationException($"Customer creation failed: {response.Error?.Message}");
-            }
 
             logger.LogInformation("Customer created successfully: {CustomerId}. Correlation: {CorrelationId}",
                 response.Data.Id, correlationId);
 
             return response.Data.Id;
-
         }, "CreateCustomer");
     }
 
     /// <summary>
-    /// Example: Get a customer by ID.
+    ///     Example: Get a customer by ID.
     /// </summary>
     public async Task<Result<string>> GetCustomerAsync(string customerId)
     {
@@ -77,20 +74,17 @@ public class CustomerExamples(
             var response = await embedlyClient.Customers.GetByIdAsync(customerId);
 
             if (!response.Success || response.Data == null)
-            {
                 throw new InvalidOperationException($"Customer retrieval failed: {response.Error?.Message}");
-            }
 
             logger.LogInformation("Customer retrieved: {CustomerName}. Correlation: {CorrelationId}",
                 $"{response.Data.FirstName} {response.Data.LastName}", correlationId);
 
             return $"Customer: {response.Data.FirstName} {response.Data.LastName} ({response.Data.Email})";
-
         }, "GetCustomer");
     }
 
     /// <summary>
-    /// Example: List customers with pagination.
+    ///     Example: List customers with pagination.
     /// </summary>
     public async Task<Result<List<string>>> ListCustomersAsync(int page = 1, int pageSize = 10)
     {
@@ -101,12 +95,10 @@ public class CustomerExamples(
             logger.LogInformation("Listing customers, page {Page}, size {PageSize}. Correlation: {CorrelationId}",
                 page, pageSize, correlationId);
 
-            var customers = await embedlyClient.Customers.GetAllAsync(page: page, pageSize: pageSize);
+            var customers = await embedlyClient.Customers.GetAllAsync(page, pageSize);
 
             if (!customers.Success || customers.Data == null)
-            {
                 throw new InvalidOperationException($"Customer listing failed: {customers.Error?.Message}");
-            }
 
             var customerList = customers.Data
                 .Select(c => $"{c.FirstName} {c.LastName} - {c.Email}")
@@ -116,12 +108,11 @@ public class CustomerExamples(
                 customerList.Count, correlationId);
 
             return customerList;
-
         }, "ListCustomers");
     }
 
     /// <summary>
-    /// Example: Demonstrate complete customer workflow.
+    ///     Example: Demonstrate complete customer workflow.
     /// </summary>
     public async Task<Result<string>> DemonstrateCustomerWorkflowAsync()
     {
@@ -134,9 +125,7 @@ public class CustomerExamples(
             Console.WriteLine("Step 1: Creating customer...");
             var createResult = await CreateCustomerAsync();
             if (!createResult.IsSuccess)
-            {
                 return Result<string>.Failure($"Failed to create customer: {createResult.Error}");
-            }
 
             var customerId = createResult.Value!;
             Console.WriteLine($"✅ Customer created: {customerId}");
@@ -144,10 +133,7 @@ public class CustomerExamples(
             // Step 2: Retrieve customer
             Console.WriteLine("\nStep 2: Retrieving customer details...");
             var getResult = await GetCustomerAsync(customerId);
-            if (!getResult.IsSuccess)
-            {
-                return Result<string>.Failure($"Failed to retrieve customer: {getResult.Error}");
-            }
+            if (!getResult.IsSuccess) return Result<string>.Failure($"Failed to retrieve customer: {getResult.Error}");
 
             Console.WriteLine($"✅ {getResult.Value}");
 
@@ -157,10 +143,7 @@ public class CustomerExamples(
             if (listResult.IsSuccess && listResult.Value!.Any())
             {
                 Console.WriteLine("✅ Recent customers:");
-                foreach (var customer in listResult.Value!.Take(3))
-                {
-                    Console.WriteLine($"   - {customer}");
-                }
+                foreach (var customer in listResult.Value!.Take(3)) Console.WriteLine($"   - {customer}");
             }
 
             Console.WriteLine("\n✅ Customer workflow completed successfully!");

@@ -1,22 +1,21 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Utilities;
+using Embedly.SDK.Models.Responses.Utilities;
+using Embedly.SDK.Services.Utilities;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Utilities;
-using Embedly.SDK.Models.Responses.Utilities;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Utilities;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for UtilityService following SDK patterns.
-/// Tests currency and country utility operations.
+///     Unit tests for UtilityService following SDK patterns.
+///     Tests currency and country utility operations.
 /// </summary>
 [TestFixture]
 public class UtilityServiceTests : ServiceTestBase
@@ -27,8 +26,6 @@ public class UtilityServiceTests : ServiceTestBase
     {
         _utilityService = new UtilityService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Currency Tests
 
     [Test]
     public async Task GetCurrenciesAsync_ReturnsListOfCurrencies()
@@ -109,10 +106,6 @@ public class UtilityServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(2);
     }
 
-    #endregion
-
-    #region Country Tests
-
     [Test]
     public async Task GetCountriesAsync_ReturnsListOfCountries()
     {
@@ -192,15 +185,11 @@ public class UtilityServiceTests : ServiceTestBase
         result.Data!.Code.Should().Be("CA");
     }
 
-    #endregion
-
-    #region File Upload Tests
-
     [Test]
     public async Task UploadFileAsync_WithValidFile_ReturnsFileUploadResponse()
     {
         // Arrange
-        var fileStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("test file content"));
+        var fileStream = new MemoryStream(Encoding.UTF8.GetBytes("test file content"));
         var fileName = "test.txt";
         var contentType = "text/plain";
         var expectedResponse = CreateTestFileUploadResponse();
@@ -224,10 +213,6 @@ public class UtilityServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
         result.Data!.Url.Should().NotBeNullOrEmpty();
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private CreateCurrencyRequest CreateValidCurrencyRequest()
     {
@@ -288,6 +273,4 @@ public class UtilityServiceTests : ServiceTestBase
             FileSize = 1024
         };
     }
-
-    #endregion
 }

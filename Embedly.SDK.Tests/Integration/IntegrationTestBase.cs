@@ -1,16 +1,17 @@
 using System;
+using System.Text.Json;
+using Embedly.SDK.Configuration;
+using Embedly.SDK.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Embedly.SDK.Configuration;
-using Embedly.SDK.Extensions;
 
 namespace Embedly.SDK.Tests.Integration;
 
 /// <summary>
-/// Base class for integration tests with real API calls.
-/// Uses user secrets for secure credential management and follows SDK patterns.
+///     Base class for integration tests with real API calls.
+///     Uses user secrets for secure credential management and follows SDK patterns.
 /// </summary>
 [Category("Integration")]
 public abstract class IntegrationTestBase
@@ -26,7 +27,7 @@ public abstract class IntegrationTestBase
     {
         // Build configuration with user secrets and environment variables
         var configurationBuilder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.test.json", optional: true)
+            .AddJsonFile("appsettings.test.json", true)
             .AddUserSecrets<IntegrationTestBase>()
             .AddEnvironmentVariables("EMBEDLY_");
 
@@ -34,18 +35,18 @@ public abstract class IntegrationTestBase
 
         // Get credentials from configuration
         ApiKey = Configuration["Embedly:ApiKey"]
-                ?? Configuration["ApiKey"]
-                ?? throw new InvalidOperationException(
-                    "Embedly API key not found. Please set via user secrets: " +
-                    "dotnet user-secrets set \"Embedly:ApiKey\" \"YOUR_API_KEY\" " +
-                    "or environment variable EMBEDLY_ApiKey");
+                 ?? Configuration["ApiKey"]
+                 ?? throw new InvalidOperationException(
+                     "Embedly API key not found. Please set via user secrets: " +
+                     "dotnet user-secrets set \"Embedly:ApiKey\" \"YOUR_API_KEY\" " +
+                     "or environment variable EMBEDLY_ApiKey");
 
         OrganizationId = Configuration["Embedly:OrganizationId"]
-                        ?? Configuration["OrganizationId"]
-                        ?? throw new InvalidOperationException(
-                            "Embedly Organization ID not found. Please set via user secrets: " +
-                            "dotnet user-secrets set \"Embedly:OrganizationId\" \"YOUR_ORG_ID\" " +
-                            "or environment variable EMBEDLY_OrganizationId");
+                         ?? Configuration["OrganizationId"]
+                         ?? throw new InvalidOperationException(
+                             "Embedly Organization ID not found. Please set via user secrets: " +
+                             "dotnet user-secrets set \"Embedly:OrganizationId\" \"YOUR_ORG_ID\" " +
+                             "or environment variable EMBEDLY_OrganizationId");
 
         // Setup service collection
         var services = new ServiceCollection();
@@ -76,8 +77,8 @@ public abstract class IntegrationTestBase
         TestContext.WriteLine("=== Integration Test Configuration ===");
         TestContext.WriteLine($"Organization ID: {OrganizationId}");
         TestContext.WriteLine($"API Key: {MaskApiKey(ApiKey)}");
-        TestContext.WriteLine($"Environment: Staging");
-        TestContext.WriteLine($"Timeout: 5 minutes");
+        TestContext.WriteLine("Environment: Staging");
+        TestContext.WriteLine("Timeout: 5 minutes");
         TestContext.WriteLine("=======================================");
     }
 
@@ -88,7 +89,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Logs an API operation start with request details.
+    ///     Logs an API operation start with request details.
     /// </summary>
     /// <param name="operation">The operation name.</param>
     /// <param name="request">The request object (optional).</param>
@@ -99,27 +100,27 @@ public abstract class IntegrationTestBase
 
         if (request != null)
         {
-            var requestJson = System.Text.Json.JsonSerializer.Serialize(request, new System.Text.Json.JsonSerializerOptions
+            var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
             {
                 WriteIndented = true,
-                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
             TestContext.WriteLine($"Request:\n{requestJson}");
         }
     }
 
     /// <summary>
-    /// Logs an API operation result with response details.
+    ///     Logs an API operation result with response details.
     /// </summary>
     /// <typeparam name="T">The response type.</typeparam>
     /// <param name="operation">The operation name.</param>
     /// <param name="response">The response object.</param>
     protected void LogApiResponse<T>(string operation, T response)
     {
-        var responseJson = System.Text.Json.JsonSerializer.Serialize(response, new System.Text.Json.JsonSerializerOptions
+        var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
         {
             WriteIndented = true,
-            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
         TestContext.WriteLine($"Response:\n{responseJson}");
@@ -127,7 +128,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Logs a test step for better readability.
+    ///     Logs a test step for better readability.
     /// </summary>
     /// <param name="step">The step description.</param>
     protected void LogStep(string step)
@@ -136,7 +137,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Logs a successful operation.
+    ///     Logs a successful operation.
     /// </summary>
     /// <param name="message">The success message.</param>
     protected void LogSuccess(string message)
@@ -145,7 +146,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Logs a warning message.
+    ///     Logs a warning message.
     /// </summary>
     /// <param name="message">The warning message.</param>
     protected void LogWarning(string message)
@@ -154,7 +155,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Logs an error message.
+    ///     Logs an error message.
     /// </summary>
     /// <param name="message">The error message.</param>
     protected void LogError(string message)
@@ -163,7 +164,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Masks API key for logging (shows first 8 characters only).
+    ///     Masks API key for logging (shows first 8 characters only).
     /// </summary>
     /// <param name="apiKey">The API key to mask.</param>
     /// <returns>Masked API key.</returns>
@@ -176,7 +177,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Creates a unique test identifier for consistent testing.
+    ///     Creates a unique test identifier for consistent testing.
     /// </summary>
     /// <param name="prefix">Optional prefix.</param>
     /// <returns>A unique test identifier.</returns>
@@ -188,7 +189,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Creates a unique test email address.
+    ///     Creates a unique test email address.
     /// </summary>
     /// <param name="prefix">Optional prefix.</param>
     /// <returns>A unique test email.</returns>
@@ -198,7 +199,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Creates a unique test phone number.
+    ///     Creates a unique test phone number.
     /// </summary>
     /// <returns>A unique Nigerian test phone number.</returns>
     protected static string CreateTestPhoneNumber()
@@ -209,7 +210,7 @@ public abstract class IntegrationTestBase
     }
 
     /// <summary>
-    /// Creates a test GUID for consistent testing.
+    ///     Creates a test GUID for consistent testing.
     /// </summary>
     /// <returns>A deterministic test GUID.</returns>
     protected static Guid CreateTestGuid()

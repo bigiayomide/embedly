@@ -1,10 +1,11 @@
-using FastEndpoints;
 using Embedly.Examples.Infrastructure.Services;
+using FastEndpoints;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Embedly.Examples.Endpoints;
 
 /// <summary>
-/// FastEndpoints health check endpoint.
+///     FastEndpoints health check endpoint.
 /// </summary>
 public class HealthEndpoint : EndpointWithoutRequest
 {
@@ -41,18 +42,14 @@ public class HealthEndpoint : EndpointWithoutRequest
                 Status = healthResult.Status.ToString().ToLowerInvariant(),
                 Timestamp = DateTime.UtcNow,
                 Version = "1.0.0",
-                Dependencies = healthResult.Data?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<string, object>()
+                Dependencies = healthResult.Data?.ToDictionary(x => x.Key, x => x.Value) ??
+                               new Dictionary<string, object>()
             };
 
-            if (healthResult.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy)
-            {
+            if (healthResult.Status == HealthStatus.Healthy)
                 await Send.ResponseAsync(response, cancellation: ct);
-            }
             else
-            {
-                
-                await Send.ResponseAsync(TypedResults.Json(response, statusCode: 503),  cancellation:ct);
-            }
+                await Send.ResponseAsync(TypedResults.Json(response, statusCode: 503), cancellation: ct);
         }
         catch (Exception ex)
         {
@@ -64,13 +61,13 @@ public class HealthEndpoint : EndpointWithoutRequest
                 Timestamp = DateTime.UtcNow,
                 Version = "1.0.0",
                 Error = "Health check failed"
-            }, statusCode: 500, cancellation: ct);
+            }, 500, ct);
         }
     }
 }
 
 /// <summary>
-/// Response model for health check.
+///     Response model for health check.
 /// </summary>
 public class HealthResponse
 {

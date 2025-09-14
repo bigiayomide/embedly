@@ -1,12 +1,12 @@
-using FastEndpoints;
-using Embedly.SDK.Webhooks;
 using System.Text;
+using Embedly.SDK.Webhooks;
+using FastEndpoints;
 
 namespace Embedly.Examples.Endpoints;
 
 /// <summary>
-/// FastEndpoints implementation for handling Embedly webhooks.
-/// Alternative to the traditional WebhookController approach.
+///     FastEndpoints implementation for handling Embedly webhooks.
+///     Alternative to the traditional WebhookController approach.
 /// </summary>
 public class WebhookEndpoint(IWebhookProcessor webhookProcessor, ILogger<WebhookEndpoint> logger)
     : EndpointWithoutRequest
@@ -18,7 +18,8 @@ public class WebhookEndpoint(IWebhookProcessor webhookProcessor, ILogger<Webhook
         Description(d => d
             .WithTags("Webhooks")
             .WithSummary("Handle Embedly webhook events")
-            .WithDescription("Receives and processes webhook events from Embedly using the SDK's built-in webhook system")
+            .WithDescription(
+                "Receives and processes webhook events from Embedly using the SDK's built-in webhook system")
             .ProducesProblem(400)
             .ProducesProblem(500)
             .Produces<WebhookResponse>(200, "application/json"));
@@ -77,7 +78,7 @@ public class WebhookEndpoint(IWebhookProcessor webhookProcessor, ILogger<Webhook
                     Status = "failed",
                     Error = result.Error,
                     ProcessedAt = DateTime.UtcNow
-                }, 400, cancellation: ct);
+                }, 400, ct);
             }
         }
         catch (Exception ex)
@@ -88,7 +89,7 @@ public class WebhookEndpoint(IWebhookProcessor webhookProcessor, ILogger<Webhook
                 Status = "error",
                 Error = "Internal server error",
                 ProcessedAt = DateTime.UtcNow
-            }, statusCode: 500, cancellation: ct);
+            }, 500, ct);
         }
     }
 
@@ -100,7 +101,7 @@ public class WebhookEndpoint(IWebhookProcessor webhookProcessor, ILogger<Webhook
 }
 
 /// <summary>
-/// Response model for successful webhook processing.
+///     Response model for successful webhook processing.
 /// </summary>
 public class WebhookResponse
 {
@@ -111,7 +112,7 @@ public class WebhookResponse
 }
 
 /// <summary>
-/// Response model for webhook processing errors.
+///     Response model for webhook processing errors.
 /// </summary>
 public class WebhookErrorResponse
 {

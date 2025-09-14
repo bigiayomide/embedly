@@ -1,27 +1,27 @@
-using Embedly.SDK;
 using System.Diagnostics;
+using Embedly.SDK;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Embedly.Examples.Infrastructure.Services;
 
 /// <summary>
-/// Service for checking application and dependency health.
+///     Service for checking application and dependency health.
 /// </summary>
 public interface IHealthService
 {
     /// <summary>
-    /// Performs a comprehensive health check.
+    ///     Performs a comprehensive health check.
     /// </summary>
     Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Checks if the Embedly API is accessible.
+    ///     Checks if the Embedly API is accessible.
     /// </summary>
     Task<HealthCheckResult> CheckEmbedlyHealthAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-/// Implementation of health service.
+///     Implementation of health service.
 /// </summary>
 public class HealthService(
     IEmbedlyClient embedlyClient,
@@ -46,10 +46,7 @@ public class HealthService(
             var embedlyHealth = await CheckEmbedlyHealthAsync(cancellationToken);
             checks["Embedly"] = embedlyHealth.Status.ToString();
 
-            foreach (var kvp in embedlyHealth.Data)
-            {
-                checks[$"Embedly_{kvp.Key}"] = kvp.Value;
-            }
+            foreach (var kvp in embedlyHealth.Data) checks[$"Embedly_{kvp.Key}"] = kvp.Value;
 
             stopwatch.Stop();
             checks["ResponseTime"] = $"{stopwatch.ElapsedMilliseconds}ms";
@@ -59,8 +56,8 @@ public class HealthService(
                 : HealthStatus.Degraded;
 
             return new HealthCheckResult(
-                status: overallStatus,
-                description: "Application health check completed",
+                overallStatus,
+                "Application health check completed",
                 data: checks);
         }
         catch (Exception ex)
@@ -74,10 +71,10 @@ public class HealthService(
                 correlationService.CorrelationId);
 
             return new HealthCheckResult(
-                status: HealthStatus.Unhealthy,
-                description: "Health check failed",
-                exception: ex,
-                data: checks);
+                HealthStatus.Unhealthy,
+                "Health check failed",
+                ex,
+                checks);
         }
     }
 
@@ -98,15 +95,15 @@ public class HealthService(
 
             if (response?.Data?.Any() != true)
                 return new HealthCheckResult(
-                    status: HealthStatus.Healthy,
-                    description: "Embedly API is accessible",
+                    HealthStatus.Healthy,
+                    "Embedly API is accessible",
                     data: data);
             data["CurrencyCount"] = response.Data.Count();
             data["SampleCurrency"] = response.Data.First().Code;
 
             return new HealthCheckResult(
-                status: HealthStatus.Healthy,
-                description: "Embedly API is accessible",
+                HealthStatus.Healthy,
+                "Embedly API is accessible",
                 data: data);
         }
         catch (Exception ex)
@@ -122,16 +119,16 @@ public class HealthService(
                 correlationService.CorrelationId);
 
             return new HealthCheckResult(
-                status: HealthStatus.Unhealthy,
-                description: "Embedly API is not accessible",
-                exception: ex,
-                data: data);
+                HealthStatus.Unhealthy,
+                "Embedly API is not accessible",
+                ex,
+                data);
         }
     }
 }
 
 /// <summary>
-/// Health check for use with ASP.NET Core health check middleware.
+///     Health check for use with ASP.NET Core health check middleware.
 /// </summary>
 public class EmbedlyHealthCheck : IHealthCheck
 {

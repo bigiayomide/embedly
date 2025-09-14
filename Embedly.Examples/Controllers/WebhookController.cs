@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Embedly.SDK.Webhooks;
 using System.Text;
+using Embedly.SDK.Webhooks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Embedly.Examples.Controllers;
 
 /// <summary>
-/// Simple webhook controller using the Embedly SDK's built-in webhook system.
-/// Developers just need to inject IWebhookProcessor and call ProcessWebhookAsync.
+///     Simple webhook controller using the Embedly SDK's built-in webhook system.
+///     Developers just need to inject IWebhookProcessor and call ProcessWebhookAsync.
 /// </summary>
 [ApiController]
 [Route("api/webhooks")]
@@ -17,8 +17,8 @@ public class WebhookController(
     : ControllerBase
 {
     /// <summary>
-    /// Primary webhook endpoint for receiving Embedly events.
-    /// Uses the SDK's built-in WebhookProcessor for validation and processing.
+    ///     Primary webhook endpoint for receiving Embedly events.
+    ///     Uses the SDK's built-in WebhookProcessor for validation and processing.
     /// </summary>
     [HttpPost("embedly")]
     public async Task<IActionResult> HandleEmbedlyWebhook()
@@ -57,16 +57,14 @@ public class WebhookController(
                     processedAt = DateTime.UtcNow
                 });
             }
-            else
+
+            logger.LogWarning("Webhook processing failed: {Error}", result.Error);
+            return BadRequest(new
             {
-                logger.LogWarning("Webhook processing failed: {Error}", result.Error);
-                return BadRequest(new
-                {
-                    status = "failed",
-                    error = result.Error,
-                    processedAt = DateTime.UtcNow
-                });
-            }
+                status = "failed",
+                error = result.Error,
+                processedAt = DateTime.UtcNow
+            });
         }
         catch (Exception ex)
         {
@@ -81,7 +79,7 @@ public class WebhookController(
     }
 
     /// <summary>
-    /// Health check endpoint.
+    ///     Health check endpoint.
     /// </summary>
     [HttpGet("health")]
     public IActionResult HealthCheck()
@@ -96,15 +94,13 @@ public class WebhookController(
     }
 
     /// <summary>
-    /// Test webhook signature validation.
+    ///     Test webhook signature validation.
     /// </summary>
     [HttpPost("test-signature")]
     public IActionResult TestSignature([FromBody] TestSignatureRequest request)
     {
         if (string.IsNullOrEmpty(request.Payload) || string.IsNullOrEmpty(request.Signature))
-        {
             return BadRequest("Payload and signature are required");
-        }
 
         // Use the SDK's built-in validation
         var isValid = webhookProcessor.ValidateWebhook(request.Payload, request.Signature);
@@ -118,7 +114,7 @@ public class WebhookController(
     }
 
     /// <summary>
-    /// Get supported webhook event types.
+    ///     Get supported webhook event types.
     /// </summary>
     [HttpGet("event-types")]
     public IActionResult GetSupportedEventTypes()
@@ -164,7 +160,7 @@ public class WebhookController(
 }
 
 /// <summary>
-/// Request model for testing webhook signatures.
+///     Request model for testing webhook signatures.
 /// </summary>
 public class TestSignatureRequest
 {

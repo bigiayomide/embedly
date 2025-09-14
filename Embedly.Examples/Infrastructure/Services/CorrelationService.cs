@@ -1,28 +1,28 @@
 namespace Embedly.Examples.Infrastructure.Services;
 
 /// <summary>
-/// Service for managing correlation IDs across requests and operations.
+///     Service for managing correlation IDs across requests and operations.
 /// </summary>
 public interface ICorrelationService
 {
     /// <summary>
-    /// Gets the current correlation ID.
+    ///     Gets the current correlation ID.
     /// </summary>
     string CorrelationId { get; }
 
     /// <summary>
-    /// Sets a new correlation ID.
+    ///     Sets a new correlation ID.
     /// </summary>
     void SetCorrelationId(string correlationId);
 
     /// <summary>
-    /// Generates a new correlation ID and sets it as current.
+    ///     Generates a new correlation ID and sets it as current.
     /// </summary>
     string GenerateNew();
 }
 
 /// <summary>
-/// Implementation of correlation service using AsyncLocal for thread safety.
+///     Implementation of correlation service using AsyncLocal for thread safety.
 /// </summary>
 public class CorrelationService : ICorrelationService
 {
@@ -47,7 +47,7 @@ public class CorrelationService : ICorrelationService
 }
 
 /// <summary>
-/// Extension methods for logging with correlation IDs.
+///     Extension methods for logging with correlation IDs.
 /// </summary>
 public static class LoggerExtensions
 {

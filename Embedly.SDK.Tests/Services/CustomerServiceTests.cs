@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Customers;
+using Embedly.SDK.Models.Responses.Customers;
+using Embedly.SDK.Services.Customers;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Customers;
-using Embedly.SDK.Models.Responses.Customers;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Customers;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Comprehensive unit tests for CustomerService following SDK patterns.
-/// Tests all customer management operations including CRUD, KYC, and validation.
+///     Comprehensive unit tests for CustomerService following SDK patterns.
+///     Tests all customer management operations including CRUD, KYC, and validation.
 /// </summary>
 [TestFixture]
 public class CustomerServiceTests : ServiceTestBase
@@ -27,8 +26,6 @@ public class CustomerServiceTests : ServiceTestBase
     {
         _customerService = new CustomerService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Customer Creation Tests
 
     [Test]
     public async Task CreateAsync_WithValidRequest_ReturnsSuccessfulResponse()
@@ -94,10 +91,6 @@ public class CustomerServiceTests : ServiceTestBase
         result.Error?.Code.Should().Be("DUPLICATE_EMAIL");
     }
 
-    #endregion
-
-    #region Customer Retrieval Tests
-
     [Test]
     public async Task GetByIdAsync_WithValidId_ReturnsCustomer()
     {
@@ -128,7 +121,7 @@ public class CustomerServiceTests : ServiceTestBase
     public void GetByIdAsync_WithNullId_ThrowsArgumentException()
     {
         // Act & Assert
-        AssertThrowsArgumentExceptionForNullOrEmptyString<Customer>(
+        AssertThrowsArgumentExceptionForNullOrEmptyString(
             _customerService.GetByIdAsync, "customerId");
     }
 
@@ -229,13 +222,8 @@ public class CustomerServiceTests : ServiceTestBase
     public void GetAllAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-         Assert.ThrowsAsync<ArgumentNullException>(
-            () => _customerService.GetAllAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _customerService.GetAllAsync(null!));
     }
-
-    #endregion
-
-    #region Customer Update Tests
 
     [Test]
     public async Task UpdateNameAsync_WithValidParameters_ReturnsUpdatedCustomer()
@@ -350,7 +338,8 @@ public class CustomerServiceTests : ServiceTestBase
 
         MockHttpClient
             .Setup(x => x.PatchAsync<object, Customer>(
-                It.Is<string>(url => url.Contains($"api/v1/customers/customer/{customerId}/customertype/{customerTypeId}/update")),
+                It.Is<string>(url =>
+                    url.Contains($"api/v1/customers/customer/{customerId}/customertype/{customerTypeId}/update")),
                 It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -364,15 +353,12 @@ public class CustomerServiceTests : ServiceTestBase
 
         MockHttpClient.Verify(
             x => x.PatchAsync<object, Customer>(
-                It.Is<string>(url => url.Contains($"api/v1/customers/customer/{customerId}/customertype/{customerTypeId}/update")),
+                It.Is<string>(url =>
+                    url.Contains($"api/v1/customers/customer/{customerId}/customertype/{customerTypeId}/update")),
                 It.IsAny<object>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
-
-    #endregion
-
-    #region KYC Tests
 
     [Test]
     public async Task UpgradeKycWithNinAsync_WithValidRequest_ReturnsKycResult()
@@ -394,7 +380,7 @@ public class CustomerServiceTests : ServiceTestBase
             VerificationReference = "KYC-REF-123456",
             ProcessedAt = DateTime.UtcNow
         };
-        
+
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
@@ -435,8 +421,8 @@ public class CustomerServiceTests : ServiceTestBase
             VerificationStatus = CustomerVerificationStatus.Verified,
             VerificationReference = "BVN-REF-123456",
             ProcessedAt = DateTime.UtcNow
-        }; 
-        
+        };
+
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
@@ -538,10 +524,6 @@ public class CustomerServiceTests : ServiceTestBase
             $"api/v1/customers/customer-verification-properties/{customerId}");
     }
 
-    #endregion
-
-    #region Lookup Tests
-
     [Test]
     public async Task GetCustomerTypesAsync_ReturnsCustomerTypesList()
     {
@@ -602,16 +584,12 @@ public class CustomerServiceTests : ServiceTestBase
         VerifyHttpClientGetCall<List<Country>>("api/v1/customers/countries/get");
     }
 
-    #endregion
-
-    #region Validation Tests
-
     [Test]
     public void UpdateNameAsync_WithNullCustomerId_ThrowsArgumentException()
     {
         // Act & Assert
-        var exception = Assert.ThrowsAsync<ArgumentException>(
-            () => _customerService.UpdateNameAsync(null!, "First", "Last"));
+        var exception =
+            Assert.ThrowsAsync<ArgumentException>(() => _customerService.UpdateNameAsync(null!, "First", "Last"));
         exception.Should().NotBeNull();
         exception!.ParamName.Should().Be("customerId");
     }
@@ -620,8 +598,8 @@ public class CustomerServiceTests : ServiceTestBase
     public void UpdateNameAsync_WithNullFirstName_ThrowsArgumentException()
     {
         // Act & Assert
-        var exception = Assert.ThrowsAsync<ArgumentException>(
-            () => _customerService.UpdateNameAsync(CreateTestGuid().ToString(), null!, "Last"));
+        var exception = Assert.ThrowsAsync<ArgumentException>(() =>
+            _customerService.UpdateNameAsync(CreateTestGuid().ToString(), null!, "Last"));
         exception.Should().NotBeNull();
         exception!.ParamName.Should().Be("firstName");
     }
@@ -630,8 +608,8 @@ public class CustomerServiceTests : ServiceTestBase
     public void UpdateNameAsync_WithNullLastName_ThrowsArgumentException()
     {
         // Act & Assert
-        var exception = Assert.ThrowsAsync<ArgumentException>(
-            () => _customerService.UpdateNameAsync(CreateTestGuid().ToString(), "First", null!));
+        var exception = Assert.ThrowsAsync<ArgumentException>(() =>
+            _customerService.UpdateNameAsync(CreateTestGuid().ToString(), "First", null!));
         exception.Should().NotBeNull();
         exception!.ParamName.Should().Be("lastName");
     }
@@ -640,8 +618,7 @@ public class CustomerServiceTests : ServiceTestBase
     public void UpdateNameAsync_WithNullRequestObject_ThrowsArgumentNullException()
     {
         // Act & Assert
-         Assert.ThrowsAsync<ArgumentNullException>(
-            () => _customerService.UpdateNameAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _customerService.UpdateNameAsync(null!));
     }
 
     [Test]
@@ -651,23 +628,19 @@ public class CustomerServiceTests : ServiceTestBase
         var request = new UpdateCustomerContactRequest { Email = "test@test.com" };
 
         // Act & Assert
-        var exception = Assert.ThrowsAsync<ArgumentException>(
-            () => _customerService.UpdateContactAsync(null!, request));
+        var exception =
+            Assert.ThrowsAsync<ArgumentException>(() => _customerService.UpdateContactAsync(null!, request));
         exception.Should().NotBeNull();
         exception!.ParamName.Should().Be("customerId");
     }
 
     [Test]
-    public  void UpdateContactAsync_WithNullRequest_ThrowsArgumentNullException()
+    public void UpdateContactAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-         Assert.ThrowsAsync<ArgumentNullException>(
-            () => _customerService.UpdateContactAsync(CreateTestGuid().ToString(), null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _customerService.UpdateContactAsync(CreateTestGuid().ToString(), null!));
     }
-
-    #endregion
-
-    #region Test Data Creation Methods
 
     private CreateCustomerRequest CreateValidCustomerRequest()
     {
@@ -709,6 +682,4 @@ public class CustomerServiceTests : ServiceTestBase
             .Select(i => CreateTestCustomer($"customer-{i}"))
             .ToList();
     }
-
-    #endregion
 }

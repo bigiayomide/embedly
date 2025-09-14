@@ -3,16 +3,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Embedly.SDK.Tests.Testing;
+using Embedly.SDK.Webhooks;
 using FluentAssertions;
 using NUnit.Framework;
-using Embedly.SDK.Webhooks;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Webhooks;
 
 /// <summary>
-/// Comprehensive unit tests for WebhookValidator following SDK patterns.
-/// Tests signature validation, event parsing, and security scenarios.
+///     Comprehensive unit tests for WebhookValidator following SDK patterns.
+///     Tests signature validation, event parsing, and security scenarios.
 /// </summary>
 [TestFixture]
 public class WebhookValidatorTests : TestBase
@@ -24,8 +24,6 @@ public class WebhookValidatorTests : TestBase
     {
         _webhookValidator = new WebhookValidator(TestWebhookSecret);
     }
-
-    #region Constructor Tests
 
     [Test]
     public void Constructor_WithValidSecret_CreatesInstance()
@@ -60,10 +58,6 @@ public class WebhookValidatorTests : TestBase
         var exception = Assert.Throws<ArgumentException>(() => new WebhookValidator("   "));
         exception.Should().NotBeNull();
     }
-
-    #endregion
-
-    #region Signature Validation Tests
 
     [Test]
     public void ValidateSignature_WithValidSignature_ReturnsTrue()
@@ -201,10 +195,6 @@ public class WebhookValidatorTests : TestBase
         result.Should().BeTrue();
     }
 
-    #endregion
-
-    #region Event Parsing Tests
-
     [Test]
     public void ParseEvent_WithValidPayloadAndSignature_ReturnsWebhookEvent()
     {
@@ -230,8 +220,8 @@ public class WebhookValidatorTests : TestBase
         const string invalidSignature = "invalid-signature";
 
         // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => _webhookValidator.ParseEvent(payload, invalidSignature));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => _webhookValidator.ParseEvent(payload, invalidSignature));
 
         exception.Should().NotBeNull();
         exception!.Message.Should().Contain("Invalid webhook signature");
@@ -245,8 +235,9 @@ public class WebhookValidatorTests : TestBase
         var validSignature = ComputeTestSignature(malformedPayload);
 
         // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => _webhookValidator.ParseEvent(malformedPayload, validSignature));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() =>
+                _webhookValidator.ParseEvent(malformedPayload, validSignature));
 
         exception.Should().NotBeNull();
         exception!.Message.Should().Contain("Failed to parse webhook event");
@@ -269,10 +260,6 @@ public class WebhookValidatorTests : TestBase
         result!.Event.Should().Be("checkout.payment.success");
         result.Data.Should().NotBeNull();
     }
-
-    #endregion
-
-    #region Typed Event Data Parsing Tests
 
     [Test]
     public void ParseEventData_WithValidCustomerEvent_ReturnsTypedData()
@@ -300,8 +287,8 @@ public class WebhookValidatorTests : TestBase
         const string invalidSignature = "invalid-signature";
 
         // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => _webhookValidator.ParseEventData<TestNipEventData>(payload, invalidSignature));
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            _webhookValidator.ParseEventData<TestNipEventData>(payload, invalidSignature));
 
         exception.Should().NotBeNull();
         exception!.Message.Should().Contain("Invalid webhook signature");
@@ -321,10 +308,6 @@ public class WebhookValidatorTests : TestBase
         result.Should().BeNull();
     }
 
-    #endregion
-
-    #region Security Tests
-
     [Test]
     public void ValidateSignature_WithTimingAttack_ConsistentTiming()
     {
@@ -335,9 +318,7 @@ public class WebhookValidatorTests : TestBase
 
         // Ensure signatures are same length to test timing attack resistance
         if (validSignature.Length != invalidSignature.Length)
-        {
             invalidSignature = invalidSignature.PadRight(validSignature.Length, '0')[..validSignature.Length];
-        }
 
         // Act & Assert - Both should return quickly and consistently
         var validResult = _webhookValidator.ValidateSignature(payload, validSignature);
@@ -406,10 +387,6 @@ public class WebhookValidatorTests : TestBase
         // Assert
         result.Should().BeTrue();
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private string CreateTestWebhookPayload()
     {
@@ -481,10 +458,7 @@ public class WebhookValidatorTests : TestBase
     private string CreateLargeWebhookPayload()
     {
         var largeData = new StringBuilder();
-        for (int i = 0; i < 1000; i++)
-        {
-            largeData.Append($"item_{i}_");
-        }
+        for (var i = 0; i < 1000; i++) largeData.Append($"item_{i}_");
 
         return JsonSerializer.Serialize(new
         {
@@ -553,26 +527,17 @@ public class WebhookValidatorTests : TestBase
         return Convert.ToHexString(hash).ToLowerInvariant();
     }
 
-    #endregion
-
-    #region Test Data Classes
-
     private class TestNipEventData
     {
-        [JsonPropertyName("accountNumber")]
-        public string? AccountNumber { get; set; }
+        [JsonPropertyName("accountNumber")] public string? AccountNumber { get; set; }
 
-        [JsonPropertyName("reference")]
-        public string? Reference { get; set; }
+        [JsonPropertyName("reference")] public string? Reference { get; set; }
 
-        [JsonPropertyName("amount")]
-        public decimal? Amount { get; set; }
+        [JsonPropertyName("amount")] public decimal? Amount { get; set; }
 
-        [JsonPropertyName("senderName")]
-        public string? SenderName { get; set; }
+        [JsonPropertyName("senderName")] public string? SenderName { get; set; }
 
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
+        [JsonPropertyName("description")] public string? Description { get; set; }
     }
 
     private class TestPayoutEventData
@@ -583,15 +548,10 @@ public class WebhookValidatorTests : TestBase
         [JsonPropertyName("creditAccountNumber")]
         public string? CreditAccountNumber { get; set; }
 
-        [JsonPropertyName("amount")]
-        public decimal? Amount { get; set; }
+        [JsonPropertyName("amount")] public decimal? Amount { get; set; }
 
-        [JsonPropertyName("currency")]
-        public string? Currency { get; set; }
+        [JsonPropertyName("currency")] public string? Currency { get; set; }
 
-        [JsonPropertyName("status")]
-        public string? Status { get; set; }
+        [JsonPropertyName("status")] public string? Status { get; set; }
     }
-
-    #endregion
 }

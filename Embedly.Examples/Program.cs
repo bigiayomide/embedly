@@ -1,18 +1,20 @@
+using System.Reflection;
+using Embedly.Examples.Examples;
 using Embedly.Examples.Infrastructure.Configuration;
 using Embedly.Examples.Infrastructure.Extensions;
 using Embedly.Examples.Infrastructure.Services;
-using Embedly.Examples.Examples;
-using Microsoft.Extensions.Options;
-using Serilog;
-using System.Reflection;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace Embedly.Examples;
 
 /// <summary>
-/// Entry point for the Embedly SDK Examples application.
-/// Demonstrates professional patterns for financial services integration.
+///     Entry point for the Embedly SDK Examples application.
+///     Demonstrates professional patterns for financial services integration.
 /// </summary>
 internal class Program
 {
@@ -56,23 +58,17 @@ internal class Program
     private static IHost CreateHost(string[] args)
     {
         // Check if we need WebApplication for API mode
-        if (args.Contains("--web") || args.Contains("--api"))
-        {
-            return CreateWebApplication(args);
-        }
+        if (args.Contains("--web") || args.Contains("--api")) return CreateWebApplication(args);
 
         var builder = Host.CreateDefaultBuilder(args)
-            .UseSerilog((context, configuration) =>
-            {
-                configuration.ReadFrom.Configuration(context.Configuration);
-            })
+            .UseSerilog((context, configuration) => { configuration.ReadFrom.Configuration(context.Configuration); })
             .ConfigureAppConfiguration((context, config) =>
             {
                 // Load configuration in order of precedence
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                config.AddJsonFile("appsettings.json", false, true);
                 config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
-                    optional: true, reloadOnChange: true);
-                config.AddUserSecrets<Program>(optional: true);
+                    true, true);
+                config.AddUserSecrets<Program>(true);
                 config.AddEnvironmentVariables("EMBEDLY_");
                 config.AddCommandLine(args);
             })
@@ -107,8 +103,8 @@ internal class Program
 
         // Check if FastEndpoints is enabled
         var useFastEndpoints = builder.Configuration.GetValue<bool>("UseFastEndpoints") ||
-                              args.Contains("--fastendpoints") ||
-                              args.Contains("--fe");
+                               args.Contains("--fastendpoints") ||
+                               args.Contains("--fe");
 
         if (useFastEndpoints)
         {
@@ -120,7 +116,8 @@ internal class Program
                 {
                     s.Title = "Embedly SDK Examples API (FastEndpoints)";
                     s.Version = "v1";
-                    s.Description = "Production-ready examples using FastEndpoints for Embedly financial services integration";
+                    s.Description =
+                        "Production-ready examples using FastEndpoints for Embedly financial services integration";
                 };
             });
         }
@@ -131,20 +128,18 @@ internal class Program
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new()
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Embedly SDK Examples API (Controllers)",
                     Version = "v1",
-                    Description = "Production-ready examples using Controllers for Embedly financial services integration"
+                    Description =
+                        "Production-ready examples using Controllers for Embedly financial services integration"
                 });
 
                 // Include XML comments if available
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
-                {
-                    c.IncludeXmlComments(xmlPath);
-                }
+                if (File.Exists(xmlPath)) c.IncludeXmlComments(xmlPath);
             });
         }
 
@@ -163,10 +158,7 @@ internal class Program
         var validationErrors = embedlySettings.Value.Validate().ToList();
         if (validationErrors.Count > 0)
         {
-            foreach (var error in validationErrors)
-            {
-                logger.LogError("Configuration Error: {Error}", error);
-            }
+            foreach (var error in validationErrors) logger.LogError("Configuration Error: {Error}", error);
 
             logger.LogError("Please check your configuration. Use 'dotnet user-secrets' for secure credential storage");
             logger.LogInformation("Example: dotnet user-secrets set \"Embedly:ApiKey\" \"BSK-your-api-key\"");
@@ -200,8 +192,8 @@ internal class Program
 
         // Determine if using FastEndpoints
         var useFastEndpoints = configuration.GetValue<bool>("UseFastEndpoints") ||
-                              Environment.GetCommandLineArgs().Contains("--fastendpoints") ||
-                              Environment.GetCommandLineArgs().Contains("--fe");
+                               Environment.GetCommandLineArgs().Contains("--fastendpoints") ||
+                               Environment.GetCommandLineArgs().Contains("--fe");
 
         var apiType = useFastEndpoints ? "FastEndpoints" : "Controllers";
         logger.LogInformation("Starting in Web API mode using {ApiType}", apiType);
@@ -246,8 +238,8 @@ internal class Program
         app.MapGet("/api/info", (IOptions<ApplicationSettings> settings) => new
         {
             Application = settings.Value.Name,
-            Version = settings.Value.Version,
-            Environment = settings.Value.Environment,
+            settings.Value.Version,
+            settings.Value.Environment,
             ApiType = apiType,
             Timestamp = DateTime.UtcNow,
             Endpoints = new
@@ -259,7 +251,8 @@ internal class Program
             }
         });
 
-        logger.LogInformation("Web API started using {ApiType}. Navigate to the root URL to see Swagger documentation", apiType);
+        logger.LogInformation("Web API started using {ApiType}. Navigate to the root URL to see Swagger documentation",
+            apiType);
 
         await app.RunAsync();
         return 0;
@@ -343,10 +336,7 @@ internal class Program
                     _ => Task.FromResult(ShowInvalidOption())
                 };
 
-                if (!await result)
-                {
-                    break;
-                }
+                if (!await result) break;
             }
             catch (Exception ex)
             {
@@ -398,16 +388,10 @@ internal class Program
         if (result.Data?.Any() == true)
         {
             Console.WriteLine("\nDetails:");
-            foreach (var kvp in result.Data)
-            {
-                Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
-            }
+            foreach (var kvp in result.Data) Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
         }
 
-        if (result.Exception != null)
-        {
-            Console.WriteLine($"\nError: {result.Exception.Message}");
-        }
+        if (result.Exception != null) Console.WriteLine($"\nError: {result.Exception.Message}");
 
         Console.WriteLine("\nPress any key to continue...");
         Console.ReadKey();
@@ -422,10 +406,7 @@ internal class Program
         var customerExamples = host.Services.GetRequiredService<CustomerExamples>();
         var result = await customerExamples.DemonstrateCustomerWorkflowAsync();
 
-        if (!result.IsSuccess)
-        {
-            Console.WriteLine($"❌ Scenario failed: {result.Error}");
-        }
+        if (!result.IsSuccess) Console.WriteLine($"❌ Scenario failed: {result.Error}");
 
         Console.WriteLine("\nPress any key to continue...");
         Console.ReadKey();
@@ -440,10 +421,7 @@ internal class Program
         var walletExamples = host.Services.GetRequiredService<WalletExamples>();
         var result = await walletExamples.DemonstrateWalletWorkflowAsync();
 
-        if (!result.IsSuccess)
-        {
-            Console.WriteLine($"❌ Scenario failed: {result.Error}");
-        }
+        if (!result.IsSuccess) Console.WriteLine($"❌ Scenario failed: {result.Error}");
 
         Console.WriteLine("\nPress any key to continue...");
         Console.ReadKey();
@@ -509,13 +487,9 @@ internal class Program
             var walletResult = await walletExamples.DemonstrateWalletWorkflowAsync();
 
             if (walletResult.IsSuccess)
-            {
                 Console.WriteLine("\n✅ Complete end-to-end workflow finished successfully!");
-            }
             else
-            {
                 Console.WriteLine($"\n❌ Wallet workflow failed: {walletResult.Error}");
-            }
         }
         else
         {
@@ -580,13 +554,16 @@ internal class Program
         return true;
     }
 
-    private static string GetStatusEmoji(Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus status) => status switch
+    private static string GetStatusEmoji(HealthStatus status)
     {
-        Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy => "✅",
-        Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded => "⚠️",
-        Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy => "❌",
-        _ => "❓"
-    };
+        return status switch
+        {
+            HealthStatus.Healthy => "✅",
+            HealthStatus.Degraded => "⚠️",
+            HealthStatus.Unhealthy => "❌",
+            _ => "❓"
+        };
+    }
 
     private static string MaskValue(string value)
     {

@@ -1,21 +1,21 @@
 using System;
-using Microsoft.Extensions.Options;
 using Embedly.SDK.Configuration;
 using Embedly.SDK.Http;
-using Embedly.SDK.Services.Customers;
-using Embedly.SDK.Services.Wallets;
-using Embedly.SDK.Services.WalletGroups;
-using Embedly.SDK.Services.Products;
-using Embedly.SDK.Services.ProductLimits;
-using Embedly.SDK.Services.Checkout;
-using Embedly.SDK.Services.Payout;
 using Embedly.SDK.Services.Cards;
+using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Services.Customers;
+using Embedly.SDK.Services.Payout;
+using Embedly.SDK.Services.ProductLimits;
+using Embedly.SDK.Services.Products;
 using Embedly.SDK.Services.Utilities;
+using Embedly.SDK.Services.WalletGroups;
+using Embedly.SDK.Services.Wallets;
+using Microsoft.Extensions.Options;
 
 namespace Embedly.SDK;
 
 /// <summary>
-/// Main client for accessing Embedly API services.
+///     Main client for accessing Embedly API services.
 /// </summary>
 public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
 {
@@ -24,7 +24,7 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     private bool _disposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmbedlyClient"/> class.
+    ///     Initializes a new instance of the <see cref="EmbedlyClient" /> class.
     /// </summary>
     /// <param name="httpClient">The HTTP client for API communication.</param>
     /// <param name="options">The configuration options.</param>
@@ -52,10 +52,10 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        
+
         // Validate configuration
         _options.Validate();
-        
+
         Customers = customerService ?? throw new ArgumentNullException(nameof(customerService));
         Wallets = walletService ?? throw new ArgumentNullException(nameof(walletService));
         WalletGroups = walletGroupService ?? throw new ArgumentNullException(nameof(walletGroupService));
@@ -68,45 +68,39 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     }
 
     /// <inheritdoc />
-    public ICustomerService Customers { get; }
-    
-    /// <inheritdoc />
-    public IWalletService Wallets { get; }
-    
-    /// <inheritdoc />
-    public IWalletGroupService WalletGroups { get; }
-    
-    /// <inheritdoc />
-    public IProductService Products { get; }
-    
-    /// <inheritdoc />
-    public IProductLimitService ProductLimits { get; }
-    
-    /// <inheritdoc />
-    public ICheckoutService Checkout { get; }
-    
-    /// <inheritdoc />
-    public IPayoutService Payouts { get; }
-    
-    /// <inheritdoc />
-    public ICardService Cards { get; }
-    
-    /// <inheritdoc />
-    public IUtilityService Utilities { get; }
-
-    /// <inheritdoc />
     public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
+        if (_disposed) return;
 
-        if (_httpClient is IDisposable disposableClient)
-        {
-            disposableClient.Dispose();
-        }
+        if (_httpClient is IDisposable disposableClient) disposableClient.Dispose();
 
         _disposed = true;
     }
+
+    /// <inheritdoc />
+    public ICustomerService Customers { get; }
+
+    /// <inheritdoc />
+    public IWalletService Wallets { get; }
+
+    /// <inheritdoc />
+    public IWalletGroupService WalletGroups { get; }
+
+    /// <inheritdoc />
+    public IProductService Products { get; }
+
+    /// <inheritdoc />
+    public IProductLimitService ProductLimits { get; }
+
+    /// <inheritdoc />
+    public ICheckoutService Checkout { get; }
+
+    /// <inheritdoc />
+    public IPayoutService Payouts { get; }
+
+    /// <inheritdoc />
+    public ICardService Cards { get; }
+
+    /// <inheritdoc />
+    public IUtilityService Utilities { get; }
 }

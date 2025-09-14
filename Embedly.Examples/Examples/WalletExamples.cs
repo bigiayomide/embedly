@@ -6,7 +6,7 @@ using Embedly.SDK.Models.Requests.Wallets;
 namespace Embedly.Examples.Examples;
 
 /// <summary>
-/// Real working examples for wallet operations.
+///     Real working examples for wallet operations.
 /// </summary>
 public class WalletExamples(
     IEmbedlyClient embedlyClient,
@@ -15,7 +15,7 @@ public class WalletExamples(
     IRetryService retryService)
 {
     /// <summary>
-    /// Example: Create a wallet for a customer.
+    ///     Example: Create a wallet for a customer.
     /// </summary>
     public async Task<Result<string>> CreateWalletAsync(string customerId)
     {
@@ -45,20 +45,17 @@ public class WalletExamples(
             var response = await embedlyClient.Wallets.CreateWalletAsync(request);
 
             if (!response.Success || response.Data == null)
-            {
                 throw new InvalidOperationException($"Wallet creation failed: {response.Error?.Message}");
-            }
 
             logger.LogInformation("Wallet created successfully: {WalletId}. Correlation: {CorrelationId}",
                 response.Data.Id, correlationId);
 
             return response.Data.Id.ToString();
-
         }, "CreateWallet");
     }
 
     /// <summary>
-    /// Example: Get wallet details.
+    ///     Example: Get wallet details.
     /// </summary>
     public async Task<Result<string>> GetWalletAsync(string walletId)
     {
@@ -72,9 +69,7 @@ public class WalletExamples(
             var response = await embedlyClient.Wallets.GetWalletAsync(walletId);
 
             if (!response.Success || response.Data == null)
-            {
                 throw new InvalidOperationException($"Wallet retrieval failed: {response.Error?.Message}");
-            }
 
             var wallet = response.Data;
             var balanceInfo = $"Balance: {wallet.AvailableBalance:C}";
@@ -83,12 +78,11 @@ public class WalletExamples(
                 walletId, balanceInfo, correlationId);
 
             return $"Wallet {walletId}: {balanceInfo}";
-
         }, "GetWallet");
     }
 
     /// <summary>
-    /// Example: Demonstrate complete wallet workflow.
+    ///     Example: Demonstrate complete wallet workflow.
     /// </summary>
     public async Task<Result<string>> DemonstrateWalletWorkflowAsync()
     {
@@ -105,9 +99,7 @@ public class WalletExamples(
             Console.WriteLine("Step 1: Creating wallet...");
             var createResult = await CreateWalletAsync(customerId);
             if (!createResult.IsSuccess)
-            {
                 return Result<string>.Failure($"Failed to create wallet: {createResult.Error}");
-            }
 
             var walletId = createResult.Value!;
             Console.WriteLine($"✅ Wallet created: {walletId}");
@@ -115,10 +107,7 @@ public class WalletExamples(
             // Step 2: Get wallet details
             Console.WriteLine("\nStep 2: Retrieving wallet details...");
             var getResult = await GetWalletAsync(walletId);
-            if (!getResult.IsSuccess)
-            {
-                return Result<string>.Failure($"Failed to retrieve wallet: {getResult.Error}");
-            }
+            if (!getResult.IsSuccess) return Result<string>.Failure($"Failed to retrieve wallet: {getResult.Error}");
 
             Console.WriteLine($"✅ {getResult.Value}");
 

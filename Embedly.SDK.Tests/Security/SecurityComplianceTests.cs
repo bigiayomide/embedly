@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using NUnit.Framework;
 using Embedly.SDK.Configuration;
 using Embedly.SDK.Models.Requests.Cards;
 using Embedly.SDK.Models.Requests.Customers;
@@ -12,12 +9,15 @@ using Embedly.SDK.Models.Responses.Cards;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Tests.Testing;
+using FluentAssertions;
+using Moq;
+using NUnit.Framework;
 
 namespace Embedly.SDK.Tests.Security;
 
 /// <summary>
-/// Security and compliance tests following SDK patterns.
-/// Tests data protection, input validation, and security best practices.
+///     Security and compliance tests following SDK patterns.
+///     Tests data protection, input validation, and security best practices.
 /// </summary>
 [TestFixture]
 [Category("Security")]
@@ -25,7 +25,7 @@ namespace Embedly.SDK.Tests.Security;
 public class SecurityComplianceTests : ServiceTestBase
 {
     /// <summary>
-    /// Tests that sensitive data is not exposed in logs or error messages.
+    ///     Tests that sensitive data is not exposed in logs or error messages.
     /// </summary>
     [Test]
     public void DataProtection_SensitiveDataNotExposedInExceptions_ShouldNotRevealSensitiveInformation()
@@ -34,8 +34,7 @@ public class SecurityComplianceTests : ServiceTestBase
         var customerService = new CustomerService(MockHttpClient.Object, MockOptions.Object);
 
         // Act & Assert - Test that exceptions don't expose sensitive data
-        var createException = Assert.ThrowsAsync<ArgumentNullException>(
-            () => customerService.CreateAsync(null!));
+        var createException = Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(null!));
 
         createException.Should().NotBeNull();
         createException!.Message.Should().NotContain("password");
@@ -43,8 +42,7 @@ public class SecurityComplianceTests : ServiceTestBase
         createException.Message.Should().NotContain("key");
         createException.Message.Should().NotContain("token");
 
-        var getException = Assert.ThrowsAsync<ArgumentException>(
-            () => customerService.GetByIdAsync(null!));
+        var getException = Assert.ThrowsAsync<ArgumentException>(() => customerService.GetByIdAsync(null!));
 
         getException.Should().NotBeNull();
         getException!.Message.Should().NotContain("password");
@@ -54,7 +52,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests input validation against invalid inputs that should be rejected.
+    ///     Tests input validation against invalid inputs that should be rejected.
     /// </summary>
     [Test]
     public async Task InputValidation_SqlInjectionAttempts_ShouldRejectMaliciousInput()
@@ -75,8 +73,7 @@ public class SecurityComplianceTests : ServiceTestBase
         foreach (var invalidInput in invalidInputs)
         {
             // Act & Assert - Should throw ArgumentException for null/empty/whitespace
-            var exception = Assert.ThrowsAsync<ArgumentException>(
-                () => customerService.GetByIdAsync(invalidInput));
+            var exception = Assert.ThrowsAsync<ArgumentException>(() => customerService.GetByIdAsync(invalidInput));
 
             exception.Should().NotBeNull();
             TestContext.WriteLine($"✓ Invalid input '{invalidInput ?? "<null>"}' correctly rejected");
@@ -88,7 +85,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests that PIN encryption service properly handles sensitive data.
+    ///     Tests that PIN encryption service properly handles sensitive data.
     /// </summary>
     [Test]
     public async Task PinSecurity_PinEncryptionService_ShouldEncryptPinsSecurely()
@@ -114,8 +111,8 @@ public class SecurityComplianceTests : ServiceTestBase
         MockHttpClient.Setup(x => x.PostAsync<ActivateAfrigoCardRequest, AfrigoCard>(
                 It.IsAny<string>(),
                 It.IsAny<ActivateAfrigoCardRequest>(),
-                It.IsAny<System.Threading.CancellationToken>()))
-            .Callback<string, ActivateAfrigoCardRequest, System.Threading.CancellationToken>((url, request, token) =>
+                It.IsAny<CancellationToken>()))
+            .Callback<string, ActivateAfrigoCardRequest, CancellationToken>((url, request, token) =>
             {
                 capturedRequest = request;
             })
@@ -134,7 +131,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests that personal identifiable information (PII) is handled securely.
+    ///     Tests that personal identifiable information (PII) is handled securely.
     /// </summary>
     [Test]
     public void DataProtection_PiiHandling_ShouldProtectPersonalData()
@@ -156,7 +153,7 @@ public class SecurityComplianceTests : ServiceTestBase
         };
 
         // Act - Serialize request to simulate logging/transmission
-        var serializedRequest = System.Text.Json.JsonSerializer.Serialize(createRequest);
+        var serializedRequest = JsonSerializer.Serialize(createRequest);
 
         // Assert - Verify PII is present (as expected in legitimate requests)
         serializedRequest.Should().Contain("john.doe@example.com");
@@ -174,7 +171,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests rate limiting and request validation scenarios.
+    ///     Tests rate limiting and request validation scenarios.
     /// </summary>
     [Test]
     public void ApiSecurity_RequestValidation_ShouldValidateRequestLimits()
@@ -186,7 +183,7 @@ public class SecurityComplianceTests : ServiceTestBase
         var oversizedRequest = new CreateCustomerRequest
         {
             FirstName = new string('A', 10000), // Very large first name
-            LastName = new string('B', 10000),  // Very large last name
+            LastName = new string('B', 10000), // Very large last name
             EmailAddress = new string('x', 1000) + "@example.com", // Very long email
             MobileNumber = "+234" + new string('1', 100), // Very long phone
             DateOfBirth = DateTime.UtcNow.AddYears(-25),
@@ -207,7 +204,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests that configuration and sensitive settings are properly secured.
+    ///     Tests that configuration and sensitive settings are properly secured.
     /// </summary>
     [Test]
     public void ConfigurationSecurity_SensitiveSettings_ShouldBeSecure()
@@ -225,7 +222,7 @@ public class SecurityComplianceTests : ServiceTestBase
         options.ApiKey.Should().NotContain("sample");
         options.ApiKey.Should().NotContain("example");
 
-        TestContext.WriteLine($"✓ API Key format validation passed");
+        TestContext.WriteLine("✓ API Key format validation passed");
         TestContext.WriteLine($"✓ API Key length: {options.ApiKey.Length} characters");
 
         // Verify environment configuration is explicitly set (not default)
@@ -235,7 +232,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests that error messages don't leak sensitive information.
+    ///     Tests that error messages don't leak sensitive information.
     /// </summary>
     [Test]
     public void ErrorHandling_InformationLeakage_ShouldNotRevealInternalDetails()
@@ -254,8 +251,7 @@ public class SecurityComplianceTests : ServiceTestBase
         foreach (var invalidInput in invalidInputs)
         {
             // Act & Assert
-            var exception = Assert.ThrowsAsync<ArgumentException>(
-                () => customerService.GetByIdAsync(invalidInput));
+            var exception = Assert.ThrowsAsync<ArgumentException>(() => customerService.GetByIdAsync(invalidInput));
 
             exception.Should().NotBeNull();
 
@@ -276,7 +272,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests compliance with data retention and deletion requirements.
+    ///     Tests compliance with data retention and deletion requirements.
     /// </summary>
     [Test]
     public void ComplianceRequirements_DataRetention_ShouldMeetRegulations()
@@ -310,7 +306,7 @@ public class SecurityComplianceTests : ServiceTestBase
     }
 
     /// <summary>
-    /// Tests audit logging capabilities for compliance.
+    ///     Tests audit logging capabilities for compliance.
     /// </summary>
     [Test]
     public void AuditCompliance_LoggingRequirements_ShouldMeetAuditStandards()
@@ -350,8 +346,6 @@ public class SecurityComplianceTests : ServiceTestBase
         }
     }
 
-    #region Helper Methods
-
     private static string MaskEmail(string email)
     {
         if (string.IsNullOrEmpty(email) || !email.Contains('@'))
@@ -371,7 +365,7 @@ public class SecurityComplianceTests : ServiceTestBase
             return phoneNumber;
 
         var start = phoneNumber[..2]; // First 2 digits
-        var end = phoneNumber[^3..];   // Last 3 digits
+        var end = phoneNumber[^3..]; // Last 3 digits
         var maskLength = phoneNumber.Length - 5; // Total length minus first 2 and last 3
         var mask = new string('*', maskLength);
         return $"{start}{mask}{end}";
@@ -387,22 +381,21 @@ public class SecurityComplianceTests : ServiceTestBase
             Email = $"anonymized_{Guid.NewGuid():N}@anonymized.local"
         };
     }
-
-    #endregion
 }
 
 /// <summary>
-/// Strongly typed model for theoretical customer deletion request (GDPR compliance).
+///     Strongly typed model for theoretical customer deletion request (GDPR compliance).
 /// </summary>
 internal sealed record CustomerDeletionRequest
 {
     /// <summary>
-    /// Gets or sets the customer identifier to be deleted.
+    ///     Gets or sets the customer identifier to be deleted.
     /// </summary>
     public Guid CustomerId { get; init; }
 }
+
 /// <summary>
-/// Strongly typed model for customer test data used in anonymization tests.
+///     Strongly typed model for customer test data used in anonymization tests.
 /// </summary>
 internal sealed record CustomerTestData
 {
@@ -412,7 +405,7 @@ internal sealed record CustomerTestData
 }
 
 /// <summary>
-/// Strongly typed model for anonymized customer data.
+///     Strongly typed model for anonymized customer data.
 /// </summary>
 internal sealed record AnonymizedCustomerData
 {

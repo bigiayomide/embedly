@@ -1,20 +1,19 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Cards;
+using Embedly.SDK.Models.Responses.Cards;
+using Embedly.SDK.Services.Cards;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Cards;
-using Embedly.SDK.Models.Responses.Cards;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Cards;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Comprehensive unit tests for CardService following SDK patterns.
-/// Tests all card management operations including issuance, activation, PIN management, and blocking.
+///     Comprehensive unit tests for CardService following SDK patterns.
+///     Tests all card management operations including issuance, activation, PIN management, and blocking.
 /// </summary>
 [TestFixture]
 public class CardServiceTests : ServiceTestBase
@@ -27,8 +26,6 @@ public class CardServiceTests : ServiceTestBase
         _mockPinEncryptionService = new Mock<IPinEncryptionService>();
         _cardService = new CardService(MockHttpClient.Object, MockOptions.Object, _mockPinEncryptionService.Object);
     }
-
-    #region Card Issuance Tests
 
     [Test]
     public async Task IssueAfrigoCardAsync_WithValidRequest_ReturnsSuccessfulResponse()
@@ -94,17 +91,16 @@ public class CardServiceTests : ServiceTestBase
         result.Error?.Code.Should().Be("INELIGIBLE_CUSTOMER");
     }
 
-    #endregion
-
-    #region Card Activation Tests
-
     [Test]
     public async Task ActivateAfrigoCardAsync_WithValidRequest_EncryptsPinAndReturnsActivatedCard()
     {
         // Arrange
         var request = CreateValidCardActivationRequest();
         var encryptedPin = "encrypted_1234";
-        var expectedCard = CreateTestAfrigoCard() with { Status = CardStatus.Active, ActivatedAt = CreateTestTimestamp() };
+        var expectedCard = CreateTestAfrigoCard() with
+        {
+            Status = CardStatus.Active, ActivatedAt = CreateTestTimestamp()
+        };
         var apiResponse = CreateSuccessfulApiResponse(expectedCard);
 
         _mockPinEncryptionService
@@ -199,10 +195,6 @@ public class CardServiceTests : ServiceTestBase
             _cardService.ActivateAfrigoCardAsync);
     }
 
-    #endregion
-
-    #region Card Update Tests
-
     [Test]
     public async Task UpdateAfrigoCardAsync_WithValidRequest_ReturnsUpdatedCard()
     {
@@ -239,10 +231,6 @@ public class CardServiceTests : ServiceTestBase
         AssertThrowsArgumentNullExceptionForNullRequest<UpdateAfrigoCardRequest, AfrigoCard>(
             _cardService.UpdateAfrigoCardAsync);
     }
-
-    #endregion
-
-    #region PIN Management Tests
 
     [Test]
     public async Task ResetCardPinAsync_WithValidRequest_EncryptsPinAndReturnsResult()
@@ -376,10 +364,6 @@ public class CardServiceTests : ServiceTestBase
             _cardService.CheckCardPinAsync);
     }
 
-    #endregion
-
-    #region Card Blocking Tests
-
     [Test]
     public async Task BlockCardAsync_WithValidRequest_ReturnsBlockedCard()
     {
@@ -455,10 +439,6 @@ public class CardServiceTests : ServiceTestBase
         AssertThrowsArgumentNullExceptionForNullRequest<UnblockCardRequest, AfrigoCard>(
             _cardService.UnblockCardAsync);
     }
-
-    #endregion
-
-    #region Test Data Creation Methods
 
     private IssueAfrigoCardRequest CreateValidCardIssuanceRequest()
     {
@@ -536,7 +516,7 @@ public class CardServiceTests : ServiceTestBase
         {
             CustomerId = CreateTestGuid(),
             WalletId = CreateTestGuid(),
-            CardNumber = "1234567890123456",
+            CardNumber = "1234567890123456"
         };
     }
 
@@ -546,7 +526,7 @@ public class CardServiceTests : ServiceTestBase
         {
             CustomerId = CreateTestGuid(),
             WalletId = CreateTestGuid(),
-            CardNumber = "1234567890123456",
+            CardNumber = "1234567890123456"
         };
     }
 
@@ -579,6 +559,4 @@ public class CardServiceTests : ServiceTestBase
             Timestamp = DateTime.UtcNow
         };
     }
-
-    #endregion
 }

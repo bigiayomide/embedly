@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Products;
+using Embedly.SDK.Models.Responses.Common;
+using Embedly.SDK.Models.Responses.Products;
+using Embedly.SDK.Services.Products;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Products;
-using Embedly.SDK.Models.Responses.Products;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Products;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Comprehensive unit tests for ProductService following SDK patterns.
-/// Tests all product management operations including CRUD and limits.
+///     Comprehensive unit tests for ProductService following SDK patterns.
+///     Tests all product management operations including CRUD and limits.
 /// </summary>
 [TestFixture]
 public class ProductServiceTests : ServiceTestBase
@@ -26,8 +26,6 @@ public class ProductServiceTests : ServiceTestBase
     {
         _productService = new ProductService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Product CRUD Tests
 
     [Test]
     public async Task CreateProductAsync_WithValidRequest_ReturnsSuccessfulResponse()
@@ -58,8 +56,7 @@ public class ProductServiceTests : ServiceTestBase
     public void CreateProductAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _productService.CreateProductAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _productService.CreateProductAsync(null!));
     }
 
     [Test]
@@ -198,10 +195,6 @@ public class ProductServiceTests : ServiceTestBase
         result.Success.Should().BeTrue();
     }
 
-    #endregion
-
-    #region Product Limits Tests
-
     [Test]
     public async Task GetDefaultLimitsAsync_ReturnsDefaultLimits()
     {
@@ -210,7 +203,7 @@ public class ProductServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimits);
 
         MockHttpClient
-            .Setup(x => x.GetAsync<Models.Responses.Products.ProductLimits>(
+            .Setup(x => x.GetAsync<ProductLimits>(
                 It.Is<string>(url => url.Contains("default")),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -235,7 +228,7 @@ public class ProductServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimits);
 
         MockHttpClient
-            .Setup(x => x.GetAsync<Models.Responses.Products.ProductLimits>(
+            .Setup(x => x.GetAsync<ProductLimits>(
                 It.Is<string>(url => url.Contains(productId.ToString()) && url.Contains(currencyId.ToString())),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -260,10 +253,10 @@ public class ProductServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedLimits);
 
         MockHttpClient
-            .Setup(x => x.GetAsync<Models.Responses.Products.ProductLimits>(
+            .Setup(x => x.GetAsync<ProductLimits>(
                 It.Is<string>(url => url.Contains(productId.ToString()) &&
-                                    url.Contains(currencyId.ToString()) &&
-                                    url.Contains(customerId)),
+                                     url.Contains(currencyId.ToString()) &&
+                                     url.Contains(customerId)),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -276,10 +269,6 @@ public class ProductServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
     }
 
-    #endregion
-
-    #region Validation Tests
-
     [Test]
     public void UpdateProductAsync_WithNullProductId_ThrowsArgumentException()
     {
@@ -287,8 +276,7 @@ public class ProductServiceTests : ServiceTestBase
         var request = CreateValidProductRequest();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productService.UpdateProductAsync(null!, request));
+        Assert.ThrowsAsync<ArgumentException>(() => _productService.UpdateProductAsync(null!, request));
     }
 
     [Test]
@@ -298,29 +286,22 @@ public class ProductServiceTests : ServiceTestBase
         var request = CreateValidProductRequest();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productService.UpdateProductAsync(string.Empty, request));
+        Assert.ThrowsAsync<ArgumentException>(() => _productService.UpdateProductAsync(string.Empty, request));
     }
 
     [Test]
     public void ActivateProductAsync_WithNullProductId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productService.ActivateProductAsync(null!));
+        Assert.ThrowsAsync<ArgumentException>(() => _productService.ActivateProductAsync(null!));
     }
 
     [Test]
     public void DeleteProductAsync_WithNullProductId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productService.DeleteProductAsync(null!));
+        Assert.ThrowsAsync<ArgumentException>(() => _productService.DeleteProductAsync(null!));
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private CreateProductRequest CreateValidProductRequest()
     {
@@ -359,9 +340,9 @@ public class ProductServiceTests : ServiceTestBase
         };
     }
 
-    private Models.Responses.Products.ProductLimits CreateTestProductLimits()
+    private ProductLimits CreateTestProductLimits()
     {
-        return new Models.Responses.Products.ProductLimits
+        return new ProductLimits
         {
             ProductId = CreateTestGuid(),
             CurrencyId = CreateTestGuid(),
@@ -375,6 +356,4 @@ public class ProductServiceTests : ServiceTestBase
             CreatedAt = DateTime.UtcNow
         };
     }
-
-    #endregion
 }

@@ -1,32 +1,32 @@
 using Polly;
-using Polly.Extensions.Http;
-using System.Net;
 
 namespace Embedly.Examples.Infrastructure.Services;
 
 /// <summary>
-/// Service for handling retry logic with exponential backoff.
+///     Service for handling retry logic with exponential backoff.
 /// </summary>
 public interface IRetryService
 {
     /// <summary>
-    /// Executes an operation with retry logic.
+    ///     Executes an operation with retry logic.
     /// </summary>
-    Task<Result<T>> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, string operationName, CancellationToken cancellationToken = default);
+    Task<Result<T>> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, string operationName,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Executes an operation with retry logic that returns no value.
+    ///     Executes an operation with retry logic that returns no value.
     /// </summary>
-    Task<Result> ExecuteWithRetryAsync(Func<Task> operation, string operationName, CancellationToken cancellationToken = default);
+    Task<Result> ExecuteWithRetryAsync(Func<Task> operation, string operationName,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-/// Implementation of retry service using Polly.
+///     Implementation of retry service using Polly.
 /// </summary>
 public class RetryService : IRetryService
 {
-    private readonly ILogger<RetryService> _logger;
     private readonly ICorrelationService _correlationService;
+    private readonly ILogger<RetryService> _logger;
 
     public RetryService(ILogger<RetryService> logger, ICorrelationService correlationService)
     {
@@ -34,7 +34,8 @@ public class RetryService : IRetryService
         _correlationService = correlationService;
     }
 
-    public async Task<Result<T>> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, string operationName, CancellationToken cancellationToken = default)
+    public async Task<Result<T>> ExecuteWithRetryAsync<T>(Func<Task<T>> operation, string operationName,
+        CancellationToken cancellationToken = default)
     {
         var policy = Policy
             .Handle<HttpRequestException>()
@@ -42,14 +43,15 @@ public class RetryService : IRetryService
             .Or<OperationCanceledException>()
             .OrResult<T>(result => result == null)
             .WaitAndRetryAsync(
-                retryCount: 3,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (outcome, timespan, retryCount, context) =>
+                3,
+                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (outcome, timespan, retryCount, context) =>
                 {
                     var exception = outcome.Exception;
                     _logger.LogWarning(
                         "Operation {OperationName} failed on attempt {RetryCount}. Retrying in {Delay}ms. Correlation: {CorrelationId}. Exception: {Exception}",
-                        operationName, retryCount, timespan.TotalMilliseconds, _correlationService.CorrelationId, exception?.Message);
+                        operationName, retryCount, timespan.TotalMilliseconds, _correlationService.CorrelationId,
+                        exception?.Message);
                 });
 
         try
@@ -76,20 +78,22 @@ public class RetryService : IRetryService
         }
     }
 
-    public async Task<Result> ExecuteWithRetryAsync(Func<Task> operation, string operationName, CancellationToken cancellationToken = default)
+    public async Task<Result> ExecuteWithRetryAsync(Func<Task> operation, string operationName,
+        CancellationToken cancellationToken = default)
     {
         var policy = Policy
             .Handle<HttpRequestException>()
             .Or<TaskCanceledException>()
             .Or<OperationCanceledException>()
             .WaitAndRetryAsync(
-                retryCount: 3,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (exception, timespan, retryCount, context) =>
+                3,
+                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (exception, timespan, retryCount, context) =>
                 {
                     _logger.LogWarning(
                         "Operation {OperationName} failed on attempt {RetryCount}. Retrying in {Delay}ms. Correlation: {CorrelationId}. Exception: {Exception}",
-                        operationName, retryCount, timespan.TotalMilliseconds, _correlationService.CorrelationId, exception.Message);
+                        operationName, retryCount, timespan.TotalMilliseconds, _correlationService.CorrelationId,
+                        exception.Message);
                 });
 
         try

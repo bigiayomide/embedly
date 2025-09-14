@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.ProductLimits;
+using Embedly.SDK.Models.Responses.Common;
+using Embedly.SDK.Models.Responses.ProductLimits;
+using Embedly.SDK.Services.ProductLimits;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.ProductLimits;
-using Embedly.SDK.Models.Responses.ProductLimits;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.ProductLimits;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for ProductLimitService following SDK patterns.
-/// Tests product limit CRUD operations and management.
+///     Unit tests for ProductLimitService following SDK patterns.
+///     Tests product limit CRUD operations and management.
 /// </summary>
 [TestFixture]
 public class ProductLimitServiceTests : ServiceTestBase
@@ -26,8 +26,6 @@ public class ProductLimitServiceTests : ServiceTestBase
     {
         _productLimitService = new ProductLimitService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Create Product Limit Tests
 
     [Test]
     public async Task CreateProductLimitAsync_WithValidRequest_ReturnsCreatedLimit()
@@ -59,13 +57,9 @@ public class ProductLimitServiceTests : ServiceTestBase
     public void CreateProductLimitAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _productLimitService.CreateProductLimitAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _productLimitService.CreateProductLimitAsync(null!, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Get Product Limit Tests
 
     [Test]
     public async Task GetProductLimitAsync_WithValidId_ReturnsProductLimit()
@@ -95,21 +89,17 @@ public class ProductLimitServiceTests : ServiceTestBase
     public void GetProductLimitAsync_WithNullId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productLimitService.GetProductLimitAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _productLimitService.GetProductLimitAsync(null!, CancellationToken.None));
     }
 
     [Test]
     public void GetProductLimitAsync_WithEmptyId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productLimitService.GetProductLimitAsync(string.Empty, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _productLimitService.GetProductLimitAsync(string.Empty, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Get Product Limits Tests
 
     [Test]
     public async Task GetProductLimitsAsync_WithValidRequest_ReturnsPaginatedLimits()
@@ -117,7 +107,7 @@ public class ProductLimitServiceTests : ServiceTestBase
         // Arrange
         var request = CreateValidGetProductLimitsRequest();
         var expectedLimits = new List<ProductLimit> { CreateTestProductLimit() };
-        var paginatedResponse = CreateTestPaginatedResponse(expectedLimits, 1, 10, 1);
+        var paginatedResponse = CreateTestPaginatedResponse(expectedLimits, 1);
         var apiResponse = CreateSuccessfulApiResponse(paginatedResponse);
 
         MockHttpClient
@@ -167,10 +157,6 @@ public class ProductLimitServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(2);
     }
 
-    #endregion
-
-    #region Update Product Limit Tests
-
     [Test]
     public async Task UpdateProductLimitAsync_WithValidRequest_ReturnsUpdatedLimit()
     {
@@ -204,8 +190,8 @@ public class ProductLimitServiceTests : ServiceTestBase
         var request = CreateValidProductLimitRequest();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productLimitService.UpdateProductLimitAsync(null!, request, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _productLimitService.UpdateProductLimitAsync(null!, request, CancellationToken.None));
     }
 
     [Test]
@@ -215,13 +201,9 @@ public class ProductLimitServiceTests : ServiceTestBase
         var limitId = CreateTestStringId();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _productLimitService.UpdateProductLimitAsync(limitId, null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _productLimitService.UpdateProductLimitAsync(limitId, null!, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Product Limit State Management Tests
 
     [Test]
     public async Task ActivateProductLimitAsync_WithValidId_ReturnsActivatedLimit()
@@ -301,10 +283,6 @@ public class ProductLimitServiceTests : ServiceTestBase
         result.Data!.CurrentUsage.Should().Be(0);
     }
 
-    #endregion
-
-    #region Delete Product Limit Tests
-
     [Test]
     public async Task DeleteProductLimitAsync_WithValidId_ReturnsSuccessResponse()
     {
@@ -330,13 +308,9 @@ public class ProductLimitServiceTests : ServiceTestBase
     public void DeleteProductLimitAsync_WithNullId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _productLimitService.DeleteProductLimitAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _productLimitService.DeleteProductLimitAsync(null!, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private CreateProductLimitRequest CreateValidProductLimitRequest()
     {
@@ -383,6 +357,4 @@ public class ProductLimitServiceTests : ServiceTestBase
             UpdatedAt = CreateTestTimestamp()
         };
     }
-
-    #endregion
 }

@@ -1,22 +1,22 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Embedly.SDK.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Embedly.SDK.Webhooks;
 
 /// <summary>
-/// Processes webhook requests from Embedly.
+///     Processes webhook requests from Embedly.
 /// </summary>
 public sealed class WebhookProcessor : IWebhookProcessor
 {
-    private readonly IWebhookValidator _validator;
     private readonly IWebhookHandler _handler;
     private readonly ILogger<WebhookProcessor>? _logger;
-    
+    private readonly IWebhookValidator _validator;
+
     /// <summary>
-    /// Initializes a new instance of the WebhookProcessor class.
+    ///     Initializes a new instance of the WebhookProcessor class.
     /// </summary>
     /// <param name="validator">The webhook validator.</param>
     /// <param name="handler">The webhook handler.</param>
@@ -30,7 +30,7 @@ public sealed class WebhookProcessor : IWebhookProcessor
         _handler = Guard.ThrowIfNull(handler);
         _logger = logger;
     }
-    
+
     /// <inheritdoc />
     public async Task<WebhookProcessResult> ProcessWebhookAsync(
         string payload,
@@ -40,10 +40,10 @@ public sealed class WebhookProcessor : IWebhookProcessor
         try
         {
             _logger?.LogDebug("Processing webhook with signature: {Signature}", signature);
-            
+
             // Validate and parse the webhook
             var webhookEvent = _validator.ParseEvent(payload, signature);
-            
+
             if (webhookEvent == null)
             {
                 _logger?.LogWarning("Failed to parse webhook event");
@@ -53,10 +53,10 @@ public sealed class WebhookProcessor : IWebhookProcessor
                     Error = "Failed to parse webhook event"
                 };
             }
-            
+
             // Handle the event
             await _handler.HandleEventAsync(webhookEvent, cancellationToken);
-            
+
             _logger?.LogInformation("Successfully processed webhook event: {EventId}", webhookEvent.Id);
 
             return new WebhookProcessResult
@@ -85,7 +85,7 @@ public sealed class WebhookProcessor : IWebhookProcessor
             };
         }
     }
-    
+
     /// <inheritdoc />
     public bool ValidateWebhook(string payload, string signature)
     {
@@ -102,12 +102,12 @@ public sealed class WebhookProcessor : IWebhookProcessor
 }
 
 /// <summary>
-/// Interface for webhook processing.
+///     Interface for webhook processing.
 /// </summary>
 public interface IWebhookProcessor
 {
     /// <summary>
-    /// Processes a webhook request.
+    ///     Processes a webhook request.
     /// </summary>
     /// <param name="payload">The webhook payload.</param>
     /// <param name="signature">The webhook signature.</param>
@@ -117,9 +117,9 @@ public interface IWebhookProcessor
         string payload,
         string signature,
         CancellationToken cancellationToken = default);
-    
+
     /// <summary>
-    /// Validates a webhook signature without processing.
+    ///     Validates a webhook signature without processing.
     /// </summary>
     /// <param name="payload">The webhook payload.</param>
     /// <param name="signature">The webhook signature.</param>
@@ -128,27 +128,27 @@ public interface IWebhookProcessor
 }
 
 /// <summary>
-/// Result of webhook processing.
+///     Result of webhook processing.
 /// </summary>
 public sealed class WebhookProcessResult
 {
     /// <summary>
-    /// Gets or sets whether the webhook was processed successfully.
+    ///     Gets or sets whether the webhook was processed successfully.
     /// </summary>
     public bool Success { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the event ID if processing was successful.
+    ///     Gets or sets the event ID if processing was successful.
     /// </summary>
     public string? EventId { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the event type if processing was successful.
+    ///     Gets or sets the event type if processing was successful.
     /// </summary>
     public string? EventType { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the error message if processing failed.
+    ///     Gets or sets the error message if processing failed.
     /// </summary>
     public string? Error { get; set; }
 }

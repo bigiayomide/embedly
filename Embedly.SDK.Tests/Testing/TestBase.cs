@@ -1,61 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using Moq;
-using NUnit.Framework;
 using Embedly.SDK.Configuration;
 using Embedly.SDK.Http;
 using Embedly.SDK.Models.Responses.Common;
+using Microsoft.Extensions.Options;
+using Moq;
+using NUnit.Framework;
 
 namespace Embedly.SDK.Tests.Testing;
 
 /// <summary>
-/// Base class for all unit tests providing common setup and utilities.
-/// Follows the SDK pattern with proper service instantiation and dependency injection.
+///     Base class for all unit tests providing common setup and utilities.
+///     Follows the SDK pattern with proper service instantiation and dependency injection.
 /// </summary>
 [TestFixture]
 public abstract class TestBase
 {
-    /// <summary>
-    /// Mock HTTP client for API calls.
-    /// </summary>
-    protected Mock<IEmbedlyHttpClient> MockHttpClient { get; private set; } = null!;
-
-    /// <summary>
-    /// Mock options for configuration.
-    /// </summary>
-    protected Mock<IOptions<EmbedlyOptions>> MockOptions { get; private set; } = null!;
-
-    /// <summary>
-    /// Standard test configuration options.
-    /// </summary>
-    protected EmbedlyOptions TestOptions { get; private set; } = null!;
-
-    /// <summary>
-    /// Test organization ID for consistent testing.
-    /// </summary>
-    protected string TestOrganizationId => "test-org-12345";
-
-    /// <summary>
-    /// Test API key for consistent testing.
-    /// </summary>
-    protected string TestApiKey => "test-api-key-12345";
-
-    /// <summary>
-    /// Test RSA public key for PIN encryption testing.
-    /// This is a valid 2048-bit RSA public key in PEM format following Embedly's specification.
-    /// Generated for testing purposes only - in production, use the key provided by Embedly.
-    /// </summary>
-    protected string TestRsaPublicKey => @"-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwmiv7kE9A5qR9B/qlAt2
-1IiPD8Jiqrvhe4el0qpmzWVnAha2ciKfEjdWIzxFaQ74WOUcbdy/f175Zu88i2aB
-EyvEncw+seLnYZzluruQ/B+QnF0hqnYTa9mkchlUMdsrp//9wCtQUnKyXmqjRStZ
-YDKcn9IYSMCymmpO1QNWdRUlNA++InKjd35Y9tIUkIpI5WfFPGJTkqXAWPR0N+HD
-Kb9TM+TB7U4/YueYAPCd2L+AkI1iKIJ9+K5/wDEblr0t4GLHCHam3OKwj/slRbg3
-SKJKb6csl3HkxiU7I5il3yfpYdBJ22clBKJp6KAqSO2x3gaIxILI/Y50BuqNr9yy
-nQIDAQAB
------END PUBLIC KEY-----";
-
     [SetUp]
     public virtual void SetUp()
     {
@@ -89,17 +49,61 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Override this method for additional setup in derived classes.
+    ///     Mock HTTP client for API calls.
     /// </summary>
-    protected virtual void OnSetUp() { }
+    protected Mock<IEmbedlyHttpClient> MockHttpClient { get; private set; } = null!;
 
     /// <summary>
-    /// Override this method for additional teardown in derived classes.
+    ///     Mock options for configuration.
     /// </summary>
-    protected virtual void OnTearDown() { }
+    protected Mock<IOptions<EmbedlyOptions>> MockOptions { get; private set; } = null!;
 
     /// <summary>
-    /// Creates a test GUID for consistent testing.
+    ///     Standard test configuration options.
+    /// </summary>
+    protected EmbedlyOptions TestOptions { get; private set; } = null!;
+
+    /// <summary>
+    ///     Test organization ID for consistent testing.
+    /// </summary>
+    protected string TestOrganizationId => "test-org-12345";
+
+    /// <summary>
+    ///     Test API key for consistent testing.
+    /// </summary>
+    protected string TestApiKey => "test-api-key-12345";
+
+    /// <summary>
+    ///     Test RSA public key for PIN encryption testing.
+    ///     This is a valid 2048-bit RSA public key in PEM format following Embedly's specification.
+    ///     Generated for testing purposes only - in production, use the key provided by Embedly.
+    /// </summary>
+    protected string TestRsaPublicKey => @"-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwmiv7kE9A5qR9B/qlAt2
+1IiPD8Jiqrvhe4el0qpmzWVnAha2ciKfEjdWIzxFaQ74WOUcbdy/f175Zu88i2aB
+EyvEncw+seLnYZzluruQ/B+QnF0hqnYTa9mkchlUMdsrp//9wCtQUnKyXmqjRStZ
+YDKcn9IYSMCymmpO1QNWdRUlNA++InKjd35Y9tIUkIpI5WfFPGJTkqXAWPR0N+HD
+Kb9TM+TB7U4/YueYAPCd2L+AkI1iKIJ9+K5/wDEblr0t4GLHCHam3OKwj/slRbg3
+SKJKb6csl3HkxiU7I5il3yfpYdBJ22clBKJp6KAqSO2x3gaIxILI/Y50BuqNr9yy
+nQIDAQAB
+-----END PUBLIC KEY-----";
+
+    /// <summary>
+    ///     Override this method for additional setup in derived classes.
+    /// </summary>
+    protected virtual void OnSetUp()
+    {
+    }
+
+    /// <summary>
+    ///     Override this method for additional teardown in derived classes.
+    /// </summary>
+    protected virtual void OnTearDown()
+    {
+    }
+
+    /// <summary>
+    ///     Creates a test GUID for consistent testing.
     /// </summary>
     /// <param name="seed">Optional seed for deterministic GUIDs.</param>
     /// <returns>A test GUID.</returns>
@@ -111,7 +115,7 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Creates a test timestamp for consistent testing.
+    ///     Creates a test timestamp for consistent testing.
     /// </summary>
     /// <param name="daysOffset">Days to offset from base date.</param>
     /// <returns>A test timestamp.</returns>
@@ -122,7 +126,7 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Generates test phone number with optional suffix.
+    ///     Generates test phone number with optional suffix.
     /// </summary>
     /// <param name="suffix">Optional suffix for uniqueness.</param>
     /// <returns>A test phone number.</returns>
@@ -132,7 +136,7 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Generates test email address with optional prefix.
+    ///     Generates test email address with optional prefix.
     /// </summary>
     /// <param name="prefix">Optional prefix for uniqueness.</param>
     /// <returns>A test email address.</returns>
@@ -142,7 +146,7 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Creates a test string ID for consistent testing.
+    ///     Creates a test string ID for consistent testing.
     /// </summary>
     /// <param name="prefix">Optional prefix for the ID.</param>
     /// <param name="seed">Optional seed for deterministic IDs.</param>
@@ -153,7 +157,7 @@ nQIDAQAB
     }
 
     /// <summary>
-    /// Creates a test paginated response.
+    ///     Creates a test paginated response.
     /// </summary>
     /// <typeparam name="T">The type of items in the response.</typeparam>
     /// <param name="items">The items for the response.</param>

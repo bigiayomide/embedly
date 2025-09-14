@@ -1,28 +1,26 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Webhooks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Embedly.SDK.Webhooks;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Integration;
 
 /// <summary>
-/// Integration tests for webhook processing following SDK patterns.
-/// Tests webhook validation, event handling, and error scenarios in realistic conditions.
+///     Integration tests for webhook processing following SDK patterns.
+///     Tests webhook validation, event handling, and error scenarios in realistic conditions.
 /// </summary>
 [TestFixture]
 [Category("Integration")]
 [Category("Webhook")]
 public class WebhookIntegrationTests : IntegrationTestBase
 {
-    private WebhookValidator _webhookValidator = null!;
-    private TestWebhookHandler _webhookHandler = null!;
-    private const string TestWebhookSecret = "integration-test-webhook-secret-key-2024";
-
     [SetUp]
     public void SetUp()
     {
@@ -31,10 +29,15 @@ public class WebhookIntegrationTests : IntegrationTestBase
         _webhookHandler = new TestWebhookHandler(logger);
     }
 
+    private WebhookValidator _webhookValidator = null!;
+    private TestWebhookHandler _webhookHandler = null!;
+    private const string TestWebhookSecret = "integration-test-webhook-secret-key-2024";
+
     /// <summary>
-    /// Complete webhook processing workflow: Validation → Parsing → Handling → Response
+    ///     Complete webhook processing workflow: Validation → Parsing → Handling → Response
     /// </summary>
-    [Test, Order(1)]
+    [Test]
+    [Order(1)]
     public async Task CompleteWebhookProcessingWorkflow_ShouldHandleRealWebhookScenarios()
     {
         LogStep("Starting Complete Webhook Processing Workflow");
@@ -58,9 +61,10 @@ public class WebhookIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests webhook security scenarios including signature validation and replay protection.
+    ///     Tests webhook security scenarios including signature validation and replay protection.
     /// </summary>
-    [Test, Order(2)]
+    [Test]
+    [Order(2)]
     public async Task WebhookSecurityWorkflow_ShouldHandleSecurityThreats()
     {
         LogStep("Starting Webhook Security Workflow");
@@ -84,9 +88,10 @@ public class WebhookIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests webhook error handling and resilience.
+    ///     Tests webhook error handling and resilience.
     /// </summary>
-    [Test, Order(3)]
+    [Test]
+    [Order(3)]
     public async Task WebhookErrorHandlingWorkflow_ShouldHandleFailureScenarios()
     {
         LogStep("Starting Webhook Error Handling Workflow");
@@ -107,9 +112,10 @@ public class WebhookIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests webhook performance under high load.
+    ///     Tests webhook performance under high load.
     /// </summary>
-    [Test, Order(4)]
+    [Test]
+    [Order(4)]
     [Category("Performance")]
     public async Task WebhookPerformanceWorkflow_ShouldHandleHighThroughput()
     {
@@ -121,7 +127,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
         var startTime = DateTimeOffset.UtcNow;
 
         // Process multiple webhooks concurrently
-        for (int i = 0; i < webhookCount; i++)
+        for (var i = 0; i < webhookCount; i++)
         {
             var webhookIndex = i;
             processingTasks[i] = Task.Run(async () =>
@@ -160,8 +166,6 @@ public class WebhookIntegrationTests : IntegrationTestBase
         totalTime.Should().BeLessThan(TimeSpan.FromSeconds(30), "Should process webhooks efficiently");
         throughput.Should().BeGreaterThan(1, "Should maintain reasonable throughput");
     }
-
-    #region Individual Webhook Test Methods
 
     private async Task TestCustomerCreatedWebhook()
     {
@@ -266,10 +270,6 @@ public class WebhookIntegrationTests : IntegrationTestBase
         LogSuccess("Unknown Event Webhook handled gracefully");
     }
 
-    #endregion
-
-    #region Security Test Methods
-
     private async Task TestInvalidSignatureAttack()
     {
         LogStep("Testing Invalid Signature Attack");
@@ -278,8 +278,8 @@ public class WebhookIntegrationTests : IntegrationTestBase
         const string invalidSignature = "invalid_signature_attempt";
 
         // Should throw exception for invalid signature
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => _webhookValidator.ParseEvent(payload, invalidSignature));
+        var exception =
+            Assert.Throws<InvalidOperationException>(() => _webhookValidator.ParseEvent(payload, invalidSignature));
 
         exception.Should().NotBeNull();
         exception!.Message.Should().Contain("Invalid webhook signature");
@@ -312,7 +312,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
         var signature = ComputeSignature(payload);
 
         // Process same webhook multiple times (simulating replay attack)
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
             var webhookEvent = _webhookValidator.ParseEvent(payload, signature);
             webhookEvent.Should().NotBeNull();
@@ -359,21 +359,19 @@ public class WebhookIntegrationTests : IntegrationTestBase
         {
             var signature = ComputeSignature(malformedPayload);
 
-            var exception = Assert.Throws<InvalidOperationException>(
-                () => _webhookValidator.ParseEvent(malformedPayload, signature));
+            var exception =
+                Assert.Throws<InvalidOperationException>(() =>
+                    _webhookValidator.ParseEvent(malformedPayload, signature));
 
             exception.Should().NotBeNull();
             exception!.Message.Should().Contain("Failed to parse webhook event");
 
-            TestContext.WriteLine($"✓ Malformed JSON correctly rejected: {malformedPayload.Substring(0, Math.Min(20, malformedPayload.Length))}...");
+            TestContext.WriteLine(
+                $"✓ Malformed JSON correctly rejected: {malformedPayload.Substring(0, Math.Min(20, malformedPayload.Length))}...");
         }
 
         LogSuccess("Malformed JSON handling validated");
     }
-
-    #endregion
-
-    #region Error Handling Test Methods
 
     private async Task TestHandlerExceptionScenarios()
     {
@@ -388,8 +386,8 @@ public class WebhookIntegrationTests : IntegrationTestBase
         var webhookEvent = _webhookValidator.ParseEvent(payload, signature);
 
         // Should throw exception from handler
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(
-            () => _webhookHandler.HandleEventAsync(webhookEvent!, CancellationToken.None));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _webhookHandler.HandleEventAsync(webhookEvent!, CancellationToken.None));
 
         exception.Should().NotBeNull();
 
@@ -430,7 +428,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
         const int concurrentCount = 10;
         var tasks = new Task[concurrentCount];
 
-        for (int i = 0; i < concurrentCount; i++)
+        for (var i = 0; i < concurrentCount; i++)
         {
             var index = i;
             tasks[i] = Task.Run(async () =>
@@ -453,7 +451,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
         LogStep("Testing Memory Pressure Scenarios");
 
         // Process many webhooks to test memory usage
-        for (int i = 0; i < 100; i++)
+        for (var i = 0; i < 100; i++)
         {
             var payload = CreateTestWebhookPayload($"memory_test_{i}");
             var signature = ComputeSignature(payload);
@@ -472,13 +470,9 @@ public class WebhookIntegrationTests : IntegrationTestBase
         LogSuccess("Memory pressure scenarios completed");
     }
 
-    #endregion
-
-    #region Helper Methods
-
     private string CreateTestWebhookPayload(string eventId)
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = eventId,
             @event = "test.event",
@@ -493,7 +487,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string CreateCustomerCreatedWebhookPayload()
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_customer_created_{CreateTestId()}",
             @event = "customer.created",
@@ -512,7 +506,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string CreateWalletTransactionWebhookPayload()
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_wallet_txn_{CreateTestId()}",
             @event = "wallet.transaction.completed",
@@ -532,7 +526,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string CreateCardStatusChangedWebhookPayload()
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_card_status_{CreateTestId()}",
             @event = "card.status.changed",
@@ -550,7 +544,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string CreateKycUpdateWebhookPayload()
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_kyc_update_{CreateTestId()}",
             @event = "customer.kyc.updated",
@@ -568,7 +562,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string CreateUnknownEventWebhookPayload()
     {
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_unknown_{CreateTestId()}",
             @event = "unknown.event.type",
@@ -584,7 +578,7 @@ public class WebhookIntegrationTests : IntegrationTestBase
     {
         var largeData = string.Join("", Enumerable.Range(0, 1000).Select(i => $"data_item_{i}_"));
 
-        return System.Text.Json.JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             id = $"evt_large_{CreateTestId()}",
             @event = "large.data.event",
@@ -603,28 +597,26 @@ public class WebhookIntegrationTests : IntegrationTestBase
 
     private string ComputeSignature(string payload)
     {
-        var keyBytes = System.Text.Encoding.UTF8.GetBytes(TestWebhookSecret);
-        var payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
+        var keyBytes = Encoding.UTF8.GetBytes(TestWebhookSecret);
+        var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
-        using var hmac = new System.Security.Cryptography.HMACSHA256(keyBytes);
+        using var hmac = new HMACSHA256(keyBytes);
         var hash = hmac.ComputeHash(payloadBytes);
         return Convert.ToHexString(hash).ToLowerInvariant();
     }
-
-    #endregion
 }
 
 /// <summary>
-/// Test webhook handler for integration testing.
+///     Test webhook handler for integration testing.
 /// </summary>
 internal class TestWebhookHandler : WebhookHandler
 {
-    public bool ShouldThrowException { get; set; }
-    public TimeSpan SimulateDelay { get; set; } = TimeSpan.Zero;
-
     public TestWebhookHandler(ILogger<WebhookHandler>? logger = null) : base(logger)
     {
     }
+
+    public bool ShouldThrowException { get; set; }
+    public TimeSpan SimulateDelay { get; set; } = TimeSpan.Zero;
 
     protected override void RegisterHandlers()
     {
@@ -695,7 +687,7 @@ internal class TestWebhookHandler : WebhookHandler
 #region Typed Logging Models
 
 /// <summary>
-/// Strongly typed model for logging webhook processing information.
+///     Strongly typed model for logging webhook processing information.
 /// </summary>
 internal sealed record WebhookProcessingLog
 {
@@ -704,7 +696,7 @@ internal sealed record WebhookProcessingLog
 }
 
 /// <summary>
-/// Strongly typed model for logging webhook processing results.
+///     Strongly typed model for logging webhook processing results.
 /// </summary>
 internal sealed record WebhookProcessingResult
 {

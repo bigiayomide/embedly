@@ -1,20 +1,19 @@
 using System;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
 using Embedly.SDK.Models.Requests.Cards;
 using Embedly.SDK.Models.Requests.Customers;
 using Embedly.SDK.Models.Requests.Wallets;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Wallets;
+using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 
 namespace Embedly.SDK.Tests.Integration;
 
 /// <summary>
-/// Comprehensive integration tests for card PIN management workflows.
-/// Tests complete PIN lifecycle including security scenarios and error handling.
+///     Comprehensive integration tests for card PIN management workflows.
+///     Tests complete PIN lifecycle including security scenarios and error handling.
 /// </summary>
 [TestFixture]
 [Category("Integration")]
@@ -22,10 +21,6 @@ namespace Embedly.SDK.Tests.Integration;
 [Category("PIN")]
 public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 {
-    private ICustomerService _customerService = null!;
-    private IWalletService _walletService = null!;
-    private ICardService _cardService = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -34,10 +29,15 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         _cardService = ServiceProvider.GetRequiredService<ICardService>();
     }
 
+    private ICustomerService _customerService = null!;
+    private IWalletService _walletService = null!;
+    private ICardService _cardService = null!;
+
     /// <summary>
-    /// Complete PIN lifecycle: Card Issue → Activate with PIN → Check PIN → Change PIN → Reset PIN
+    ///     Complete PIN lifecycle: Card Issue → Activate with PIN → Check PIN → Change PIN → Reset PIN
     /// </summary>
-    [Test, Order(1)]
+    [Test]
+    [Order(1)]
     public async Task CompletePinLifecycleWorkflow_ShouldSucceedWithAllOperations()
     {
         LogStep("Starting Complete PIN Lifecycle Workflow");
@@ -100,9 +100,10 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests PIN security scenarios including invalid attempts and validation.
+    ///     Tests PIN security scenarios including invalid attempts and validation.
     /// </summary>
-    [Test, Order(2)]
+    [Test]
+    [Order(2)]
     public async Task PinSecurityWorkflow_ShouldHandleSecurityScenarios()
     {
         LogStep("Starting PIN Security Workflow");
@@ -143,9 +144,10 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests PIN operations under different error conditions.
+    ///     Tests PIN operations under different error conditions.
     /// </summary>
-    [Test, Order(3)]
+    [Test]
+    [Order(3)]
     public async Task PinErrorHandlingWorkflow_ShouldHandleErrorConditions()
     {
         LogStep("Starting PIN Error Handling Workflow");
@@ -170,9 +172,10 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests concurrent PIN operations to verify system stability.
+    ///     Tests concurrent PIN operations to verify system stability.
     /// </summary>
-    [Test, Order(4)]
+    [Test]
+    [Order(4)]
     [Category("Performance")]
     public async Task ConcurrentPinOperationsWorkflow_ShouldHandleConcurrentAccess()
     {
@@ -187,10 +190,7 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             var (customerId, walletId, accountNumber) = await CreateCustomerWalletSetup($"Concurrent{i}");
             if (string.IsNullOrEmpty(accountNumber)) continue;
             var cardNumber = await IssueAndActivateCard(accountNumber, $"000{i}");
-            if (!string.IsNullOrEmpty(cardNumber))
-            {
-                cardSetups[i] = (customerId, walletId, cardNumber);
-            }
+            if (!string.IsNullOrEmpty(cardNumber)) cardSetups[i] = (customerId, walletId, cardNumber);
         }
 
         // Test concurrent PIN checks
@@ -198,7 +198,6 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         var pinCheckTasks = new Task[cardCount];
 
         for (var i = 0; i < cardCount; i++)
-        {
             if (!string.IsNullOrEmpty(cardSetups[i].cardNumber))
             {
                 var setup = cardSetups[i];
@@ -221,15 +220,13 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             {
                 pinCheckTasks[i] = Task.CompletedTask;
             }
-        }
 
         await Task.WhenAll(pinCheckTasks);
         LogSuccess("Concurrent PIN Operations Workflow completed");
     }
 
-    #region Helper Methods
-
-    private async Task<(Guid customerId, Guid walletId, string? accountNumber)> CreateCustomerWalletSetup(string namePrefix)
+    private async Task<(Guid customerId, Guid walletId, string? accountNumber)> CreateCustomerWalletSetup(
+        string namePrefix)
     {
         try
         {
@@ -239,7 +236,7 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             var customerRequest = new CreateCustomerRequest
             {
                 FirstName = namePrefix,
-                LastName = $"PinTest",
+                LastName = "PinTest",
                 EmailAddress = CreateTestEmail($"{namePrefix.ToLower()}-pin"),
                 MobileNumber = CreateTestPhoneNumber(),
                 DateOfBirth = DateTime.UtcNow.AddYears(-30),
@@ -323,10 +320,7 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
             };
 
             var activateResponse = await _cardService.ActivateAfrigoCardAsync(activateRequest);
-            if (!activateResponse.Success)
-            {
-                LogWarning($"Card activation failed: {activateResponse.Message}");
-            }
+            if (!activateResponse.Success) LogWarning($"Card activation failed: {activateResponse.Message}");
 
             return cardNumber;
         }
@@ -358,18 +352,14 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("Card Activation Response", response);
 
         if (response.Success)
-        {
             LogSuccess("Card activated successfully with PIN");
-        }
         else
-        {
             LogWarning($"Card activation failed: {response.Message}");
-        }
     }
 
     private async Task TestPinCheck(Guid customerId, Guid walletId, string cardNumber, string pin)
     {
-        LogStep($"Testing PIN check");
+        LogStep("Testing PIN check");
 
         var checkRequest = new CheckCardPinRequest
         {
@@ -390,13 +380,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("PIN Check Response", response);
 
         if (response.Success)
-        {
             LogSuccess("PIN check completed successfully");
-        }
         else
-        {
             LogWarning($"PIN check failed: {response.Message}");
-        }
     }
 
     private async Task TestPinChange(Guid customerId, Guid walletId, string cardNumber, string oldPin, string newPin)
@@ -424,13 +410,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("PIN Change Response", response);
 
         if (response.Success)
-        {
             LogSuccess("PIN changed successfully");
-        }
         else
-        {
             LogWarning($"PIN change failed: {response.Message}");
-        }
     }
 
     private async Task TestPinReset(Guid customerId, Guid walletId, string cardNumber, string newPin)
@@ -456,13 +438,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("PIN Reset Response", response);
 
         if (response.Success)
-        {
             LogSuccess("PIN reset successfully");
-        }
         else
-        {
             LogWarning($"PIN reset failed: {response.Message}");
-        }
     }
 
     private async Task TestInvalidPinCheck(Guid customerId, Guid walletId, string cardNumber, string wrongPin)
@@ -480,16 +458,13 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         var response = await _cardService.CheckCardPinAsync(checkRequest);
 
         if (!response.Success)
-        {
             LogSuccess($"Invalid PIN correctly rejected: {response.Message}");
-        }
         else
-        {
             LogWarning("Invalid PIN was unexpectedly accepted");
-        }
     }
 
-    private async Task TestInvalidPinChange(Guid customerId, Guid walletId, string cardNumber, string wrongOldPin, string newPin)
+    private async Task TestInvalidPinChange(Guid customerId, Guid walletId, string cardNumber, string wrongOldPin,
+        string newPin)
     {
         LogStep("Testing PIN change with wrong old PIN");
 
@@ -505,13 +480,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
         var response = await _cardService.ChangeCardPinAsync(changeRequest);
 
         if (!response.Success)
-        {
             LogSuccess($"PIN change with wrong old PIN correctly rejected: {response.Message}");
-        }
         else
-        {
             LogWarning("PIN change with wrong old PIN was unexpectedly accepted");
-        }
     }
 
     private async Task TestPinOperationsWithInvalidCard(Guid customerId, Guid walletId)
@@ -529,13 +500,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
         var checkResponse = await _cardService.CheckCardPinAsync(checkRequest);
         if (!checkResponse.Success)
-        {
             LogSuccess($"PIN check with invalid card correctly rejected: {checkResponse.Message}");
-        }
         else
-        {
             LogWarning("PIN check with invalid card was unexpectedly accepted");
-        }
     }
 
     private async Task TestPinValidationEdgeCases(Guid customerId, Guid walletId, string cardNumber)
@@ -551,16 +518,13 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
         var emptyPinResponse = await _cardService.CheckCardPinAsync(emptyPinRequest);
         if (!emptyPinResponse.Success)
-        {
             LogSuccess("Empty PIN correctly rejected");
-        }
         else
-        {
             LogWarning("Empty PIN was unexpectedly accepted");
-        }
     }
 
-    private async Task TestPinOperationsWithInvalidCustomer(Guid invalidCustomerId, Guid invalidWalletId, string invalidCardNumber)
+    private async Task TestPinOperationsWithInvalidCustomer(Guid invalidCustomerId, Guid invalidWalletId,
+        string invalidCardNumber)
     {
         var request = new CheckCardPinRequest
         {
@@ -572,13 +536,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
         var response = await _cardService.CheckCardPinAsync(request);
         if (!response.Success)
-        {
             LogSuccess($"PIN operation with invalid customer correctly rejected: {response.Message}");
-        }
         else
-        {
             LogWarning("PIN operation with invalid customer was unexpectedly accepted");
-        }
     }
 
     private async Task TestPinOperationsWithMalformedData()
@@ -596,13 +556,9 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
             var response = await _cardService.CheckCardPinAsync(longPinRequest);
             if (!response.Success)
-            {
                 LogSuccess("Malformed PIN data correctly rejected");
-            }
             else
-            {
                 LogWarning("Malformed PIN data was unexpectedly accepted");
-            }
         }
         catch (Exception ex)
         {
@@ -654,22 +610,16 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
         var pinResponse = await _cardService.CheckCardPinAsync(pinCheckRequest);
         if (!pinResponse.Success)
-        {
             LogSuccess($"PIN operation on blocked card correctly rejected: {pinResponse.Message}");
-        }
         else
-        {
             LogWarning("PIN operation on blocked card was unexpectedly accepted");
-        }
     }
-
-    #endregion
 }
 
 #region Typed Logging Models for Security
 
 /// <summary>
-/// Strongly typed model for logging masked card activation requests.
+///     Strongly typed model for logging masked card activation requests.
 /// </summary>
 internal sealed record MaskedCardActivationLog
 {
@@ -679,7 +629,7 @@ internal sealed record MaskedCardActivationLog
 }
 
 /// <summary>
-/// Strongly typed model for logging masked PIN operation requests.
+///     Strongly typed model for logging masked PIN operation requests.
 /// </summary>
 internal sealed record MaskedPinOperationLog
 {
@@ -690,7 +640,7 @@ internal sealed record MaskedPinOperationLog
 }
 
 /// <summary>
-/// Strongly typed model for logging masked PIN change requests.
+///     Strongly typed model for logging masked PIN change requests.
 /// </summary>
 internal sealed record MaskedPinChangeLog
 {

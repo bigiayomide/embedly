@@ -6,214 +6,209 @@ using Embedly.SDK.Models.Common;
 namespace Embedly.SDK.Models.Responses.Wallets;
 
 /// <summary>
-/// Represents a wallet transaction.
+///     Represents a wallet transaction.
 /// </summary>
 public sealed class WalletTransaction
 {
     /// <summary>
-    /// Gets or sets the unique transaction identifier.
+    ///     Gets or sets the unique transaction identifier.
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the transaction reference.
+    ///     Gets or sets the transaction reference.
     /// </summary>
     [JsonPropertyName("reference")]
     public string Reference { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the wallet ID.
+    ///     Gets or sets the wallet ID.
     /// </summary>
     [JsonPropertyName("walletId")]
     public string WalletId { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the transaction amount in the smallest currency unit.
+    ///     Gets or sets the transaction amount in the smallest currency unit.
     /// </summary>
     [JsonPropertyName("amount")]
     public long Amount { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the currency code.
+    ///     Gets or sets the currency code.
     /// </summary>
     [JsonPropertyName("currency")]
     public string Currency { get; set; } = "NGN";
-    
+
     /// <summary>
-    /// Gets or sets the transaction type.
+    ///     Gets or sets the transaction type.
     /// </summary>
     [JsonPropertyName("transactionType")]
     public TransactionType TransactionType { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the transaction direction (debit/credit).
+    ///     Gets or sets the transaction direction (debit/credit).
     /// </summary>
     [JsonPropertyName("direction")]
     public TransactionDirection Direction { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the transaction status.
+    ///     Gets or sets the transaction status.
     /// </summary>
     [JsonPropertyName("status")]
     public TransactionStatus Status { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the transaction description.
+    ///     Gets or sets the transaction description.
     /// </summary>
     [JsonPropertyName("description")]
     public string? Description { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the counterpart wallet ID (for transfers).
+    ///     Gets or sets the counterpart wallet ID (for transfers).
     /// </summary>
     [JsonPropertyName("counterpartWalletId")]
     public string? CounterpartWalletId { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the balance before this transaction.
+    ///     Gets or sets the balance before this transaction.
     /// </summary>
     [JsonPropertyName("balanceBefore")]
     public long BalanceBefore { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the balance after this transaction.
+    ///     Gets or sets the balance after this transaction.
     /// </summary>
     [JsonPropertyName("balanceAfter")]
     public long BalanceAfter { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the date when the transaction was created.
+    ///     Gets or sets the date when the transaction was created.
     /// </summary>
     [JsonPropertyName("createdAt")]
     public DateTimeOffset CreatedAt { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the date when the transaction was processed.
+    ///     Gets or sets the date when the transaction was processed.
     /// </summary>
     [JsonPropertyName("processedAt")]
     public DateTimeOffset? ProcessedAt { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets additional metadata for the transaction.
+    ///     Gets or sets additional metadata for the transaction.
     /// </summary>
     [JsonPropertyName("metadata")]
     public Dictionary<string, object?>? Metadata { get; set; }
-    
+
     /// <summary>
-    /// Gets the transaction amount as a Money object.
+    ///     Gets the transaction amount as a Money object.
     /// </summary>
-    public Money GetAmount() => new(Amount, Currency);
-    
+    public Money GetAmount()
+    {
+        return new Money(Amount, Currency);
+    }
+
     /// <summary>
-    /// Gets the balance before as a Money object.
+    ///     Gets the balance before as a Money object.
     /// </summary>
-    public Money GetBalanceBefore() => new(BalanceBefore, Currency);
-    
+    public Money GetBalanceBefore()
+    {
+        return new Money(BalanceBefore, Currency);
+    }
+
     /// <summary>
-    /// Gets the balance after as a Money object.
+    ///     Gets the balance after as a Money object.
     /// </summary>
-    public Money GetBalanceAfter() => new(BalanceAfter, Currency);
+    public Money GetBalanceAfter()
+    {
+        return new Money(BalanceAfter, Currency);
+    }
 }
 
 /// <summary>
-/// Transaction type enumeration.
+///     Transaction type enumeration.
 /// </summary>
 public enum TransactionType
 {
     /// <summary>
-    /// Wallet-to-wallet transfer.
+    ///     Wallet-to-wallet transfer.
     /// </summary>
-    [JsonPropertyName("transfer")]
-    Transfer,
-    
+    [JsonPropertyName("transfer")] Transfer,
+
     /// <summary>
-    /// Deposit into wallet.
+    ///     Deposit into wallet.
     /// </summary>
-    [JsonPropertyName("deposit")]
-    Deposit,
-    
+    [JsonPropertyName("deposit")] Deposit,
+
     /// <summary>
-    /// Withdrawal from wallet.
+    ///     Withdrawal from wallet.
     /// </summary>
-    [JsonPropertyName("withdrawal")]
-    Withdrawal,
-    
+    [JsonPropertyName("withdrawal")] Withdrawal,
+
     /// <summary>
-    /// Payment from wallet.
+    ///     Payment from wallet.
     /// </summary>
-    [JsonPropertyName("payment")]
-    Payment,
-    
+    [JsonPropertyName("payment")] Payment,
+
     /// <summary>
-    /// Refund to wallet.
+    ///     Refund to wallet.
     /// </summary>
-    [JsonPropertyName("refund")]
-    Refund,
-    
+    [JsonPropertyName("refund")] Refund,
+
     /// <summary>
-    /// Fee charge.
+    ///     Fee charge.
     /// </summary>
-    [JsonPropertyName("fee")]
-    Fee,
-    
+    [JsonPropertyName("fee")] Fee,
+
     /// <summary>
-    /// Reversal transaction.
+    ///     Reversal transaction.
     /// </summary>
-    [JsonPropertyName("reversal")]
-    Reversal
+    [JsonPropertyName("reversal")] Reversal
 }
 
 /// <summary>
-/// Transaction direction enumeration.
+///     Transaction direction enumeration.
 /// </summary>
 public enum TransactionDirection
 {
     /// <summary>
-    /// Money leaving the wallet (debit).
+    ///     Money leaving the wallet (debit).
     /// </summary>
-    [JsonPropertyName("debit")]
-    Debit,
-    
+    [JsonPropertyName("debit")] Debit,
+
     /// <summary>
-    /// Money entering the wallet (credit).
+    ///     Money entering the wallet (credit).
     /// </summary>
-    [JsonPropertyName("credit")]
-    Credit
+    [JsonPropertyName("credit")] Credit
 }
 
 /// <summary>
-/// Transaction status enumeration.
+///     Transaction status enumeration.
 /// </summary>
 public enum TransactionStatus
 {
     /// <summary>
-    /// Transaction is pending.
+    ///     Transaction is pending.
     /// </summary>
-    [JsonPropertyName("pending")]
-    Pending,
-    
+    [JsonPropertyName("pending")] Pending,
+
     /// <summary>
-    /// Transaction completed successfully.
+    ///     Transaction completed successfully.
     /// </summary>
-    [JsonPropertyName("completed")]
-    Completed,
-    
+    [JsonPropertyName("completed")] Completed,
+
     /// <summary>
-    /// Transaction failed.
+    ///     Transaction failed.
     /// </summary>
-    [JsonPropertyName("failed")]
-    Failed,
-    
+    [JsonPropertyName("failed")] Failed,
+
     /// <summary>
-    /// Transaction was reversed.
+    ///     Transaction was reversed.
     /// </summary>
-    [JsonPropertyName("reversed")]
-    Reversed,
-    
+    [JsonPropertyName("reversed")] Reversed,
+
     /// <summary>
-    /// Transaction was cancelled.
+    ///     Transaction was cancelled.
     /// </summary>
-    [JsonPropertyName("cancelled")]
-    Cancelled
+    [JsonPropertyName("cancelled")] Cancelled
 }

@@ -1,32 +1,32 @@
 namespace Embedly.SDK.Configuration;
 
 /// <summary>
-/// Contains the service URLs for different Embedly API endpoints.
+///     Contains the service URLs for different Embedly API endpoints.
 /// </summary>
 public sealed class ServiceUrls
 {
     /// <summary>
-    /// Gets or sets the base API URL for core services.
+    ///     Gets or sets the base API URL for core services.
     /// </summary>
     public string Base { get; init; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the payout service URL.
+    ///     Gets or sets the payout service URL.
     /// </summary>
     public string Payout { get; init; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the checkout service URL.
+    ///     Gets or sets the checkout service URL.
     /// </summary>
     public string Checkout { get; init; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the card management service URL.
+    ///     Gets or sets the card management service URL.
     /// </summary>
     public string Cards { get; init; } = string.Empty;
-    
+
     /// <summary>
-    /// Creates service URLs for the staging environment.
+    ///     Creates service URLs for the staging environment.
     /// </summary>
     public static ServiceUrls Staging => new()
     {
@@ -35,9 +35,9 @@ public sealed class ServiceUrls
         Checkout = "https://checkout-staging.embedly.ng",
         Cards = "https://waas-card-middleware-api-staging.embedly.ng"
     };
-    
+
     /// <summary>
-    /// Creates service URLs for the production environment.
+    ///     Creates service URLs for the production environment.
     /// </summary>
     public static ServiceUrls Production => new()
     {

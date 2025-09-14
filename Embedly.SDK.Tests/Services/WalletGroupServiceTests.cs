@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.WalletGroups;
+using Embedly.SDK.Models.Responses.WalletGroups;
+using Embedly.SDK.Services.WalletGroups;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.WalletGroups;
-using Embedly.SDK.Models.Responses.WalletGroups;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.WalletGroups;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for WalletGroupService following SDK patterns.
-/// Tests wallet group management operations and features.
+///     Unit tests for WalletGroupService following SDK patterns.
+///     Tests wallet group management operations and features.
 /// </summary>
 [TestFixture]
 public class WalletGroupServiceTests : ServiceTestBase
@@ -26,8 +25,6 @@ public class WalletGroupServiceTests : ServiceTestBase
     {
         _walletGroupService = new WalletGroupService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Create Wallet Group Tests
 
     [Test]
     public async Task CreateWalletGroupAsync_WithValidRequest_ReturnsCreatedGroup()
@@ -59,13 +56,9 @@ public class WalletGroupServiceTests : ServiceTestBase
     public void CreateWalletGroupAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _walletGroupService.CreateWalletGroupAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _walletGroupService.CreateWalletGroupAsync(null!, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Get Wallet Group Tests
 
     [Test]
     public async Task GetWalletGroupAsync_WithValidId_ReturnsWalletGroup()
@@ -95,16 +88,16 @@ public class WalletGroupServiceTests : ServiceTestBase
     public void GetWalletGroupAsync_WithNullId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.GetWalletGroupAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.GetWalletGroupAsync(null!, CancellationToken.None));
     }
 
     [Test]
     public void GetWalletGroupAsync_WithEmptyId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.GetWalletGroupAsync(string.Empty, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.GetWalletGroupAsync(string.Empty, CancellationToken.None));
     }
 
     [Test]
@@ -134,10 +127,6 @@ public class WalletGroupServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(2);
     }
 
-    #endregion
-
-    #region Wallet Group Feature Tests
-
     [Test]
     public async Task AddWalletGroupFeatureAsync_WithValidRequest_ReturnsSuccessResponse()
     {
@@ -164,8 +153,8 @@ public class WalletGroupServiceTests : ServiceTestBase
     public void AddWalletGroupFeatureAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _walletGroupService.AddWalletGroupFeatureAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _walletGroupService.AddWalletGroupFeatureAsync(null!, CancellationToken.None));
     }
 
     [Test]
@@ -194,10 +183,6 @@ public class WalletGroupServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
         result.Data!.Should().HaveCount(2);
     }
-
-    #endregion
-
-    #region Wallet Management Tests
 
     [Test]
     public async Task AddWalletToGroupAsync_WithValidIds_ReturnsSuccessResponse()
@@ -229,8 +214,8 @@ public class WalletGroupServiceTests : ServiceTestBase
         var walletId = CreateTestStringId();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.AddWalletToGroupAsync(null!, walletId, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.AddWalletToGroupAsync(null!, walletId, CancellationToken.None));
     }
 
     [Test]
@@ -240,8 +225,8 @@ public class WalletGroupServiceTests : ServiceTestBase
         var groupId = CreateTestStringId();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.AddWalletToGroupAsync(groupId, null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.AddWalletToGroupAsync(groupId, null!, CancellationToken.None));
     }
 
     [Test]
@@ -251,8 +236,8 @@ public class WalletGroupServiceTests : ServiceTestBase
         var walletId = CreateTestStringId();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.AddWalletToGroupAsync(string.Empty, walletId, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.AddWalletToGroupAsync(string.Empty, walletId, CancellationToken.None));
     }
 
     [Test]
@@ -262,13 +247,9 @@ public class WalletGroupServiceTests : ServiceTestBase
         var groupId = CreateTestStringId();
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletGroupService.AddWalletToGroupAsync(groupId, string.Empty, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _walletGroupService.AddWalletToGroupAsync(groupId, string.Empty, CancellationToken.None));
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private CreateWalletGroupRequest CreateValidWalletGroupRequest()
     {
@@ -310,6 +291,4 @@ public class WalletGroupServiceTests : ServiceTestBase
             FeaturePropertyValue = "true"
         };
     }
-
-    #endregion
 }

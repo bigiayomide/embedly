@@ -5,49 +5,24 @@ using System.Net;
 namespace Embedly.SDK.Exceptions;
 
 /// <summary>
-/// Exception thrown when an API call to Embedly fails.
+///     Exception thrown when an API call to Embedly fails.
 /// </summary>
 [Serializable]
 public class EmbedlyApiException : EmbedlyException
 {
     /// <summary>
-    /// Gets the HTTP status code returned by the API.
-    /// </summary>
-    public HttpStatusCode StatusCode { get; }
-    
-    /// <summary>
-    /// Gets the raw response body from the API.
-    /// </summary>
-    public string? ResponseBody { get; }
-    
-    /// <summary>
-    /// Gets the request ID for tracking purposes.
-    /// </summary>
-    public string? RequestId { get; }
-    
-    /// <summary>
-    /// Gets the endpoint that was called.
-    /// </summary>
-    public string? Endpoint { get; }
-    
-    /// <summary>
-    /// Gets the HTTP method used.
-    /// </summary>
-    public string? HttpMethod { get; }
-    
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EmbedlyApiException"/> class.
+    ///     Initializes a new instance of the <see cref="EmbedlyApiException" /> class.
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="statusCode">The HTTP status code.</param>
-    public EmbedlyApiException(string message, HttpStatusCode statusCode) 
+    public EmbedlyApiException(string message, HttpStatusCode statusCode)
         : base(message)
     {
         StatusCode = statusCode;
     }
-    
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="EmbedlyApiException"/> class with full details.
+    ///     Initializes a new instance of the <see cref="EmbedlyApiException" /> class with full details.
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="statusCode">The HTTP status code.</param>
@@ -66,7 +41,8 @@ public class EmbedlyApiException : EmbedlyException
         string? endpoint = null,
         string? httpMethod = null,
         Exception? innerException = null)
-        : base(message, errorCode, CreateErrorContext(statusCode, responseBody, requestId, endpoint, httpMethod), innerException)
+        : base(message, errorCode, CreateErrorContext(statusCode, responseBody, requestId, endpoint, httpMethod),
+            innerException)
     {
         StatusCode = statusCode;
         ResponseBody = responseBody;
@@ -74,7 +50,32 @@ public class EmbedlyApiException : EmbedlyException
         Endpoint = endpoint;
         HttpMethod = httpMethod;
     }
-    
+
+    /// <summary>
+    ///     Gets the HTTP status code returned by the API.
+    /// </summary>
+    public HttpStatusCode StatusCode { get; }
+
+    /// <summary>
+    ///     Gets the raw response body from the API.
+    /// </summary>
+    public string? ResponseBody { get; }
+
+    /// <summary>
+    ///     Gets the request ID for tracking purposes.
+    /// </summary>
+    public string? RequestId { get; }
+
+    /// <summary>
+    ///     Gets the endpoint that was called.
+    /// </summary>
+    public string? Endpoint { get; }
+
+    /// <summary>
+    ///     Gets the HTTP method used.
+    /// </summary>
+    public string? HttpMethod { get; }
+
     private static Dictionary<string, object?> CreateErrorContext(
         HttpStatusCode statusCode,
         string? responseBody,
@@ -92,26 +93,23 @@ public class EmbedlyApiException : EmbedlyException
             ["Timestamp"] = DateTimeOffset.UtcNow
         };
     }
-    
+
     /// <summary>
-    /// Creates an exception for rate limiting scenarios.
+    ///     Creates an exception for rate limiting scenarios.
     /// </summary>
     public static EmbedlyApiException RateLimitExceeded(string? retryAfter = null)
     {
         var message = "API rate limit exceeded.";
-        if (!string.IsNullOrEmpty(retryAfter))
-        {
-            message += $" Retry after: {retryAfter}";
-        }
-        
+        if (!string.IsNullOrEmpty(retryAfter)) message += $" Retry after: {retryAfter}";
+
         return new EmbedlyApiException(
             message,
             HttpStatusCode.TooManyRequests,
             errorCode: "RATE_LIMIT_EXCEEDED");
     }
-    
+
     /// <summary>
-    /// Creates an exception for authentication failures.
+    ///     Creates an exception for authentication failures.
     /// </summary>
     public static EmbedlyApiException Unauthorized(string? message = null)
     {
@@ -120,24 +118,24 @@ public class EmbedlyApiException : EmbedlyException
             HttpStatusCode.Unauthorized,
             errorCode: "UNAUTHORIZED");
     }
-    
+
     /// <summary>
-    /// Creates an exception for forbidden access.
+    ///     Creates an exception for forbidden access.
     /// </summary>
     public static EmbedlyApiException Forbidden(string? resource = null)
     {
-        var message = resource != null 
+        var message = resource != null
             ? $"Access to resource '{resource}' is forbidden."
             : "Access to the requested resource is forbidden.";
-            
+
         return new EmbedlyApiException(
             message,
             HttpStatusCode.Forbidden,
             errorCode: "FORBIDDEN");
     }
-    
+
     /// <summary>
-    /// Creates an exception for not found resources.
+    ///     Creates an exception for not found resources.
     /// </summary>
     public static EmbedlyApiException NotFound(string resourceType, string resourceId)
     {

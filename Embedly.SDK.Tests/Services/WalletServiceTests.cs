@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Wallets;
+using Embedly.SDK.Models.Responses.Wallets;
+using Embedly.SDK.Services.Wallets;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Wallets;
-using Embedly.SDK.Models.Responses.Wallets;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Wallets;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Comprehensive unit tests for WalletService following SDK patterns.
-/// Tests all wallet management operations including CRUD, transactions, and restrictions.
+///     Comprehensive unit tests for WalletService following SDK patterns.
+///     Tests all wallet management operations including CRUD, transactions, and restrictions.
 /// </summary>
 [TestFixture]
 public class WalletServiceTests : ServiceTestBase
@@ -26,8 +25,6 @@ public class WalletServiceTests : ServiceTestBase
     {
         _walletService = new WalletService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Wallet Creation Tests
 
     [Test]
     public async Task CreateWalletAsync_WithValidRequest_ReturnsSuccessfulResponse()
@@ -61,8 +58,8 @@ public class WalletServiceTests : ServiceTestBase
     public void CreateWalletAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _walletService.CreateWalletAsync(null!, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _walletService.CreateWalletAsync(null!, CancellationToken.None));
     }
 
     [Test]
@@ -89,10 +86,6 @@ public class WalletServiceTests : ServiceTestBase
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
     }
-
-    #endregion
-
-    #region Wallet Retrieval Tests
 
     [Test]
     public async Task GetWalletAsync_WithValidId_ReturnsWallet()
@@ -166,10 +159,6 @@ public class WalletServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(2);
     }
 
-    #endregion
-
-    #region Wallet Search Tests
-
     [Test]
     public async Task SearchWalletsByEmailAsync_WithValidRequest_ReturnsMatchingWallets()
     {
@@ -226,10 +215,6 @@ public class WalletServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(1);
     }
 
-    #endregion
-
-    #region Wallet Transaction Tests
-
     [Test]
     public async Task WalletToWalletTransferAsync_WithValidRequest_ReturnsTransferResult()
     {
@@ -265,7 +250,8 @@ public class WalletServiceTests : ServiceTestBase
 
         MockHttpClient
             .Setup(x => x.GetAsync<WalletTransferStatus>(
-                It.Is<string>(url => url.Contains($"api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{reference}")),
+                It.Is<string>(url =>
+                    url.Contains($"api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{reference}")),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -278,10 +264,6 @@ public class WalletServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
         result.Data!.TransactionReference.Should().Be(expectedStatus.TransactionReference);
     }
-
-    #endregion
-
-    #region Wallet Restriction Tests
 
     [Test]
     public async Task RestrictWalletAsync_WithValidRequest_ReturnsSuccess()
@@ -332,37 +314,26 @@ public class WalletServiceTests : ServiceTestBase
         result.Data!.Should().HaveCount(2);
     }
 
-    #endregion
-
-    #region Validation Tests
-
     [Test]
     public void GetWalletAsync_WithNullId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletService.GetWalletAsync(null!));
+        Assert.ThrowsAsync<ArgumentException>(() => _walletService.GetWalletAsync(null!));
     }
 
     [Test]
     public void GetWalletAsync_WithEmptyId_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _walletService.GetWalletAsync(string.Empty));
+        Assert.ThrowsAsync<ArgumentException>(() => _walletService.GetWalletAsync(string.Empty));
     }
 
     [Test]
     public void SearchWalletsByEmailAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _walletService.SearchWalletsByEmailAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _walletService.SearchWalletsByEmailAsync(null!));
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private CreateWalletRequest CreateValidWalletRequest()
     {
@@ -440,7 +411,7 @@ public class WalletServiceTests : ServiceTestBase
         {
             AccountNumber = "1234567890",
             BankName = "Test Bank",
-            BankCode = "001",
+            BankCode = "001"
         };
     }
 
@@ -479,6 +450,4 @@ public class WalletServiceTests : ServiceTestBase
             IsActive = true
         };
     }
-
-    #endregion
 }

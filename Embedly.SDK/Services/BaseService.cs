@@ -1,35 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Options;
 using Embedly.SDK.Configuration;
-using Embedly.SDK.Http;
 using Embedly.SDK.Helpers;
+using Embedly.SDK.Http;
+using Microsoft.Extensions.Options;
 
 namespace Embedly.SDK.Services;
 
 /// <summary>
-/// Base class for all Embedly API services.
+///     Base class for all Embedly API services.
 /// </summary>
 public abstract class BaseService
 {
     /// <summary>
-    /// Gets the HTTP client for making API requests.
-    /// </summary>
-    protected IEmbedlyHttpClient HttpClient { get; }
-    
-    /// <summary>
-    /// Gets the Embedly configuration options.
-    /// </summary>
-    protected EmbedlyOptions Options { get; }
-    
-    /// <summary>
-    /// Gets the service URLs for the current environment.
-    /// </summary>
-    protected ServiceUrls ServiceUrls { get; }
-    
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BaseService"/> class.
+    ///     Initializes a new instance of the <see cref="BaseService" /> class.
     /// </summary>
     /// <param name="httpClient">The HTTP client.</param>
     /// <param name="options">The configuration options.</param>
@@ -39,9 +22,24 @@ public abstract class BaseService
         Options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         ServiceUrls = Options.GetServiceUrls();
     }
-    
+
     /// <summary>
-    /// Builds a complete URL for the base API service.
+    ///     Gets the HTTP client for making API requests.
+    /// </summary>
+    protected IEmbedlyHttpClient HttpClient { get; }
+
+    /// <summary>
+    ///     Gets the Embedly configuration options.
+    /// </summary>
+    protected EmbedlyOptions Options { get; }
+
+    /// <summary>
+    ///     Gets the service URLs for the current environment.
+    /// </summary>
+    protected ServiceUrls ServiceUrls { get; }
+
+    /// <summary>
+    ///     Builds a complete URL for the base API service.
     /// </summary>
     /// <param name="endpoint">The API endpoint.</param>
     /// <returns>The complete URL.</returns>
@@ -49,9 +47,9 @@ public abstract class BaseService
     {
         return BuildUrl(ServiceUrls.Base, endpoint);
     }
-    
+
     /// <summary>
-    /// Builds a complete URL for a specific service.
+    ///     Builds a complete URL for a specific service.
     /// </summary>
     /// <param name="serviceUrl">The base service URL.</param>
     /// <param name="endpoint">The API endpoint.</param>
@@ -60,15 +58,15 @@ public abstract class BaseService
     {
         Guard.ThrowIfNullOrWhiteSpace(serviceUrl, nameof(serviceUrl));
         Guard.ThrowIfNullOrWhiteSpace(endpoint, nameof(endpoint));
-        
+
         var baseUrl = serviceUrl.TrimEnd('/');
         var cleanEndpoint = endpoint.TrimStart('/');
-        
+
         return $"{baseUrl}/{cleanEndpoint}";
     }
-    
+
     /// <summary>
-    /// Validates required string parameters.
+    ///     Validates required string parameters.
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="paramName">The parameter name for exception messages.</param>
@@ -77,9 +75,9 @@ public abstract class BaseService
     {
         Guard.ThrowIfNullOrWhiteSpace(value, paramName);
     }
-    
+
     /// <summary>
-    /// Validates required object parameters.
+    ///     Validates required object parameters.
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="paramName">The parameter name for exception messages.</param>
@@ -88,5 +86,4 @@ public abstract class BaseService
     {
         ArgumentNullException.ThrowIfNull(value, paramName);
     }
-    
 }

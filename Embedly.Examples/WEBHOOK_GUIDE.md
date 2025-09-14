@@ -1,6 +1,7 @@
 # Embedly SDK Webhook Integration Guide
 
-This guide shows developers how to use the Embedly SDK's built-in webhook system instead of building custom webhook handling.
+This guide shows developers how to use the Embedly SDK's built-in webhook system instead of building custom webhook
+handling.
 
 ## ✅ The Right Way: Using SDK's Built-in System
 
@@ -110,26 +111,31 @@ public class WebhookController : ControllerBase
 The SDK provides constants for all webhook events:
 
 ### Customer Events
+
 - `WebhookEventTypes.CustomerCreated`
 - `WebhookEventTypes.CustomerUpdated`
 - `WebhookEventTypes.CustomerVerified`
 
 ### Transaction Events
+
 - `WebhookEventTypes.TransactionCreated`
 - `WebhookEventTypes.TransactionCompleted`
 - `WebhookEventTypes.TransactionFailed`
 
 ### Payment Events
+
 - `WebhookEventTypes.PaymentInitiated`
 - `WebhookEventTypes.PaymentCompleted`
 - `WebhookEventTypes.PaymentFailed`
 
 ### Card Events
+
 - `WebhookEventTypes.CardCreated`
 - `WebhookEventTypes.CardActivated`
 - `WebhookEventTypes.CardBlocked`
 
 ### KYC Events
+
 - `WebhookEventTypes.KycSubmitted`
 - `WebhookEventTypes.KycApproved`
 - `WebhookEventTypes.KycRejected`
@@ -139,6 +145,7 @@ The SDK provides constants for all webhook events:
 ## 🔒 Security Features Built-In
 
 The SDK's webhook system automatically handles:
+
 - ✅ Signature validation using HMAC-SHA256
 - ✅ Constant-time comparison to prevent timing attacks
 - ✅ Proper JSON parsing and deserialization
@@ -148,6 +155,7 @@ The SDK's webhook system automatically handles:
 ## 📊 Benefits of Using SDK's System
 
 ### Instead of Building Custom:
+
 ```csharp
 // ❌ DON'T: Custom implementation
 public class CustomWebhookProcessor
@@ -164,6 +172,7 @@ public class CustomWebhookProcessor
 ```
 
 ### Use SDK's Built-in System:
+
 ```csharp
 // ✅ DO: SDK's built-in system
 public class MyWebhookHandler : WebhookHandler

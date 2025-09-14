@@ -1,7 +1,7 @@
 namespace Embedly.Examples.Infrastructure.Configuration;
 
 /// <summary>
-/// Application-wide configuration settings.
+///     Application-wide configuration settings.
 /// </summary>
 public class ApplicationSettings
 {
@@ -18,7 +18,7 @@ public class ApplicationSettings
 }
 
 /// <summary>
-/// Embedly SDK specific configuration.
+///     Embedly SDK specific configuration.
 /// </summary>
 public class EmbedlySettings
 {
@@ -36,7 +36,7 @@ public class EmbedlySettings
     public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(1);
 
     /// <summary>
-    /// Validates the configuration and returns any validation errors.
+    ///     Validates the configuration and returns any validation errors.
     /// </summary>
     public IEnumerable<string> Validate()
     {
@@ -62,7 +62,7 @@ public class EmbedlySettings
 }
 
 /// <summary>
-/// Logging configuration settings.
+///     Logging configuration settings.
 /// </summary>
 public class LoggingSettings
 {
@@ -79,6 +79,7 @@ public class LoggingSettings
 public class ConsoleLoggingSettings
 {
     public bool Enabled { get; set; } = true;
+
     public string OutputTemplate { get; set; } =
         "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
 }
@@ -89,6 +90,7 @@ public class FileLoggingSettings
     public string Path { get; set; } = "logs/app-.txt";
     public long FileSizeLimitBytes { get; set; } = 100 * 1024 * 1024; // 100MB
     public int RetainedFileCountLimit { get; set; } = 7;
+
     public string OutputTemplate { get; set; } =
         "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
 }

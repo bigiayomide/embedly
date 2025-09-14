@@ -1,11 +1,10 @@
 using Embedly.SDK.Webhooks;
-using Microsoft.Extensions.Logging;
 
 namespace Embedly.Examples.Infrastructure.Services;
 
 /// <summary>
-/// Example webhook handler using the Embedly SDK's built-in webhook system.
-/// Developers only need to inherit from WebhookHandler and register their event handlers.
+///     Example webhook handler using the Embedly SDK's built-in webhook system.
+///     Developers only need to inherit from WebhookHandler and register their event handlers.
 /// </summary>
 public class EmbedlyWebhookHandler : WebhookHandler
 {

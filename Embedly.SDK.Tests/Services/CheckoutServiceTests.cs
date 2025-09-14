@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Checkout;
+using Embedly.SDK.Models.Responses.Checkout;
+using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Checkout;
-using Embedly.SDK.Models.Responses.Checkout;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Checkout;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for CheckoutService following SDK patterns.
-/// Tests checkout wallet generation and management operations.
+///     Unit tests for CheckoutService following SDK patterns.
+///     Tests checkout wallet generation and management operations.
 /// </summary>
 [TestFixture]
 public class CheckoutServiceTests : ServiceTestBase
@@ -26,8 +25,6 @@ public class CheckoutServiceTests : ServiceTestBase
     {
         _checkoutService = new CheckoutService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Checkout Wallet Generation Tests
 
     [Test]
     public async Task GenerateCheckoutWalletAsync_WithValidRequest_ReturnsCheckoutWallet()
@@ -59,13 +56,8 @@ public class CheckoutServiceTests : ServiceTestBase
     public void GenerateCheckoutWalletAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _checkoutService.GenerateCheckoutWalletAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _checkoutService.GenerateCheckoutWalletAsync(null!));
     }
-
-    #endregion
-
-    #region Checkout Wallet Retrieval Tests
 
     [Test]
     public async Task GetCheckoutWalletsAsync_WithValidRequest_ReturnsWalletList()
@@ -118,10 +110,6 @@ public class CheckoutServiceTests : ServiceTestBase
         result.Data!.Id.Should().Be(expectedWallet.Id);
     }
 
-    #endregion
-
-    #region Helper Methods
-
     private GenerateCheckoutWalletRequest CreateValidGenerateCheckoutWalletRequest()
     {
         return new GenerateCheckoutWalletRequest
@@ -163,6 +151,4 @@ public class CheckoutServiceTests : ServiceTestBase
             ReactivatedAt = CreateTestTimestamp().DateTime
         };
     }
-
-    #endregion
 }

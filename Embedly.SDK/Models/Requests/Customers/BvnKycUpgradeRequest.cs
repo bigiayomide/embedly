@@ -5,27 +5,27 @@ using System.Text.Json.Serialization;
 namespace Embedly.SDK.Models.Requests.Customers;
 
 /// <summary>
-/// Request model for upgrading customer KYC using BVN (Bank Verification Number).
+///     Request model for upgrading customer KYC using BVN (Bank Verification Number).
 /// </summary>
 public sealed class BvnKycUpgradeRequest
 {
     /// <summary>
-    /// Gets or sets the customer identifier.
+    ///     Gets or sets the customer identifier.
     /// </summary>
     [Required(ErrorMessage = "Customer ID is required")]
     [JsonPropertyName("customerId")]
     public string CustomerId { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the Bank Verification Number (BVN).
+    ///     Gets or sets the Bank Verification Number (BVN).
     /// </summary>
     [Required(ErrorMessage = "BVN is required")]
     [RegularExpression(@"^\d{11}$", ErrorMessage = "BVN must be 11 digits")]
     [JsonPropertyName("bvn")]
     public string Bvn { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Gets or sets the customer's date of birth for verification.
+    ///     Gets or sets the customer's date of birth for verification.
     /// </summary>
     [Required(ErrorMessage = "Date of birth is required")]
     [JsonPropertyName("dateOfBirth")]

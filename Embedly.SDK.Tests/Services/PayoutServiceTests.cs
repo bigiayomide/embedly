@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Payout;
+using Embedly.SDK.Models.Responses.Common;
+using Embedly.SDK.Models.Responses.Payout;
+using Embedly.SDK.Services.Payout;
+using Embedly.SDK.Tests.Testing;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Payout;
-using Embedly.SDK.Models.Responses.Payout;
-using Embedly.SDK.Models.Responses.Common;
-using Embedly.SDK.Services.Payout;
-using Embedly.SDK.Tests.Testing;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for PayoutService following SDK patterns.
-/// Tests all payout operations including bank transfers, limits, and profile management.
+///     Unit tests for PayoutService following SDK patterns.
+///     Tests all payout operations including bank transfers, limits, and profile management.
 /// </summary>
 [TestFixture]
 public class PayoutServiceTests : ServiceTestBase
@@ -26,8 +26,6 @@ public class PayoutServiceTests : ServiceTestBase
     {
         _payoutService = new PayoutService(MockHttpClient.Object, MockOptions.Object);
     }
-
-    #region Bank Operations Tests
 
     [Test]
     public async Task GetBanksAsync_WithoutSearch_ReturnsListOfBanks()
@@ -112,13 +110,8 @@ public class PayoutServiceTests : ServiceTestBase
     public void NameEnquiryAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _payoutService.NameEnquiryAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _payoutService.NameEnquiryAsync(null!));
     }
-
-    #endregion
-
-    #region Transfer Operations Tests
 
     [Test]
     public async Task InterBankTransferAsync_WithValidRequest_ReturnsTransactionDetails()
@@ -150,8 +143,7 @@ public class PayoutServiceTests : ServiceTestBase
     public void InterBankTransferAsync_WithNullRequest_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(
-            () => _payoutService.InterBankTransferAsync(null!));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _payoutService.InterBankTransferAsync(null!));
     }
 
     [Test]
@@ -182,13 +174,8 @@ public class PayoutServiceTests : ServiceTestBase
     public void GetTransactionStatusAsync_WithNullReference_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(
-            () => _payoutService.GetTransactionStatusAsync(null!));
+        Assert.ThrowsAsync<ArgumentException>(() => _payoutService.GetTransactionStatusAsync(null!));
     }
-
-    #endregion
-
-    #region Organization and Profile Tests
 
     [Test]
     public async Task GetOrganizationPayoutDataAsync_WithValidId_ReturnsPayoutData()
@@ -290,10 +277,6 @@ public class PayoutServiceTests : ServiceTestBase
         result.Data!.AccountNumber.Should().Be(expectedWallet.AccountNumber);
     }
 
-    #endregion
-
-    #region Global Payout Limits Tests
-
     [Test]
     public async Task AddGlobalPayoutLimitAsync_WithValidRequest_ReturnsCreatedLimit()
     {
@@ -325,7 +308,7 @@ public class PayoutServiceTests : ServiceTestBase
         // Arrange
         var request = CreateValidGetPayoutLimitsRequest();
         var expectedLimits = new List<GlobalPayoutLimit> { CreateTestGlobalPayoutLimit() };
-        var paginatedResponse = CreateTestPaginatedResponse(expectedLimits, 1, 10, 1);
+        var paginatedResponse = CreateTestPaginatedResponse(expectedLimits, 1);
         var apiResponse = CreateSuccessfulApiResponse(paginatedResponse);
 
         MockHttpClient
@@ -396,10 +379,6 @@ public class PayoutServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
         result.Data!.DailyTransactionLimitStatus.Should().Be(enabled);
     }
-
-    #endregion
-
-    #region Helper Methods
 
     private Bank CreateTestBank(string code, string name)
     {
@@ -542,6 +521,4 @@ public class PayoutServiceTests : ServiceTestBase
             UpdatedAt = CreateTestTimestamp().DateTime
         };
     }
-
-    #endregion
 }

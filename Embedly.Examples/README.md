@@ -1,6 +1,7 @@
 # Embedly SDK Examples
 
-A professional reference implementation showing how to use the Embedly SDK with clean architecture patterns, proper error handling, and the SDK's built-in webhook system.
+A professional reference implementation showing how to use the Embedly SDK with clean architecture patterns, proper
+error handling, and the SDK's built-in webhook system.
 
 ## 🏗️ Project Structure
 
@@ -35,7 +36,8 @@ Embedly.Examples/
 
 ### How Event Processing Works
 
-The Embedly SDK uses a **one-handler-per-event** pattern. Each webhook event type gets its own dedicated handler method that you write.
+The Embedly SDK uses a **one-handler-per-event** pattern. Each webhook event type gets its own dedicated handler method
+that you write.
 
 #### 1. Each Event Gets Its Own Handler Method
 
@@ -82,6 +84,7 @@ Webhook arrives → SDK routes by event type → Calls your specific handler
 ```
 
 **Example Flow:**
+
 1. Webhook with `"event": "customer.created"` arrives
 2. SDK looks up `WebhookEventTypes.CustomerCreated` in registered handlers
 3. SDK calls your `HandleCustomerCreatedAsync` method
@@ -175,6 +178,7 @@ private async Task HandleCustomerCreatedAsync(WebhookEvent webhookEvent, Cancell
 ```
 
 This method signature **must match** the delegate expected by `RegisterHandler()`:
+
 - `Func<WebhookEvent, CancellationToken, Task>`
 
 ### 📝 Summary for Developers
@@ -186,6 +190,7 @@ This method signature **must match** the delegate expected by `RegisterHandler()
 ✅ **Write your business logic in each handler method**
 
 **Example: If you only care about customers and transactions:**
+
 ```csharp
 protected override void RegisterHandlers()
 {
@@ -595,6 +600,7 @@ public class TestSignatureRequest
 ## 📊 Architecture Patterns Used
 
 ### Result Pattern
+
 ```csharp
 public async Task<Result<Customer>> CreateCustomerAsync()
 {
@@ -611,6 +617,7 @@ public async Task<Result<Customer>> CreateCustomerAsync()
 ```
 
 ### Correlation Tracking
+
 ```csharp
 public async Task ProcessRequest()
 {
@@ -620,6 +627,7 @@ public async Task ProcessRequest()
 ```
 
 ### Retry with Exponential Backoff
+
 ```csharp
 var result = await _retryService.ExecuteWithRetryAsync(async () =>
 {
@@ -630,21 +638,25 @@ var result = await _retryService.ExecuteWithRetryAsync(async () =>
 ## 🔧 Running the Examples
 
 ### Interactive Mode
+
 ```bash
 dotnet run -- --mode=interactive
 ```
 
 ### Web API Mode
+
 ```bash
 dotnet run -- --mode=webapi
 ```
 
 ### Console Examples
+
 ```bash
 dotnet run -- --mode=console
 ```
 
 ### Specific Scenario
+
 ```bash
 dotnet run -- --mode=scenario --scenario=customer-management
 ```
@@ -659,18 +671,21 @@ dotnet run -- --mode=scenario --scenario=customer-management
 ## 📋 Available Examples
 
 ### Customer Management
+
 - Create customer with validation
 - Update customer information
 - Verify customer identity
 - Handle customer lifecycle events
 
 ### Wallet Management
+
 - Create customer wallets
 - Activate wallets
 - Handle wallet events
 - Balance operations
 
 ### Webhook Processing
+
 - Automatic signature validation
 - Event type routing
 - Strongly-typed event data
@@ -698,16 +713,16 @@ dotnet run -- --mode=scenario --scenario=customer-management
 ### Common Issues
 
 1. **Webhook signature validation fails**
-   - Verify webhook secret in configuration
-   - Check that payload hasn't been modified in transit
+    - Verify webhook secret in configuration
+    - Check that payload hasn't been modified in transit
 
 2. **Handler not called**
-   - Ensure handler is registered with correct event type constant
-   - Verify handler method signature matches expected delegate
+    - Ensure handler is registered with correct event type constant
+    - Verify handler method signature matches expected delegate
 
 3. **Deserialization errors**
-   - Check that your data model matches the actual webhook payload structure
-   - Use nullable properties for optional fields
+    - Check that your data model matches the actual webhook payload structure
+    - Use nullable properties for optional fields
 
 ### Debug Mode
 
@@ -724,6 +739,7 @@ Set logging level to Debug to see detailed webhook processing:
 ```
 
 This will show:
+
 - Incoming webhook payloads
 - Signature validation details
 - Event routing decisions

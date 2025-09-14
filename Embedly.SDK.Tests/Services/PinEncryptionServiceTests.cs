@@ -1,14 +1,14 @@
 using System;
-using FluentAssertions;
-using NUnit.Framework;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Tests.Testing;
+using FluentAssertions;
+using NUnit.Framework;
 
 namespace Embedly.SDK.Tests.Services;
 
 /// <summary>
-/// Unit tests for PinEncryptionService following SDK patterns.
-/// Tests PIN encryption operations and RSA key management.
+///     Unit tests for PinEncryptionService following SDK patterns.
+///     Tests PIN encryption operations and RSA key management.
 /// </summary>
 [TestFixture]
 public class PinEncryptionServiceTests : ServiceTestBase
@@ -19,8 +19,6 @@ public class PinEncryptionServiceTests : ServiceTestBase
     {
         _pinEncryptionService = new PinEncryptionService(MockOptions.Object);
     }
-
-    #region RSA Public Key Tests
 
     [Test]
     public void GetRsaPublicKey_ReturnsValidPublicKey()
@@ -57,10 +55,6 @@ public class PinEncryptionServiceTests : ServiceTestBase
         publicKey.Should().Contain("-----END PUBLIC KEY-----");
         publicKey.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length.Should().BeGreaterThan(2);
     }
-
-    #endregion
-
-    #region PIN Encryption Tests
 
     [Test]
     public void EncryptPin_WithValidPin_ReturnsEncryptedString()
@@ -132,24 +126,21 @@ public class PinEncryptionServiceTests : ServiceTestBase
     public void EncryptPin_WithNullPin_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(
-            () => _pinEncryptionService.EncryptPin(null!));
+        Assert.Throws<ArgumentException>(() => _pinEncryptionService.EncryptPin(null!));
     }
 
     [Test]
     public void EncryptPin_WithEmptyPin_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(
-            () => _pinEncryptionService.EncryptPin(string.Empty));
+        Assert.Throws<ArgumentException>(() => _pinEncryptionService.EncryptPin(string.Empty));
     }
 
     [Test]
     public void EncryptPin_WithWhitespacePin_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(
-            () => _pinEncryptionService.EncryptPin("   "));
+        Assert.Throws<ArgumentException>(() => _pinEncryptionService.EncryptPin("   "));
     }
 
     [Test]
@@ -175,10 +166,6 @@ public class PinEncryptionServiceTests : ServiceTestBase
         exception.Message.Should().Contain("PIN must be 4-6 digits");
         exception.ParamName.Should().Be("plainTextPin");
     }
-
-    #endregion
-
-    #region Integration Tests
 
     [Test]
     public void PinEncryption_EndToEndFlow_WorksCorrectly()
@@ -219,10 +206,6 @@ public class PinEncryptionServiceTests : ServiceTestBase
         }
     }
 
-    #endregion
-
-    #region Helper Methods
-
     private static bool IsValidBase64String(string base64String)
     {
         try
@@ -235,6 +218,4 @@ public class PinEncryptionServiceTests : ServiceTestBase
             return false;
         }
     }
-
-    #endregion
 }

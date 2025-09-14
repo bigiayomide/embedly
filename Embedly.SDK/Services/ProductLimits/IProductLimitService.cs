@@ -8,77 +8,84 @@ using Embedly.SDK.Models.Responses.ProductLimits;
 namespace Embedly.SDK.Services.ProductLimits;
 
 /// <summary>
-/// Interface for product limit management operations.
+///     Interface for product limit management operations.
 /// </summary>
 public interface IProductLimitService
 {
     /// <summary>
-    /// Creates a new product limit.
+    ///     Creates a new product limit.
     /// </summary>
     /// <param name="request">The product limit creation request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created product limit.</returns>
-    Task<ApiResponse<ProductLimit>> CreateProductLimitAsync(CreateProductLimitRequest request, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<ProductLimit>> CreateProductLimitAsync(CreateProductLimitRequest request,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Gets a product limit by its ID.
+    ///     Gets a product limit by its ID.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The product limit details.</returns>
     Task<ApiResponse<ProductLimit>> GetProductLimitAsync(string limitId, CancellationToken cancellationToken = default);
-    
+
     /// <summary>
-    /// Gets product limits based on the request criteria.
+    ///     Gets product limits based on the request criteria.
     /// </summary>
     /// <param name="request">The product limits request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Paginated list of product limits.</returns>
-    Task<ApiResponse<PaginatedResponse<ProductLimit>>> GetProductLimitsAsync(GetProductLimitsRequest request, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<PaginatedResponse<ProductLimit>>> GetProductLimitsAsync(GetProductLimitsRequest request,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Gets all limits for a specific product.
+    ///     Gets all limits for a specific product.
     /// </summary>
     /// <param name="productId">The product ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of product limits.</returns>
-    Task<ApiResponse<List<ProductLimit>>> GetProductLimitsByProductAsync(string productId, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<List<ProductLimit>>> GetProductLimitsByProductAsync(string productId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Updates a product limit.
+    ///     Updates a product limit.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="request">The update request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated product limit.</returns>
-    Task<ApiResponse<ProductLimit>> UpdateProductLimitAsync(string limitId, CreateProductLimitRequest request, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<ProductLimit>> UpdateProductLimitAsync(string limitId, CreateProductLimitRequest request,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Activates a product limit.
+    ///     Activates a product limit.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated product limit.</returns>
-    Task<ApiResponse<ProductLimit>> ActivateProductLimitAsync(string limitId, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<ProductLimit>> ActivateProductLimitAsync(string limitId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Deactivates a product limit.
+    ///     Deactivates a product limit.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated product limit.</returns>
-    Task<ApiResponse<ProductLimit>> DeactivateProductLimitAsync(string limitId, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<ProductLimit>> DeactivateProductLimitAsync(string limitId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Resets the usage counter for a product limit.
+    ///     Resets the usage counter for a product limit.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated product limit.</returns>
-    Task<ApiResponse<ProductLimit>> ResetProductLimitUsageAsync(string limitId, CancellationToken cancellationToken = default);
-    
+    Task<ApiResponse<ProductLimit>> ResetProductLimitUsageAsync(string limitId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
-    /// Deletes a product limit.
+    ///     Deletes a product limit.
     /// </summary>
     /// <param name="limitId">The product limit ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

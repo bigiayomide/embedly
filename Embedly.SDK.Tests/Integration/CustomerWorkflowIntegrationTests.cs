@@ -1,35 +1,36 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Embedly.SDK.Models.Requests.Customers;
+using Embedly.SDK.Services.Customers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Embedly.SDK.Models.Requests.Customers;
-using Embedly.SDK.Services.Customers;
 
 namespace Embedly.SDK.Tests.Integration;
 
 /// <summary>
-/// Integration tests for complete customer workflows following SDK patterns.
-/// Tests real API interactions for customer lifecycle management.
+///     Integration tests for complete customer workflows following SDK patterns.
+///     Tests real API interactions for customer lifecycle management.
 /// </summary>
 [TestFixture]
 [Category("Integration")]
 [Category("Customer")]
 public class CustomerWorkflowIntegrationTests : IntegrationTestBase
 {
-    private ICustomerService _customerService = null!;
-
     [SetUp]
     public void SetUp()
     {
         _customerService = ServiceProvider.GetRequiredService<ICustomerService>();
     }
 
+    private ICustomerService _customerService = null!;
+
     /// <summary>
-    /// Complete customer lifecycle: Create → Retrieve → Update → KYC Upgrade
+    ///     Complete customer lifecycle: Create → Retrieve → Update → KYC Upgrade
     /// </summary>
-    [Test, Order(1)]
+    [Test]
+    [Order(1)]
     public async Task CompleteCustomerLifecycleWorkflow_ShouldSucceedWithAllSteps()
     {
         LogStep("Starting Complete Customer Lifecycle Workflow");
@@ -133,9 +134,10 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests customer KYC upgrade workflows with different verification methods.
+    ///     Tests customer KYC upgrade workflows with different verification methods.
     /// </summary>
-    [Test, Order(2)]
+    [Test]
+    [Order(2)]
     public async Task CustomerKycUpgradeWorkflow_ShouldHandleDifferentVerificationMethods()
     {
         LogStep("Starting Customer KYC Upgrade Workflow");
@@ -234,9 +236,10 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests customer retrieval and listing operations with pagination.
+    ///     Tests customer retrieval and listing operations with pagination.
     /// </summary>
-    [Test, Order(3)]
+    [Test]
+    [Order(3)]
     public async Task CustomerRetrievalWorkflow_ShouldHandlePaginationAndFiltering()
     {
         LogStep("Starting Customer Retrieval Workflow");
@@ -302,9 +305,10 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests customer lookup operations for types and countries.
+    ///     Tests customer lookup operations for types and countries.
     /// </summary>
-    [Test, Order(4)]
+    [Test]
+    [Order(4)]
     public async Task CustomerLookupWorkflow_ShouldRetrieveSupportingData()
     {
         LogStep("Starting Customer Lookup Workflow");
@@ -323,9 +327,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             LogSuccess($"Retrieved {typesResponse.Data!.Count()} customer types");
 
             foreach (var customerType in typesResponse.Data.Take(3))
-            {
                 TestContext.WriteLine($"  - {customerType.Name}: {customerType.Description}");
-            }
         }
         else
         {
@@ -346,9 +348,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             LogSuccess($"Retrieved {countriesResponse.Data!.Count()} countries");
 
             foreach (var country in countriesResponse.Data.Take(5))
-            {
                 TestContext.WriteLine($"  - {country.Name} ({country.Code})");
-            }
         }
         else
         {
@@ -359,9 +359,10 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    /// Tests error scenarios and edge cases in customer operations.
+    ///     Tests error scenarios and edge cases in customer operations.
     /// </summary>
-    [Test, Order(5)]
+    [Test]
+    [Order(5)]
     public async Task CustomerErrorHandlingWorkflow_ShouldHandleInvalidOperations()
     {
         LogStep("Starting Customer Error Handling Workflow");
@@ -387,13 +388,9 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             LogApiResponse("Duplicate Customer Response", duplicateResponse);
 
             if (!duplicateResponse.Success)
-            {
                 LogSuccess($"Duplicate email correctly rejected: {duplicateResponse.Message}");
-            }
             else
-            {
                 LogWarning("Duplicate email was unexpectedly accepted");
-            }
         }
 
         // Step 2: Test invalid customer ID retrieval
@@ -405,13 +402,9 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("Invalid Customer Response", invalidResponse);
 
         if (!invalidResponse.Success)
-        {
             LogSuccess($"Invalid customer ID correctly handled: {invalidResponse.Message}");
-        }
         else
-        {
             LogWarning("Invalid customer ID unexpectedly returned success");
-        }
 
         // Step 3: Test invalid KYC data
         LogStep("Testing invalid KYC upgrade");
@@ -427,18 +420,12 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         LogApiResponse("Invalid KYC Response", invalidKycResponse);
 
         if (!invalidKycResponse.Success)
-        {
             LogSuccess($"Invalid KYC correctly rejected: {invalidKycResponse.Message}");
-        }
         else
-        {
             LogWarning("Invalid KYC was unexpectedly accepted");
-        }
 
         LogSuccess("Customer Error Handling Workflow completed");
     }
-
-    #region Helper Methods
 
     private CreateCustomerRequest CreateUniqueCustomerRequest()
     {
@@ -459,14 +446,12 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             OrganizationId = CreateTestGuid()
         };
     }
-
-    #endregion
 }
 
 #region Typed Logging Models
 
 /// <summary>
-/// Strongly typed model for logging pagination parameters.
+///     Strongly typed model for logging pagination parameters.
 /// </summary>
 internal sealed record PaginationLog
 {

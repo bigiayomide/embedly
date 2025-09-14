@@ -1,10 +1,10 @@
-using FastEndpoints;
 using Embedly.SDK.Webhooks;
+using FastEndpoints;
 
 namespace Embedly.Examples.Endpoints;
 
 /// <summary>
-/// FastEndpoints implementation for testing webhook signature validation.
+///     FastEndpoints implementation for testing webhook signature validation.
 /// </summary>
 public class TestSignatureEndpoint(IWebhookProcessor webhookProcessor, ILogger<TestSignatureEndpoint> logger)
     : Endpoint<TestSignatureRequest, TestSignatureResponse>
@@ -45,7 +45,7 @@ public class TestSignatureEndpoint(IWebhookProcessor webhookProcessor, ILogger<T
                 IsValid = isValid,
                 Message = isValid ? "Valid signature" : "Invalid signature",
                 Timestamp = DateTime.UtcNow
-            }, cancellation:ct);
+            }, cancellation: ct);
         }
         catch (Exception ex)
         {
@@ -55,13 +55,13 @@ public class TestSignatureEndpoint(IWebhookProcessor webhookProcessor, ILogger<T
                 IsValid = false,
                 Message = "Error validating signature",
                 Timestamp = DateTime.UtcNow
-            }, cancellation:ct);
+            }, cancellation: ct);
         }
     }
 }
 
 /// <summary>
-/// Request model for testing webhook signatures.
+///     Request model for testing webhook signatures.
 /// </summary>
 public class TestSignatureRequest
 {
@@ -70,7 +70,7 @@ public class TestSignatureRequest
 }
 
 /// <summary>
-/// Response model for signature validation test.
+///     Response model for signature validation test.
 /// </summary>
 public class TestSignatureResponse
 {

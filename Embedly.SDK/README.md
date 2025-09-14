@@ -4,7 +4,8 @@
 [![Downloads](https://img.shields.io/nuget/dt/Embedly.SDK.svg)](https://www.nuget.org/packages/Embedly.SDK/)
 [![License](https://img.shields.io/github/license/embedly/embedly-dotnet-sdk.svg)](https://github.com/embedly/embedly-dotnet-sdk/blob/main/LICENSE)
 
-The official .NET SDK for [Embedly.ng](https://embedly.ng) - Nigeria's leading embedded finance platform. This SDK provides comprehensive access to wallet management, payments, cards, and financial services APIs.
+The official .NET SDK for [Embedly.ng](https://embedly.ng) - Nigeria's leading embedded finance platform. This SDK
+provides comprehensive access to wallet management, payments, cards, and financial services APIs.
 
 ## Features
 
@@ -101,6 +102,7 @@ public class CustomerController : ControllerBase
 ## Available Services
 
 ### Customer Management
+
 ```csharp
 // Create a customer
 var customer = await embedlyClient.Customers.CreateAsync(new CreateCustomerRequest
@@ -129,6 +131,7 @@ var kycResult = await embedlyClient.Customers.UpgradeKycWithNinAsync(new NinKycU
 ```
 
 ### Wallet Operations (Coming Soon)
+
 ```csharp
 // Create wallet
 var wallet = await embedlyClient.Wallets.CreateAsync(new CreateWalletRequest

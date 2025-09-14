@@ -1,7 +1,7 @@
 namespace Embedly.Examples.Models;
 
 /// <summary>
-/// Base class for scenario requests.
+///     Base class for scenario requests.
 /// </summary>
 public abstract class ScenarioRequestBase
 {
@@ -11,7 +11,7 @@ public abstract class ScenarioRequestBase
 }
 
 /// <summary>
-/// Base class for scenario results.
+///     Base class for scenario results.
 /// </summary>
 public abstract class ScenarioResultBase
 {
@@ -24,7 +24,7 @@ public abstract class ScenarioResultBase
 }
 
 /// <summary>
-/// Customer information for scenarios.
+///     Customer information for scenarios.
 /// </summary>
 public class CustomerInfo
 {
@@ -41,7 +41,7 @@ public class CustomerInfo
 }
 
 /// <summary>
-/// Address information.
+///     Address information.
 /// </summary>
 public class AddressInfo
 {
@@ -53,7 +53,7 @@ public class AddressInfo
 }
 
 /// <summary>
-/// Wallet configuration for scenarios.
+///     Wallet configuration for scenarios.
 /// </summary>
 public class WalletConfig
 {
@@ -64,7 +64,7 @@ public class WalletConfig
 }
 
 /// <summary>
-/// Card configuration for scenarios.
+///     Card configuration for scenarios.
 /// </summary>
 public class CardConfig
 {
@@ -77,7 +77,7 @@ public class CardConfig
 }
 
 /// <summary>
-/// Payout configuration for scenarios.
+///     Payout configuration for scenarios.
 /// </summary>
 public class PayoutConfig
 {
@@ -91,7 +91,7 @@ public class PayoutConfig
 }
 
 /// <summary>
-/// Result of a completed scenario step.
+///     Result of a completed scenario step.
 /// </summary>
 public class ScenarioStep
 {
@@ -106,7 +106,7 @@ public class ScenarioStep
 }
 
 /// <summary>
-/// Created resource information.
+///     Created resource information.
 /// </summary>
 public class CreatedResource
 {
@@ -118,7 +118,7 @@ public class CreatedResource
 }
 
 /// <summary>
-/// Transaction information.
+///     Transaction information.
 /// </summary>
 public class TransactionInfo
 {

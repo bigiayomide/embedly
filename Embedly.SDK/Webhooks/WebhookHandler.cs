@@ -7,15 +7,15 @@ using Microsoft.Extensions.Logging;
 namespace Embedly.SDK.Webhooks;
 
 /// <summary>
-/// Base webhook handler for processing Embedly webhook events.
+///     Base webhook handler for processing Embedly webhook events.
 /// </summary>
 public abstract class WebhookHandler : IWebhookHandler
 {
-    private readonly ILogger<WebhookHandler>? _logger;
     private readonly Dictionary<string, Func<WebhookEvent, CancellationToken, Task>> _handlers;
-    
+    private readonly ILogger<WebhookHandler>? _logger;
+
     /// <summary>
-    /// Initializes a new instance of the WebhookHandler class.
+    ///     Initializes a new instance of the WebhookHandler class.
     /// </summary>
     /// <param name="logger">Optional logger instance.</param>
     protected WebhookHandler(ILogger<WebhookHandler>? logger = null)
@@ -24,25 +24,7 @@ public abstract class WebhookHandler : IWebhookHandler
         _handlers = new Dictionary<string, Func<WebhookEvent, CancellationToken, Task>>();
         RegisterHandlers();
     }
-    
-    /// <summary>
-    /// Registers event handlers. Override this method to register custom handlers.
-    /// </summary>
-    protected virtual void RegisterHandlers()
-    {
-        // Default handlers can be registered here
-    }
-    
-    /// <summary>
-    /// Registers a handler for a specific event type.
-    /// </summary>
-    /// <param name="eventType">The event type to handle.</param>
-    /// <param name="handler">The handler function.</param>
-    protected void RegisterHandler(string eventType, Func<WebhookEvent, CancellationToken, Task> handler)
-    {
-        _handlers[eventType] = handler;
-    }
-    
+
     /// <inheritdoc />
     public virtual async Task HandleEventAsync(WebhookEvent webhookEvent, CancellationToken cancellationToken = default)
     {
@@ -51,10 +33,10 @@ public abstract class WebhookHandler : IWebhookHandler
             _logger?.LogWarning("Received null webhook event");
             return;
         }
-        
-        _logger?.LogInformation("Processing webhook event: {EventType} with ID: {EventId}", 
+
+        _logger?.LogInformation("Processing webhook event: {EventType} with ID: {EventId}",
             webhookEvent.Event, webhookEvent.Id);
-        
+
         try
         {
             if (_handlers.TryGetValue(webhookEvent.Event, out var handler))
@@ -73,9 +55,27 @@ public abstract class WebhookHandler : IWebhookHandler
             throw;
         }
     }
-    
+
     /// <summary>
-    /// Handles unknown event types. Override to provide custom behavior.
+    ///     Registers event handlers. Override this method to register custom handlers.
+    /// </summary>
+    protected virtual void RegisterHandlers()
+    {
+        // Default handlers can be registered here
+    }
+
+    /// <summary>
+    ///     Registers a handler for a specific event type.
+    /// </summary>
+    /// <param name="eventType">The event type to handle.</param>
+    /// <param name="handler">The handler function.</param>
+    protected void RegisterHandler(string eventType, Func<WebhookEvent, CancellationToken, Task> handler)
+    {
+        _handlers[eventType] = handler;
+    }
+
+    /// <summary>
+    ///     Handles unknown event types. Override to provide custom behavior.
     /// </summary>
     /// <param name="webhookEvent">The webhook event.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -87,12 +87,12 @@ public abstract class WebhookHandler : IWebhookHandler
 }
 
 /// <summary>
-/// Interface for webhook event handlers.
+///     Interface for webhook event handlers.
 /// </summary>
 public interface IWebhookHandler
 {
     /// <summary>
-    /// Handles a webhook event.
+    ///     Handles a webhook event.
     /// </summary>
     /// <param name="webhookEvent">The webhook event to handle.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
