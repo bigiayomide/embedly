@@ -204,7 +204,7 @@ Console.WriteLine(total.ToString());          // ₦2,500.50
 [HttpPost("webhooks/embedly")]
 public async Task<IActionResult> HandleWebhook()
 {
-    var signature = Request.Headers["x-embedly-signature"];
+    var signature = Request.Headers["X-Auth-Signature"];
     var payload = await ReadBodyAsync();
     
     var result = await _webhookProcessor.ProcessWebhookAsync(payload, signature);
