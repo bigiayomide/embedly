@@ -53,7 +53,7 @@ public class CustomerServiceTests : ServiceTestBase
         result.Data.FirstName.Should().Be(request.FirstName);
         result.Data.LastName.Should().Be(request.LastName);
         result.Data.Email.Should().Be(request.EmailAddress);
-        result.Data.PhoneNumber.Should().Be(request.MobileNumber);
+        result.Data.MobileNumber.Should().Be(request.MobileNumber);
 
         VerifyHttpClientPostCall<CreateCustomerRequest, Customer>("api/v1/customers/add", request);
     }
@@ -368,7 +368,9 @@ public class CustomerServiceTests : ServiceTestBase
         {
             CustomerId = CreateTestGuid().ToString(),
             Nin = "12345678901",
-            DateOfBirth = CreateTestTimestamp(-30 * 365).DateTime // 30 years ago
+            DateOfBirth = CreateTestTimestamp(-30 * 365).DateTime, // 30 years ago
+            FirstName = "KYC",
+            LastName = "User"
         };
         var expectedResult = new KycUpgradeResult
         {
@@ -404,7 +406,7 @@ public class CustomerServiceTests : ServiceTestBase
     }
 
     [Test]
-    public async Task UpgradeKycWithBvnAsync_WithValidRequest_ReturnsKycResult()
+    public async Task UpgradeKycWithBvnAsync_WithValidRequest_ReturnsBvnKycResult()
     {
         // Arrange
         var request = new BvnKycUpgradeRequest
@@ -412,22 +414,58 @@ public class CustomerServiceTests : ServiceTestBase
             CustomerId = CreateTestGuid().ToString(),
             Bvn = "12345678901"
         };
-        var expectedResult = new KycUpgradeResult
+
+        var expectedResult = new BvnKycUpgradeResponse
         {
-            Success = true,
-            Message = "BVN verification successful",
-            CustomerId = request.CustomerId,
-            NewKycLevel = "TIER_2",
-            VerificationStatus = CustomerVerificationStatus.Verified,
-            VerificationReference = "BVN-REF-123456",
-            ProcessedAt = DateTime.UtcNow
+            KycCompleted = true,
+            Response = new BvnResultResponse
+            {
+                Id = CreateTestLongId(),
+                Applicant = new Applicant
+                {
+                    Firstname = "Bunch",
+                    Lastname = "Dillon"
+                },
+                Summary = new Summary
+                {
+                    BvnCheck = new BvnCheck
+                    {
+                        Status = "EXACT_MATCH",
+                        FieldMatches = new FieldMatches
+                        {
+                            Firstname = true,
+                            Lastname = true
+                        }
+                    }
+                },
+                Status = new Status
+                {
+                    Description = "verified",
+                    State = "complete"
+                },
+                Bvn = new BvnInfo
+                {
+                    Bvn = "95888168924", // Test BVN
+                    Email = CreateTestEmail(),
+                    EnrollmentBank = "011", // Test Bank
+                    Firstname = "Bunch",
+                    Lastname = "Dillon",
+                    LgaOfResidence = "Agege",
+                    MaritalStatus = "Single",
+                    Nationality = "Nigerian",
+                    StateOfResidence = "Lagos State",
+                    ResidentialAddress = "121 Paul Gas Avenue",
+                    WatchListed = "NO"
+                }
+            },
+            Successful = true
         };
 
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<BvnKycUpgradeRequest, KycUpgradeResult>(
-                It.Is<string>(url => url.Contains($"api/v1/customers/kyc/monnify/kyc/customer/{request.CustomerId}")),
+            .Setup(x => x.PostAsync<BvnKycUpgradeRequest, BvnKycUpgradeResponse>(
+                It.Is<string>(url => url.Contains($"api/v1/customers/kyc/premium-kyc")),
                 request,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -439,11 +477,11 @@ public class CustomerServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Success.Should().BeTrue();
-        result.Data.VerificationStatus.Should().Be(CustomerVerificationStatus.Verified);
+        result.Data!.KycCompleted.Should().BeTrue();
+        result.Data.Response!.Status!.Description.Should().Be("verified");
 
-        VerifyHttpClientPostCall<BvnKycUpgradeRequest, KycUpgradeResult>(
-            $"api/v1/customers/kyc/monnify/kyc/customer/{request.CustomerId}", request);
+        VerifyHttpClientPostCall<BvnKycUpgradeRequest, BvnKycUpgradeResponse>(
+            $"/api/v1/customers/kyc/premium-kyc", request);
     }
 
     [Test]
@@ -453,11 +491,8 @@ public class CustomerServiceTests : ServiceTestBase
         var request = new AddressVerificationRequest
         {
             CustomerId = CreateTestGuid().ToString(),
-            Street = "123 Test Street",
-            City = "Lagos",
-            State = "Lagos",
-            Country = "NG",
-            VerificationMethod = "utility_bill"
+            HouseAddress = "123 Integration Test Street, Lagos, Lagos State, Nigeria",
+            MeterNumber = "09876543212" // Test meter number
         };
         var expectedResult = new AddressVerificationResult
         {
@@ -560,8 +595,8 @@ public class CustomerServiceTests : ServiceTestBase
         // Arrange
         var expectedCountries = new List<Country>
         {
-            new() { Id = 1, Name = "Nigeria", Code = "NG", IsoCode = "NGA" },
-            new() { Id = 2, Name = "Ghana", Code = "GH", IsoCode = "GHA" }
+            new() { Id = CreateTestGuid().ToString(), Name = "Nigeria", CountryCodeTwo = "NG", CountryCodeThree = "NGA" },
+            new() { Id = CreateTestGuid().ToString(), Name = "Ghana", CountryCodeTwo = "GH", CountryCodeThree = "GHA" }
         };
         var apiResponse = CreateSuccessfulApiResponse(expectedCountries);
 
@@ -655,7 +690,6 @@ public class CustomerServiceTests : ServiceTestBase
             City = "Lagos",
             CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
             CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
-            CustomerTierId = 1,
             OrganizationId = CreateTestGuid()
         };
     }
@@ -668,10 +702,10 @@ public class CustomerServiceTests : ServiceTestBase
             FirstName = "John",
             LastName = "Doe",
             Email = CreateTestEmail("john.doe"),
-            PhoneNumber = CreateTestPhoneNumber("1234"),
+            MobileNumber = CreateTestPhoneNumber("1234"),
             DateOfBirth = DateTime.UtcNow.AddYears(-25),
             CreatedAt = DateTimeOffset.UtcNow,
-            KycLevel = "TIER_1",
+            CustomerTierId = 0,
             Status = CustomerStatus.Active
         };
     }

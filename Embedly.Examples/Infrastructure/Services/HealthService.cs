@@ -99,7 +99,7 @@ public class HealthService(
                     "Embedly API is accessible",
                     data: data);
             data["CurrencyCount"] = response.Data.Count();
-            data["SampleCurrency"] = response.Data.First().Code;
+            data["SampleCurrency"] = response.Data.First().ShortName;
 
             return new HealthCheckResult(
                 HealthStatus.Healthy,

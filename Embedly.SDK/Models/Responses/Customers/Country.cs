@@ -11,7 +11,7 @@ public sealed class Country
     ///     Gets or sets the country ID.
     /// </summary>
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the country name.
@@ -22,12 +22,12 @@ public sealed class Country
     /// <summary>
     ///     Gets or sets the country code.
     /// </summary>
-    [JsonPropertyName("code")]
-    public string Code { get; set; } = string.Empty;
+    [JsonPropertyName("countryCodeTwo")]
+    public string CountryCodeTwo { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the ISO code.
     /// </summary>
-    [JsonPropertyName("isoCode")]
-    public string IsoCode { get; set; } = string.Empty;
+    [JsonPropertyName("countryCodeThree")]
+    public string CountryCodeThree { get; set; } = string.Empty;
 }

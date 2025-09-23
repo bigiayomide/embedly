@@ -16,28 +16,18 @@ public sealed class AddressVerificationRequest
     public string CustomerId { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the street address.
+    ///     Gets or sets the customers electricity meter number.
     /// </summary>
-    [Required(ErrorMessage = "Street address is required")]
-    [StringLength(200, ErrorMessage = "Street address cannot exceed 200 characters")]
-    [JsonPropertyName("street")]
-    public string Street { get; set; } = string.Empty;
+    [Required(ErrorMessage = "The meter number is required")]
+    [JsonPropertyName("meterNumber")]
+    public string MeterNumber { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the city.
+    ///     Gets or sets the customer's house address.
     /// </summary>
-    [Required(ErrorMessage = "City is required")]
-    [StringLength(100, ErrorMessage = "City cannot exceed 100 characters")]
-    [JsonPropertyName("city")]
-    public string City { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the state.
-    /// </summary>
-    [Required(ErrorMessage = "State is required")]
-    [StringLength(100, ErrorMessage = "State cannot exceed 100 characters")]
-    [JsonPropertyName("state")]
-    public string State { get; set; } = string.Empty;
+    [Required(ErrorMessage = "The house address is required")]
+    [JsonPropertyName("houseAddress")]
+    public string HouseAddress { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the postal code.
@@ -50,13 +40,6 @@ public sealed class AddressVerificationRequest
     /// </summary>
     [JsonPropertyName("country")]
     public string Country { get; set; } = "NG";
-
-    /// <summary>
-    ///     Gets or sets the verification method (e.g., "utility_bill", "bank_statement").
-    /// </summary>
-    [Required(ErrorMessage = "Verification method is required")]
-    [JsonPropertyName("verificationMethod")]
-    public string VerificationMethod { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the verification document or evidence.

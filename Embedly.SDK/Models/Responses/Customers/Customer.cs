@@ -30,44 +30,38 @@ public sealed class Customer
     /// <summary>
     ///     Gets or sets the customer's full name.
     /// </summary>
-    [JsonPropertyName("fullName")]
-    public string? FullName { get; set; }
+    [JsonPropertyName("middleName")]
+    public string? MiddleName { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the customer tier ID.
+    /// </summary>
+    [JsonPropertyName("customerTierId")]
+    public int CustomerTierId { get; set; }
 
     /// <summary>
     ///     Gets or sets the customer's email address.
     /// </summary>
-    [JsonPropertyName("email")]
+    [JsonPropertyName("emailAddress")]
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the customer's phone number.
     /// </summary>
-    [JsonPropertyName("phoneNumber")]
-    public string PhoneNumber { get; set; } = string.Empty;
+    [JsonPropertyName("mobileNumber")]
+    public string MobileNumber { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the customer's date of birth.
     /// </summary>
-    [JsonPropertyName("dateOfBirth")]
+    [JsonPropertyName("dob")]
     public DateTime? DateOfBirth { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the customer's gender.
-    /// </summary>
-    [JsonPropertyName("gender")]
-    public string? Gender { get; set; }
 
     /// <summary>
     ///     Gets or sets the customer's verification status.
     /// </summary>
     [JsonPropertyName("verificationStatus")]
     public CustomerVerificationStatus VerificationStatus { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the customer's KYC level.
-    /// </summary>
-    [JsonPropertyName("kycLevel")]
-    public string? KycLevel { get; set; }
 
     /// <summary>
     ///     Gets or sets the customer type.
@@ -82,6 +76,12 @@ public sealed class Customer
     public string? Address { get; set; }
 
     /// <summary>
+    ///     Gets or sets the customer's city.
+    /// </summary>
+    [JsonPropertyName("city")]
+    public string? City { get; set; }
+
+    /// <summary>
     ///     Gets or sets the customer status.
     /// </summary>
     [JsonPropertyName("status")]
@@ -90,8 +90,8 @@ public sealed class Customer
     /// <summary>
     ///     Gets or sets the date when the customer was created.
     /// </summary>
-    [JsonPropertyName("createdAt")]
-    public DateTimeOffset CreatedAt { get; set; }
+    [JsonPropertyName("dateCreated")]
+    public DateTimeOffset? CreatedAt { get; set; }
 
     /// <summary>
     ///     Gets or sets the date when the customer was last updated.

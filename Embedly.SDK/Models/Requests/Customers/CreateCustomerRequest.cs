@@ -48,13 +48,6 @@ public sealed class CreateCustomerRequest
     public Guid CustomerTypeId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the customer tier ID.
-    /// </summary>
-    [Required(ErrorMessage = "Customer tier ID is required")]
-    [JsonPropertyName("customerTierId")]
-    public int CustomerTierId { get; set; }
-
-    /// <summary>
     ///     Gets or sets the customer alias.
     /// </summary>
     [JsonPropertyName("alias")]
@@ -90,10 +83,4 @@ public sealed class CreateCustomerRequest
     /// </summary>
     [JsonPropertyName("emailAddress")]
     public string? EmailAddress { get; set; }
-
-    /// <summary>
-    ///     Gets or sets whether corporate verification is complete.
-    /// </summary>
-    [JsonPropertyName("isCorporateVerified")]
-    public string? IsCorporateVerified { get; set; }
 }

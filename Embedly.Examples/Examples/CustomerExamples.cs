@@ -38,7 +38,6 @@ public class CustomerExamples(
                 MobileNumber = "+2348012345678",
                 DateOfBirth = new DateTime(1990, 5, 15),
                 CustomerTypeId = customerTypeId,
-                CustomerTierId = 1, // Basic tier
                 CountryId = countryId,
                 City = "Lagos",
                 Address = "123 Victoria Island, Lagos"
