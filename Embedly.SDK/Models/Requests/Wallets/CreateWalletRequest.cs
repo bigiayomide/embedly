@@ -24,9 +24,14 @@ public sealed class CreateWalletRequest
     public string? CurrencyId { get; set; }
 
     /// <summary>
+    ///     Gets or sets the wallet restriction ID.
+    /// </summary>
+    [JsonPropertyName("walletRestrictionId")]
+    public string? WalletRestrictionId { get; set; }
+
+    /// <summary>
     ///     Gets or sets the wallet classification ID.
     /// </summary>
-    [Required(ErrorMessage = "Wallet classification ID is required")]
     [JsonPropertyName("walletClassificationId")]
     public string? WalletClassificationId { get; set; }
 

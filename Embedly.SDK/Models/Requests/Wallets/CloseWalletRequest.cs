@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
 namespace Embedly.SDK.Models.Requests.Wallets;
@@ -21,4 +22,24 @@ public sealed record CloseWalletRequest
     [Required(ErrorMessage = "Closure reason is required")]
     [JsonPropertyName("reason")]
     public string Reason { get; init; } = string.Empty;
+
+    /// <summary>
+    ///     Specifies whether to close or delete the account. "true: Delete the account. false: Close the account"
+    /// </summary>
+    [Required(ErrorMessage = "Close or delete option is required")]
+    [JsonPropertyName("closeOrDelete")]
+    public bool CloseOrDelete { get; set; }
+
+    /// <summary>
+    ///     Specifies whether the operation is for a customer or an account. true: Customer - false: Account
+    /// </summary>
+    [Required(ErrorMessage = "Customer or Account option is required")]
+    [JsonPropertyName("customerOrAccount")]
+    public bool CustomerOrAccount { get; set; }
+
+    /// <summary>
+    ///     The ID of the teller processing the closure.
+    /// </summary>
+    [JsonPropertyName("tellerId")]
+    public string TellerId { get; set; } = string.Empty;
 }

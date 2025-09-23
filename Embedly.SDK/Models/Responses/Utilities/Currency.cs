@@ -8,10 +8,16 @@ namespace Embedly.SDK.Models.Responses.Utilities;
 public sealed class Currency
 {
     /// <summary>
+    ///     Gets or sets the number of decimal places.
+    /// </summary>
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>
     ///     Gets or sets the currency code (e.g., NGN, USD).
     /// </summary>
-    [JsonPropertyName("code")]
-    public string Code { get; set; } = string.Empty;
+    [JsonPropertyName("shortName")]
+    public string ShortName { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the currency name.
@@ -24,16 +30,4 @@ public sealed class Currency
     /// </summary>
     [JsonPropertyName("symbol")]
     public string Symbol { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets whether the currency is active.
-    /// </summary>
-    [JsonPropertyName("isActive")]
-    public bool IsActive { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the number of decimal places.
-    /// </summary>
-    [JsonPropertyName("decimalPlaces")]
-    public int DecimalPlaces { get; set; } = 2;
 }

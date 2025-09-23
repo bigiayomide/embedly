@@ -30,6 +30,12 @@ public sealed class CreateWalletGroupRequest
     public string CustomerId { get; set; } = string.Empty;
 
     /// <summary>
+    ///     Gets or sets the wallet group features.
+    /// </summary>
+    [JsonPropertyName("walletGroupFeatureDto")]
+    public List<Responses.WalletGroups.WalletGroupFeature>? WalletGroupFeatures { get; set; }
+
+    /// <summary>
     ///     Gets or sets additional metadata for the wallet group.
     /// </summary>
     [JsonPropertyName("metadata")]

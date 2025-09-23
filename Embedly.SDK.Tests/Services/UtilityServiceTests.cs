@@ -76,7 +76,7 @@ public class UtilityServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Code.Should().Be("EUR");
+        result.Data!.ShortName.Should().Be("EUR");
     }
 
     [Test]
@@ -225,15 +225,14 @@ public class UtilityServiceTests : ServiceTestBase
         };
     }
 
-    private Currency CreateTestCurrency(string code, string name)
+    private Currency CreateTestCurrency(string shortName, string name)
     {
         return new Currency
         {
-            Code = code,
+            Id = CreateTestGuid().ToString(),
+            ShortName = shortName,
             Name = name,
-            Symbol = code == "NGN" ? "₦" : "$",
-            IsActive = true,
-            DecimalPlaces = 2
+            Symbol = shortName == "NGN" ? "₦" : "$"
         };
     }
 
