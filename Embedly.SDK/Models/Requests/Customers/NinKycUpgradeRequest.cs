@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -28,6 +29,35 @@ public sealed class NinKycUpgradeRequest
     ///     Gets or sets the customer's date of birth for verification.
     /// </summary>
     [Required(ErrorMessage = "Date of birth is required")]
-    [JsonPropertyName("dateOfBirth")]
+    [JsonPropertyName("dob")]
     public DateTime DateOfBirth { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the last name of the individual.
+    /// </summary>
+    [Required(ErrorMessage = "The lastname field is required.")]
+    [JsonPropertyName("lastname")]
+    public string LastName { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the first name of the individual.
+    /// </summary>
+    [Required(ErrorMessage = "The firstname field is required.")]
+    [JsonPropertyName("firstname")]
+    public string FirstName { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Adds query parameters to the request endpoint.
+    /// </summary>
+    /// <returns>A simple query parameters dictionary.</returns>
+    public Dictionary<string, object?> ToQueryParameters()
+    {
+        var parameters = new Dictionary<string, object?>
+        {
+            ["customerId"] = CustomerId,
+            ["nin"] = Nin
+        };
+
+        return parameters;
+    }
 }

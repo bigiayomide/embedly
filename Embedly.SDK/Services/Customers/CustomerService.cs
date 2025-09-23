@@ -123,18 +123,19 @@ internal sealed class CustomerService : BaseService, ICustomerService
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/kyc/customer/nin");
-        return await HttpClient.PostAsync<NinKycUpgradeRequest, KycUpgradeResult>(url, request, cancellationToken);
+        var queryParams = request.ToQueryParameters();
+
+        return await HttpClient.PostAsync<NinKycUpgradeRequest, KycUpgradeResult>(url, request, queryParams, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithBvnAsync(BvnKycUpgradeRequest request,
+    public async Task<ApiResponse<BvnKycUpgradeResponse>> UpgradeKycWithBvnAsync(BvnKycUpgradeRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
-        Guard.ThrowIfNullOrWhiteSpace(request.CustomerId, nameof(request.CustomerId));
 
-        var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/kyc/monnify/kyc/customer/{request.CustomerId}");
-        return await HttpClient.PostAsync<BvnKycUpgradeRequest, KycUpgradeResult>(url, request, cancellationToken);
+        var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/kyc/premium-kyc");
+        return await HttpClient.PostAsync<BvnKycUpgradeRequest, BvnKycUpgradeResponse>(url, request, cancellationToken);
     }
 
     /// <inheritdoc />

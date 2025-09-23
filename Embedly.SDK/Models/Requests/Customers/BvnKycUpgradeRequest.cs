@@ -23,11 +23,4 @@ public sealed class BvnKycUpgradeRequest
     [RegularExpression(@"^\d{11}$", ErrorMessage = "BVN must be 11 digits")]
     [JsonPropertyName("bvn")]
     public string Bvn { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the customer's date of birth for verification.
-    /// </summary>
-    [Required(ErrorMessage = "Date of birth is required")]
-    [JsonPropertyName("dateOfBirth")]
-    public DateTime DateOfBirth { get; set; }
 }

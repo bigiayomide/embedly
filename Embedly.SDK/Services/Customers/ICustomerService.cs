@@ -92,7 +92,7 @@ public interface ICustomerService
     /// <param name="request">The BVN KYC upgrade request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the KYC upgrade result.</returns>
-    Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithBvnAsync(BvnKycUpgradeRequest request,
+    Task<ApiResponse<BvnKycUpgradeResponse>> UpgradeKycWithBvnAsync(BvnKycUpgradeRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>

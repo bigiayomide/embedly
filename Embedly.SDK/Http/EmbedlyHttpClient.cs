@@ -106,6 +106,21 @@ internal sealed class EmbedlyHttpClient : IEmbedlyHttpClient, IDisposable
     }
 
     /// <inheritdoc />
+    public async Task<ApiResponse<TResponse>> PostAsync<TRequest, TResponse>(string endpoint, TRequest request,
+        Dictionary<string, object?> queryParams, CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNullOrWhiteSpace(endpoint, nameof(endpoint));
+        Guard.ThrowIfNull(queryParams, nameof(queryParams));
+
+        var uri = BuildUri(endpoint, queryParams);
+        var response = await SendRequestAsync(HttpMethod.Post, uri, request, cancellationToken)
+            .ConfigureAwait(false);
+
+        return await DeserializeResponseAsync<ApiResponse<TResponse>>(response, endpoint, "POST")
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async Task<ApiResponse<T>> PutAsync<T>(string endpoint, object? content = null,
         CancellationToken cancellationToken = default)
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Embedly.SDK.Configuration;
 using Embedly.SDK.Http;
 using Embedly.SDK.Models.Responses.Common;
@@ -154,6 +155,30 @@ nQIDAQAB
     protected static string CreateTestStringId(string prefix = "test", int seed = 1)
     {
         return $"{prefix}-{seed:D6}";
+    }
+
+    /// <summary>
+    ///     Creates a cryptographically-random long in [minInclusive, maxInclusive].
+    /// </summary>
+    /// <param name="minInclusive">Minimum inclusive range.</param>
+    /// <param name="maxInclusive">Maximum inclusive range.</param>
+    /// <returns>A cryptographically-random 8-digit long ID.</returns>
+    protected static long CreateTestLongId(long minInclusive = 10_000_000, long maxInclusive = 99_000_000)
+    {
+        var rng = RandomNumberGenerator.Create();
+        long range = maxInclusive - minInclusive + 1;
+
+        var buffer = new byte[8];
+        while (true)
+        {
+            rng.GetBytes(buffer);
+            ulong sample = BitConverter.ToUInt64(buffer, 0);
+            ulong max = ulong.MaxValue - ((ulong.MaxValue % (ulong)range) + 1);
+            if (sample <= max)
+            {
+                return (long)(minInclusive + (long)(sample % (ulong)range));
+            }
+        }
     }
 
     /// <summary>

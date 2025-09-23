@@ -55,6 +55,19 @@ public interface IEmbedlyHttpClient
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    ///     Sends a strongly-typed POST request to the specified endpoint with query parameters.
+    /// </summary>
+    /// <typeparam name="TRequest">The type of the request.</typeparam>
+    /// <typeparam name="TResponse">The type to deserialize the response to.</typeparam>
+    /// <param name="endpoint">The API endpoint.</param>
+    /// <param name="request">The request content.</param>
+    /// <param name="queryParams">The query parameters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The API response wrapped in ApiResponse.</returns>
+    Task<ApiResponse<TResponse>> PostAsync<TRequest, TResponse>(string endpoint, TRequest request,
+        Dictionary<string, object?> queryParams, CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     Sends a PUT request to the specified endpoint.
     /// </summary>
     /// <typeparam name="T">The type to deserialize the response to.</typeparam>

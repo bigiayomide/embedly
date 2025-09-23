@@ -161,13 +161,37 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         var customerId = createResponse.Data!.Id;
         LogSuccess($"KYC test customer created with ID: {customerId}");
 
-        // Step 2: Test NIN KYC upgrade
+        // Step 2: Test BVN KYC upgrade
+        LogStep("Testing BVN KYC upgrade");
+        var bvnUpgradeRequest = new BvnKycUpgradeRequest
+        {
+            CustomerId = customerId,
+            Bvn = "12345678909" // Test BVN
+        };
+
+        LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);
+        var bvnResponse = await _customerService.UpgradeKycWithBvnAsync(bvnUpgradeRequest);
+        LogApiResponse("BVN KYC Response", bvnResponse);
+
+        if (bvnResponse.Success)
+        {
+            bvnResponse.Data.Should().NotBeNull();
+            LogSuccess($"BVN KYC upgrade successful - Level: {bvnResponse.Data!.Response!.Status!.Description}");
+        }
+        else
+        {
+            LogWarning($"BVN KYC upgrade failed: {bvnResponse.Message}");
+        }
+
+        // Step 3: Test NIN KYC upgrade
         LogStep("Testing NIN KYC upgrade");
         var ninUpgradeRequest = new NinKycUpgradeRequest
         {
             CustomerId = customerId,
             Nin = "12345678901", // Test NIN
-            DateOfBirth = createRequest.DateOfBirth!.Value
+            DateOfBirth = createRequest.DateOfBirth!.Value,
+            FirstName = createRequest.FirstName,
+            LastName = createRequest.LastName
         };
 
         LogApiCall("NIN KYC Upgrade", ninUpgradeRequest);
@@ -184,38 +208,13 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             LogWarning($"NIN KYC upgrade failed: {ninResponse.Message}");
         }
 
-        // Step 3: Test BVN KYC upgrade
-        LogStep("Testing BVN KYC upgrade");
-        var bvnUpgradeRequest = new BvnKycUpgradeRequest
-        {
-            CustomerId = customerId,
-            Bvn = "12345678901" // Test BVN
-        };
-
-        LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);
-        var bvnResponse = await _customerService.UpgradeKycWithBvnAsync(bvnUpgradeRequest);
-        LogApiResponse("BVN KYC Response", bvnResponse);
-
-        if (bvnResponse.Success)
-        {
-            bvnResponse.Data.Should().NotBeNull();
-            LogSuccess($"BVN KYC upgrade successful - Level: {bvnResponse.Data!.VerificationStatus}");
-        }
-        else
-        {
-            LogWarning($"BVN KYC upgrade failed: {bvnResponse.Message}");
-        }
-
         // Step 4: Test address verification
         LogStep("Testing address verification");
         var addressRequest = new AddressVerificationRequest
         {
             CustomerId = customerId,
-            Street = "123 Integration Test Street",
-            City = "Lagos",
-            State = "Lagos",
-            Country = "NG",
-            VerificationMethod = "utility_bill"
+            HouseAddress = "123 Integration Test Street, Lagos, Lagos State, Nigeria",
+            MeterNumber = "09876543212", // Test meter number
         };
 
         LogApiCall("Address Verification", addressRequest);
@@ -348,7 +347,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             LogSuccess($"Retrieved {countriesResponse.Data!.Count()} countries");
 
             foreach (var country in countriesResponse.Data.Take(5))
-                TestContext.WriteLine($"  - {country.Name} ({country.Code})");
+                TestContext.WriteLine($"  - {country.Name} ({country.CountryCodeTwo})");
         }
         else
         {
@@ -412,7 +411,9 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         {
             CustomerId = invalidId, // Invalid customer ID
             Nin = "invalid_nin",
-            DateOfBirth = DateTime.UtcNow.AddDays(1) // Future date
+            DateOfBirth = DateTime.UtcNow.AddDays(1), // Future date
+            FirstName = "Invalid",
+            LastName = "User"
         };
 
         LogApiCall("Invalid KYC Upgrade", invalidKycRequest);
@@ -442,7 +443,6 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             City = "Lagos",
             CountryId = Guid.Parse("c15ad9ae-c4d7-4342-b70f-de5508627e3b"),
             CustomerTypeId = Guid.Parse("f671da57-e281-4b40-965f-a96f4205405e"),
-            CustomerTierId = 1,
             OrganizationId = CreateTestGuid()
         };
     }
