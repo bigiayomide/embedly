@@ -1,5 +1,6 @@
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
 using Embedly.SDK.Services.ProductLimits;
@@ -19,6 +20,11 @@ public interface IEmbedlyClient
     ///     Gets the customer management service.
     /// </summary>
     ICustomerService Customers { get; }
+
+    /// <summary>
+    ///     Gets the corporate customer management service.
+    /// </summary>
+    ICorporateCustomerService CorporateCustomers { get; }
 
     /// <summary>
     ///     Gets the wallet management service.

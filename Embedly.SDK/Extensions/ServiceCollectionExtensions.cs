@@ -6,6 +6,7 @@ using Embedly.SDK.Http;
 using Embedly.SDK.Http.Handlers;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
 using Embedly.SDK.Services.ProductLimits;
@@ -91,6 +92,7 @@ public static class ServiceCollectionExtensions
 
         // Register all services
         services.TryAddScoped<ICustomerService, CustomerService>();
+        services.TryAddScoped<ICorporateCustomerService, CorporateCustomerService>();
         services.TryAddScoped<IWalletService, WalletService>();
         services.TryAddScoped<IWalletGroupService, WalletGroupService>();
         services.TryAddScoped<IProductService, ProductService>();
