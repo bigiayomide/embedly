@@ -47,6 +47,12 @@ public sealed class NinKycUpgradeRequest
     public string FirstName { get; set; } = string.Empty;
 
     /// <summary>
+    ///     The number verification attempts to be made.
+    /// </summary>
+    [JsonPropertyName("verify")]
+    public int? Verify { get; set; }
+
+    /// <summary>
     ///     Adds query parameters to the request endpoint.
     /// </summary>
     /// <returns>A simple query parameters dictionary.</returns>
@@ -55,7 +61,8 @@ public sealed class NinKycUpgradeRequest
         var parameters = new Dictionary<string, object?>
         {
             ["customerId"] = CustomerId,
-            ["nin"] = Nin
+            ["nin"] = Nin,
+            ["verify"] = Verify
         };
 
         return parameters;
