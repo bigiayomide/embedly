@@ -191,7 +191,8 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             Nin = "12345678901", // Test NIN
             DateOfBirth = createRequest.DateOfBirth!.Value,
             FirstName = createRequest.FirstName,
-            LastName = createRequest.LastName
+            LastName = createRequest.LastName,
+            Verify = 1 // No. of verification attempts
         };
 
         LogApiCall("NIN KYC Upgrade", ninUpgradeRequest);
@@ -201,7 +202,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         if (ninResponse.Success)
         {
             ninResponse.Data.Should().NotBeNull();
-            LogSuccess($"NIN KYC upgrade successful - Level: {ninResponse.Data!.VerificationStatus}");
+            LogSuccess($"NIN KYC upgrade successful - State: {ninResponse.Data!.Status!.State}");
         }
         else
         {
@@ -224,7 +225,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         if (addressResponse.Success)
         {
             addressResponse.Data.Should().NotBeNull();
-            LogSuccess($"Address verification successful - Status: {addressResponse.Data!.VerificationStatus}");
+            LogSuccess($"Address verification successful - Verification Status: {addressResponse.Data!.Status}");
         }
         else
         {
@@ -413,7 +414,8 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             Nin = "invalid_nin",
             DateOfBirth = DateTime.UtcNow.AddDays(1), // Future date
             FirstName = "Invalid",
-            LastName = "User"
+            LastName = "User",
+            Verify = 1 // No. of verification attempts
         };
 
         LogApiCall("Invalid KYC Upgrade", invalidKycRequest);

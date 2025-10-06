@@ -83,7 +83,7 @@ public interface ICustomerService
     /// <param name="request">The NIN KYC upgrade request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the KYC upgrade result.</returns>
-    Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithNinAsync(NinKycUpgradeRequest request,
+    Task<ApiResponse<KycResultResponse>> UpgradeKycWithNinAsync(NinKycUpgradeRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -101,7 +101,7 @@ public interface ICustomerService
     /// <param name="request">The address verification request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the address verification result.</returns>
-    Task<ApiResponse<AddressVerificationResult>> VerifyAddressAsync(AddressVerificationRequest request,
+    Task<ApiResponse<AddressKycUpgradeResponse>> VerifyAddressAsync(AddressVerificationRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>

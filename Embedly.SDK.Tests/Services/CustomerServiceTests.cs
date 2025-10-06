@@ -370,27 +370,55 @@ public class CustomerServiceTests : ServiceTestBase
             Nin = "12345678901",
             DateOfBirth = CreateTestTimestamp(-30 * 365).DateTime, // 30 years ago
             FirstName = "KYC",
-            LastName = "User"
+            LastName = "User",
+            Verify = 1
         };
-        var expectedResult = new KycUpgradeResult
+        var expectedResult = new KycResultResponse
         {
-            Success = true,
-            Message = "KYC upgrade successful",
-            CustomerId = request.CustomerId,
-            NewKycLevel = "TIER_2",
-            VerificationStatus = CustomerVerificationStatus.Verified,
-            VerificationReference = "KYC-REF-123456",
-            ProcessedAt = DateTime.UtcNow
+            Id= 130,
+            Applicant = new Applicant
+            {
+                FirstName = "KYC",
+                Lastname = "User",
+            },
+            Summary = new Summary
+            {
+                NinCheck = new NinCheck
+                {
+                    Status = "EXACT_MATCH",
+                    FieldMatches = new FieldMatches
+                    {
+                        FirstName = true,
+                        LastName = true
+                    }
+                }
+            },
+            Status = new Status
+            {
+                State = "complete",
+                Description = "verified"
+            },
+            Nin = new NinInfo
+            {
+                FirstName = "KYC",
+                Lastname = "User",
+                MiddleName = "John",
+                Birthdate = "06-01-1974",
+                Gender = "m",
+                Phone = "08000000000",
+                Nin = "12345678901",
+                Photo = "/9j/4AAQSk******/wCpiNUFoooEf//Z",
+            }
         };
 
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<NinKycUpgradeRequest, KycUpgradeResult>(
+            .Setup(x => x.PostAsync<NinKycUpgradeRequest, KycResultResponse>(
                 It.Is<string>(url => url.Contains("api/v1/customers/kyc/customer/nin")),
-                request,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(apiResponse);
+                        request,
+                        It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(apiResponse);
 
         // Act
         var result = await _customerService.UpgradeKycWithNinAsync(request);
@@ -399,10 +427,9 @@ public class CustomerServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Success.Should().BeTrue();
-        result.Data.VerificationStatus.Should().Be(CustomerVerificationStatus.Verified);
+        result.Data!.Status!.Description.Should().Be("verified");
 
-        VerifyHttpClientPostCall<NinKycUpgradeRequest, KycUpgradeResult>("api/v1/customers/kyc/customer/nin", request);
+        VerifyHttpClientPostCall<NinKycUpgradeRequest, KycResultResponse>("api/v1/customers/kyc/customer/nin", request);
     }
 
     [Test]
@@ -418,12 +445,12 @@ public class CustomerServiceTests : ServiceTestBase
         var expectedResult = new BvnKycUpgradeResponse
         {
             KycCompleted = true,
-            Response = new BvnResultResponse
+            Response = new KycResultResponse
             {
                 Id = CreateTestLongId(),
                 Applicant = new Applicant
                 {
-                    Firstname = "Bunch",
+                    FirstName = "Bunch",
                     Lastname = "Dillon"
                 },
                 Summary = new Summary
@@ -433,8 +460,8 @@ public class CustomerServiceTests : ServiceTestBase
                         Status = "EXACT_MATCH",
                         FieldMatches = new FieldMatches
                         {
-                            Firstname = true,
-                            Lastname = true
+                            FirstName = true,
+                            LastName = true
                         }
                     }
                 },
@@ -494,23 +521,28 @@ public class CustomerServiceTests : ServiceTestBase
             HouseAddress = "123 Integration Test Street, Lagos, Lagos State, Nigeria",
             MeterNumber = "09876543212" // Test meter number
         };
-        var expectedResult = new AddressVerificationResult
+        var expectedResult = new AddressKycUpgradeResponse
         {
-            Success = true,
-            Message = "Address verification successful",
-            CustomerId = request.CustomerId,
-            VerificationStatus = "VERIFIED",
-            VerificationReference = "ADDR-REF-123456",
-            ProcessedAt = DateTime.UtcNow
+            Status = "successful",
+            Message = "Verification successful!",
+            Timestamp = DateTime.UtcNow,
+            Data = new AddressVerificationData
+            {
+                Verified = true,
+                HouseAddress = "123 Integration Test Street, Lagos, Lagos State, Nigeria",
+                HouseOwner = "Du*****",
+                ConfidenceLevel = 95,
+                DiscoCode = "00"
+            }
         };
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<AddressVerificationRequest, AddressVerificationResult>(
+            .Setup(x => x.PostAsync<AddressVerificationRequest, AddressKycUpgradeResponse>(
                 It.Is<string>(url => url.Contains("api/v1/customers/kyc/address-verification")),
-                request,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(apiResponse);
+                        request,
+                        It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(apiResponse);
 
         // Act
         var result = await _customerService.VerifyAddressAsync(request);
@@ -519,11 +551,11 @@ public class CustomerServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Success.Should().BeTrue();
-        result.Data.VerificationStatus.Should().Be("VERIFIED");
+        result.Data!.Status.Should().Be("successful");
+        result.Data.Data!.Verified.Should().BeTrue();
 
-        VerifyHttpClientPostCall<AddressVerificationRequest, AddressVerificationResult>(
-            "api/v1/customers/kyc/address-verification", request);
+        VerifyHttpClientPostCall<AddressVerificationRequest, AddressKycUpgradeResponse>(
+                    "api/v1/customers/kyc/address-verification", request);
     }
 
     [Test]

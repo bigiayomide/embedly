@@ -117,7 +117,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<KycUpgradeResult>> UpgradeKycWithNinAsync(NinKycUpgradeRequest request,
+    public async Task<ApiResponse<KycResultResponse>> UpgradeKycWithNinAsync(NinKycUpgradeRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
@@ -125,7 +125,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/kyc/customer/nin");
         var queryParams = request.ToQueryParameters();
 
-        return await HttpClient.PostAsync<NinKycUpgradeRequest, KycUpgradeResult>(url, request, queryParams, cancellationToken);
+        return await HttpClient.PostAsync<NinKycUpgradeRequest, KycResultResponse>(url, request, queryParams, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -139,13 +139,13 @@ internal sealed class CustomerService : BaseService, ICustomerService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<AddressVerificationResult>> VerifyAddressAsync(AddressVerificationRequest request,
+    public async Task<ApiResponse<AddressKycUpgradeResponse>> VerifyAddressAsync(AddressVerificationRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, "api/v1/customers/kyc/address-verification");
-        return await HttpClient.PostAsync<AddressVerificationRequest, AddressVerificationResult>(url, request,
+        return await HttpClient.PostAsync<AddressVerificationRequest, AddressKycUpgradeResponse>(url, request,
             cancellationToken);
     }
 
