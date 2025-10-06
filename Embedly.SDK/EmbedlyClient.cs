@@ -3,6 +3,7 @@ using Embedly.SDK.Configuration;
 using Embedly.SDK.Http;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Checkout;
+using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
 using Embedly.SDK.Services.ProductLimits;
@@ -29,6 +30,7 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     /// <param name="httpClient">The HTTP client for API communication.</param>
     /// <param name="options">The configuration options.</param>
     /// <param name="customerService">The customer service.</param>
+    /// <param name="corporateCustomerService">The corporate customer service.</param>
     /// <param name="walletService">The wallet service.</param>
     /// <param name="walletGroupService">The wallet group service.</param>
     /// <param name="productService">The product service.</param>
@@ -41,6 +43,7 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
         IEmbedlyHttpClient httpClient,
         IOptions<EmbedlyOptions> options,
         ICustomerService customerService,
+        ICorporateCustomerService corporateCustomerService,
         IWalletService walletService,
         IWalletGroupService walletGroupService,
         IProductService productService,
@@ -57,6 +60,7 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
         _options.Validate();
 
         Customers = customerService ?? throw new ArgumentNullException(nameof(customerService));
+        CorporateCustomers = corporateCustomerService ?? throw new ArgumentNullException(nameof(corporateCustomerService));
         Wallets = walletService ?? throw new ArgumentNullException(nameof(walletService));
         WalletGroups = walletGroupService ?? throw new ArgumentNullException(nameof(walletGroupService));
         Products = productService ?? throw new ArgumentNullException(nameof(productService));
@@ -79,6 +83,9 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
 
     /// <inheritdoc />
     public ICustomerService Customers { get; }
+
+    /// <inheritdoc />
+    public ICorporateCustomerService CorporateCustomers { get; }
 
     /// <inheritdoc />
     public IWalletService Wallets { get; }
