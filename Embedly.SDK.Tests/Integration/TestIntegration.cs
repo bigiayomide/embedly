@@ -177,7 +177,7 @@ public class TestIntegration : IntegrationTestBase
         if (ninResponse.Success)
         {
             ninResponse.Data.Should().NotBeNull();
-            LogSuccess($"NIN KYC upgrade successful - Level: {ninResponse.Data!.VerificationStatus}");
+            LogSuccess($"NIN KYC upgrade successful - State: {ninResponse.Data!.Status!.State}");
         }
         else
         {
@@ -223,7 +223,7 @@ public class TestIntegration : IntegrationTestBase
         if (addressResponse.Success)
         {
             addressResponse.Data.Should().NotBeNull();
-            LogSuccess($"Address verification successful - Status: {addressResponse.Data!.VerificationStatus}");
+            LogSuccess($"Address verification successful - Verification Status: {addressResponse.Data!.Status}");
         }
         else
         {
