@@ -51,6 +51,24 @@ public sealed class ApiResponse<T>
     /// </summary>
     [JsonPropertyName("requestId")]
     public string? RequestId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the HTTP status code associated with the error.
+    /// </summary>
+    [JsonPropertyName("statusCode")]
+    public int StatusCode { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the specific error code, if provided.
+    /// </summary>
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+    
+    /// <summary>
+    ///     Gets or sets a value indicating whether the request succeeded.
+    /// </summary>
+    [JsonPropertyName("succeeded")]
+    public bool Succeeded { get; set; }
 }
 
 /// <summary>
