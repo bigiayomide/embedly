@@ -103,7 +103,7 @@ public class PayoutServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.AccountName.Should().NotBeNullOrEmpty();
+        result.Data!.Data.AccountName.Should().NotBeNullOrEmpty();
     }
 
     [Test]
@@ -404,10 +404,13 @@ public class PayoutServiceTests : ServiceTestBase
     {
         return new NameEnquiryResponse
         {
-            AccountName = "John Doe",
-            AccountNumber = "1234567890",
-            BankCode = "011",
-            BankName = "First Bank of Nigeria"
+            Status = "success",
+            Data = new BankAccountVerificationData
+            {
+                DestinationBankCode = "000010",
+                AccountNumber = "1111111111",
+                AccountName = "CHECKING ACCOUNT"
+            }
         };
     }
 
