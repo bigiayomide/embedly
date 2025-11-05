@@ -38,7 +38,7 @@ public interface IPayoutService
     /// <param name="request">The bank transfer request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The transfer transaction details.</returns>
-    Task<ApiResponse<PayoutTransaction>> InterBankTransferAsync(BankTransferRequest request,
+    Task<ApiResponse<string>> InterBankTransferAsync(BankTransferRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -47,7 +47,7 @@ public interface IPayoutService
     /// <param name="transactionReference">The transaction reference.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The transaction status details.</returns>
-    Task<ApiResponse<PayoutTransaction>> GetTransactionStatusAsync(string transactionReference,
+    Task<ApiResponse<PayoutTransactionStatus>> GetTransactionStatusAsync(string transactionReference,
         CancellationToken cancellationToken = default);
 
     /// <summary>

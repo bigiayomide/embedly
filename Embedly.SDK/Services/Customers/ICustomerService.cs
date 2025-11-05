@@ -56,7 +56,7 @@ public interface ICustomerService
     /// <param name="lastName">The new last name.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the updated customer.</returns>
-    Task<ApiResponse<Customer>> UpdateNameAsync(string customerId, string firstName, string lastName,
+    Task<ApiResponse<bool>> UpdateNameAsync(string customerId, string firstName, string lastName,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -65,7 +65,7 @@ public interface ICustomerService
     /// <param name="request">The update request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the updated customer.</returns>
-    Task<ApiResponse<Customer>> UpdateNameAsync(UpdateCustomerNameRequest request,
+    Task<ApiResponse<bool>> UpdateNameAsync(UpdateCustomerNameRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -135,6 +135,6 @@ public interface ICustomerService
     /// <param name="request">The contact update request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API response containing the updated customer.</returns>
-    Task<ApiResponse<Customer>> UpdateContactAsync(string customerId, UpdateCustomerContactRequest request,
+    Task<ApiResponse<bool>> UpdateContactAsync(string customerId, UpdateCustomerContactRequest request,
         CancellationToken cancellationToken = default);
 }

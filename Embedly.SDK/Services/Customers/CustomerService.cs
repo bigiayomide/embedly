@@ -78,7 +78,7 @@ internal sealed class CustomerService : BaseService, ICustomerService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<Customer>> UpdateNameAsync(string customerId, string firstName, string lastName,
+    public async Task<ApiResponse<bool>> UpdateNameAsync(string customerId, string firstName, string lastName,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
@@ -96,14 +96,14 @@ internal sealed class CustomerService : BaseService, ICustomerService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<Customer>> UpdateNameAsync(UpdateCustomerNameRequest request,
+    public async Task<ApiResponse<bool>> UpdateNameAsync(UpdateCustomerNameRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
         Guard.ThrowIfNullOrWhiteSpace(request.CustomerId, nameof(request.CustomerId));
 
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer/{request.CustomerId}/updatename");
-        return await HttpClient.PatchAsync<UpdateCustomerNameRequest, Customer>(url, request, cancellationToken);
+        return await HttpClient.PatchAsync<UpdateCustomerNameRequest, bool>(url, request, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -135,7 +135,9 @@ internal sealed class CustomerService : BaseService, ICustomerService
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/kyc/premium-kyc");
-        return await HttpClient.PostAsync<BvnKycUpgradeRequest, BvnKycUpgradeResponse>(url, request, cancellationToken);
+        var queryParams = request.ToQueryParameters();
+
+        return await HttpClient.PostAsync<BvnKycUpgradeRequest, BvnKycUpgradeResponse>(url, request, queryParams, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -202,13 +204,13 @@ internal sealed class CustomerService : BaseService, ICustomerService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<Customer>> UpdateContactAsync(string customerId, UpdateCustomerContactRequest request,
+    public async Task<ApiResponse<bool>> UpdateContactAsync(string customerId, UpdateCustomerContactRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNullOrWhiteSpace(customerId, nameof(customerId));
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/customers/customer/{customerId}/updatecontact");
-        return await HttpClient.PatchAsync<UpdateCustomerContactRequest, Customer>(url, request, cancellationToken);
+        return await HttpClient.PatchAsync<UpdateCustomerContactRequest, bool>(url, request, cancellationToken);
     }
 }

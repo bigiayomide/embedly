@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -9,22 +10,22 @@ namespace Embedly.SDK.Models.Requests.Customers;
 public sealed record UpdateCustomerContactRequest
 {
     /// <summary>
+    ///     Gets or sets the unique identifier of the organization associated with the customer.
+    /// </summary>
+    [JsonPropertyName("organizationId")]
+    public Guid OrganizationId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the customer's mobile phone number.
+    /// </summary>
+    [Phone(ErrorMessage = "Invalid phone number format")]
+    [JsonPropertyName("mobileNumber")]
+    public string MobileNumber { get; set; } = string.Empty;
+
+    /// <summary>
     ///     Gets or sets the customer's email address.
     /// </summary>
     [EmailAddress(ErrorMessage = "Invalid email format")]
-    [JsonPropertyName("email")]
-    public string? Email { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the customer's phone number.
-    /// </summary>
-    [Phone(ErrorMessage = "Invalid phone number format")]
-    [JsonPropertyName("phoneNumber")]
-    public string? PhoneNumber { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the customer's address.
-    /// </summary>
-    [JsonPropertyName("address")]
-    public string? Address { get; init; }
+    [JsonPropertyName("emailAddress")]
+    public string EmailAddress { get; set; } = string.Empty;
 }

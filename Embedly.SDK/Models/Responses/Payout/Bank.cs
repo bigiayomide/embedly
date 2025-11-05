@@ -18,16 +18,4 @@ public sealed class Bank
     /// </summary>
     [JsonPropertyName("bankName")]
     public string BankName { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets whether the bank is active.
-    /// </summary>
-    [JsonPropertyName("isActive")]
-    public bool IsActive { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the bank type.
-    /// </summary>
-    [JsonPropertyName("type")]
-    public string? Type { get; set; }
 }

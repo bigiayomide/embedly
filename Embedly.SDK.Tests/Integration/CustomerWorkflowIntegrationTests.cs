@@ -63,7 +63,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         getResponse.Data!.Id.Should().Be(customerId);
         getResponse.Data.FirstName.Should().Be(createRequest.FirstName);
         getResponse.Data.LastName.Should().Be(createRequest.LastName);
-        getResponse.Data.Email.Should().Be(createRequest.EmailAddress);
+        getResponse.Data.EmailAddress.Should().Be(createRequest.EmailAddress);
 
         LogSuccess("Customer retrieved successfully with matching data");
 
@@ -82,7 +82,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
 
         if (updateResponse.Success)
         {
-            updateResponse.Data.Should().NotBeNull();
+            updateResponse.Data.Should().BeTrue();
             LogSuccess("Customer name updated successfully");
         }
         else
@@ -94,8 +94,8 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         LogStep("Updating customer contact information");
         var updateContactRequest = new UpdateCustomerContactRequest
         {
-            Email = CreateTestEmail("updated"),
-            PhoneNumber = CreateTestPhoneNumber()
+            EmailAddress = CreateTestEmail("updated"),
+            MobileNumber = CreateTestPhoneNumber()
         };
         LogApiCall("Update Customer Contact", updateContactRequest);
 
@@ -104,7 +104,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
 
         if (contactResponse.Success)
         {
-            contactResponse.Data.Should().NotBeNull();
+            contactResponse.Data.Should().BeTrue();
             LogSuccess("Customer contact updated successfully");
         }
         else
@@ -166,7 +166,8 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         var bvnUpgradeRequest = new BvnKycUpgradeRequest
         {
             CustomerId = customerId,
-            Bvn = "12345678909" // Test BVN
+            Bvn = "12345678909", // Test BVN
+            Verify = 1 // No. of Verification Attempts
         };
 
         LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);

@@ -5,57 +5,105 @@ using System.Text.Json.Serialization;
 namespace Embedly.SDK.Models.Responses.Customers;
 
 /// <summary>
-///     Represents a customer in the Embedly system.
+///     Represents a customer within an organization.
 /// </summary>
 public sealed class Customer
 {
     /// <summary>
-    ///     Gets or sets the unique customer identifier.
+    ///     Gets or sets the unique identifier of the customer.
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer's first name.
+    ///     Gets or sets the unique identifier of the organization associated with the customer.
+    /// </summary>
+    [JsonPropertyName("organizationId")]
+    public Guid OrganizationId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the first name of the customer.
     /// </summary>
     [JsonPropertyName("firstName")]
     public string FirstName { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer's last name.
+    ///     Gets or sets the last name of the customer.
     /// </summary>
     [JsonPropertyName("lastName")]
     public string LastName { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer's full name.
+    ///     Gets or sets the middle name of the customer.
     /// </summary>
     [JsonPropertyName("middleName")]
-    public string? MiddleName { get; set; }
+    public string MiddleName { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer tier ID.
+    ///     ets or sets the date of birth of the customer, if available.
+    /// </summary>
+    [JsonPropertyName("dob")]
+    public DateTime? DateOfBirth { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the unique identifier for the customer type.
+    /// </summary>
+    [JsonPropertyName("customerTypeId")]
+    public Guid CustomerTypeId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the tier level of the customer.
     /// </summary>
     [JsonPropertyName("customerTierId")]
     public int CustomerTierId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the customer's email address.
+    ///     Gets or sets an alternate or display name for the customer, if any.
     /// </summary>
-    [JsonPropertyName("emailAddress")]
-    public string Email { get; set; } = string.Empty;
+    [JsonPropertyName("alias")]
+    public string? Alias { get; set; }
 
     /// <summary>
-    ///     Gets or sets the customer's phone number.
+    ///     Gets or sets the unique identifier of the customer’s country.
+    /// </summary>
+    [JsonPropertyName("countryId")]
+    public Guid CountryId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the city where the customer resides.
+    /// </summary>
+    [JsonPropertyName("city")]
+    public string City { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the residential or business address of the customer.
+    /// </summary>
+    [JsonPropertyName("address")]
+    public string Address { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the customer's mobile phone number.
     /// </summary>
     [JsonPropertyName("mobileNumber")]
     public string MobileNumber { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer's date of birth.
+    ///     Gets or sets the email address of the customer.
     /// </summary>
-    [JsonPropertyName("dob")]
-    public DateTime? DateOfBirth { get; set; }
+    [JsonPropertyName("emailAddress")]
+    public string EmailAddress { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the date when the customer record was created, if available.
+    /// </summary>
+    [JsonPropertyName("dateCreated")]
+    public DateTimeOffset? DateCreated { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether the corporate customer has been verified.
+    /// </summary>
+    [JsonPropertyName("isCorporateVerified")]
+    public string IsCorporateVerified { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the customer's verification status.
@@ -70,28 +118,10 @@ public sealed class Customer
     public CustomerType? CustomerType { get; set; }
 
     /// <summary>
-    ///     Gets or sets the customer's address.
-    /// </summary>
-    [JsonPropertyName("address")]
-    public string? Address { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the customer's city.
-    /// </summary>
-    [JsonPropertyName("city")]
-    public string? City { get; set; }
-
-    /// <summary>
     ///     Gets or sets the customer status.
     /// </summary>
     [JsonPropertyName("status")]
     public CustomerStatus Status { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the date when the customer was created.
-    /// </summary>
-    [JsonPropertyName("dateCreated")]
-    public DateTimeOffset? CreatedAt { get; set; }
 
     /// <summary>
     ///     Gets or sets the date when the customer was last updated.

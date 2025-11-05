@@ -8,50 +8,44 @@ namespace Embedly.SDK.Models.Responses.Payout;
 public sealed class NameEnquiryResponse
 {
     /// <summary>
-    ///     Gets or sets the overall status of the verification response.
+    ///     Gets or sets the unique session identifier for the transaction.
     /// </summary>
-    [JsonPropertyName("status")]
-    public string Status { get; set; } = string.Empty;
+    [JsonPropertyName("sessionID")]
+    public string SessionId { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the detailed bank account verification data.
+    ///     Gets or sets the destination institution code associated with the transaction.
     /// </summary>
-    [JsonPropertyName("data")]
-    public BankAccountVerificationData Data { get; set; } = new();
+    [JsonPropertyName("destinationInstitutionCode")]
+    public string DestinationInstitutionCode { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the response code returned from the verification service.
+    ///     Gets or sets the channel code used for the transaction.
     /// </summary>
-    [JsonPropertyName("code")]
-    public string? Code { get; set; }
+    [JsonPropertyName("channelCode")]
+    public int ChannelCode { get; set; }
 
     /// <summary>
-    ///     Gets or sets the message returned from the verification service.
-    /// </summary>
-    [JsonPropertyName("message")]
-    public string? Message { get; set; }
-}
-
-/// <summary>
-/// Represents the detailed data for the bank account verification response.
-/// </summary>
-public class BankAccountVerificationData
-{
-    /// <summary>
-    ///     Gets or sets the destination bank code associated with the account.
-    /// </summary>
-    [JsonPropertyName("destinationBankCode")]
-    public string DestinationBankCode { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the verified bank account number.
+    ///     Gets or sets the customer's account number.
     /// </summary>
     [JsonPropertyName("accountNumber")]
     public string AccountNumber { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the verified name associated with the bank account.
+    ///     Gets or sets the customer's account name.
     /// </summary>
     [JsonPropertyName("accountName")]
     public string AccountName { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the customer's KYC (Know Your Customer) level.
+    /// </summary>
+    [JsonPropertyName("kycLevel")]
+    public string KycLevel { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the response code indicating the outcome of the verification.
+    /// </summary>
+    [JsonPropertyName("responseCode")]
+    public string ResponseCode { get; set; } = string.Empty;
 }
