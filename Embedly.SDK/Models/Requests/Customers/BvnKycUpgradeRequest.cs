@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -23,4 +24,24 @@ public sealed class BvnKycUpgradeRequest
     [RegularExpression(@"^\d{11}$", ErrorMessage = "BVN must be 11 digits")]
     [JsonPropertyName("bvn")]
     public string Bvn { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     The number verification attempts to be made.
+    /// </summary>
+    [JsonPropertyName("verify")]
+    public int? Verify { get; set; }
+
+    /// <summary>
+    ///     Adds query parameters to the request endpoint.
+    /// </summary>
+    /// <returns>A simple query parameters dictionary.</returns>
+    public Dictionary<string, object?> ToQueryParameters()
+    {
+        var parameters = new Dictionary<string, object?>
+        {
+            ["verify"] = Verify
+        };
+
+        return parameters;
+    }
 }

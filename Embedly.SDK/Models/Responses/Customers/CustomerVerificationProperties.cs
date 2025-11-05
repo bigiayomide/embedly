@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Embedly.SDK.Models.Responses.Customers;
@@ -10,16 +8,46 @@ namespace Embedly.SDK.Models.Responses.Customers;
 public sealed class CustomerVerificationProperties
 {
     /// <summary>
-    ///     Gets or sets the customer identifier.
+    ///     Gets or sets the unique identifier of the customer.
     /// </summary>
     [JsonPropertyName("customerId")]
     public string CustomerId { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the current KYC level.
+    ///     Gets or sets a value indicating whether the customer has a registered BVN (Bank Verification Number).
     /// </summary>
-    [JsonPropertyName("kycLevel")]
-    public string KycLevel { get; set; } = string.Empty;
+    [JsonPropertyName("hasBvn")]
+    public bool HasBvn { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether the customer has a registered NIN (National Identification Number).
+    /// </summary>
+    [JsonPropertyName("hasNin")]
+    public bool HasNin { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether the customer's address has been verified.
+    /// </summary>
+    [JsonPropertyName("hasAddressVerification")]
+    public bool HasAddressVerification { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the customer's verification tier level.
+    /// </summary>
+    [JsonPropertyName("customerTierId")]
+    public int CustomerTierId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the customer's BVN value, if available.
+    /// </summary>
+    [JsonPropertyName("bvnValue")]
+    public string BvnValue { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the customer's NIN value, if available.
+    /// </summary>
+    [JsonPropertyName("ninValue")]
+    public string NinValue { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the verification status.
@@ -28,52 +56,10 @@ public sealed class CustomerVerificationProperties
     public CustomerVerificationStatus VerificationStatus { get; set; }
 
     /// <summary>
-    ///     Gets or sets whether identity verification is completed.
-    /// </summary>
-    [JsonPropertyName("identityVerified")]
-    public bool IdentityVerified { get; set; }
-
-    /// <summary>
-    ///     Gets or sets whether address verification is completed.
-    /// </summary>
-    [JsonPropertyName("addressVerified")]
-    public bool AddressVerified { get; set; }
-
-    /// <summary>
-    ///     Gets or sets whether phone number is verified.
-    /// </summary>
-    [JsonPropertyName("phoneVerified")]
-    public bool PhoneVerified { get; set; }
-
-    /// <summary>
-    ///     Gets or sets whether email is verified.
-    /// </summary>
-    [JsonPropertyName("emailVerified")]
-    public bool EmailVerified { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the verification methods completed.
-    /// </summary>
-    [JsonPropertyName("completedVerifications")]
-    public List<string> CompletedVerifications { get; set; } = new();
-
-    /// <summary>
-    ///     Gets or sets the pending verification requirements.
-    /// </summary>
-    [JsonPropertyName("pendingVerifications")]
-    public List<string> PendingVerifications { get; set; } = new();
-
-    /// <summary>
     ///     Gets or sets the maximum transaction limits for this KYC level.
     /// </summary>
     [JsonPropertyName("transactionLimits")]
     public TransactionLimits? TransactionLimits { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the date when verification was last updated.
-    /// </summary>
-    [JsonPropertyName("lastVerificationUpdate")]
-    public DateTime? LastVerificationUpdate { get; set; }
 }
 
 /// <summary>

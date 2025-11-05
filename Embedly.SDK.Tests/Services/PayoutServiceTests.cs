@@ -103,7 +103,9 @@ public class PayoutServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Data.AccountName.Should().NotBeNullOrEmpty();
+        result.Data!.AccountName.Should().NotBeNullOrEmpty();
+        result.Data!.AccountNumber.Should().NotBeNullOrEmpty();
+        result.Data!.DestinationInstitutionCode.Should().NotBeNullOrEmpty();
     }
 
     [Test]
@@ -118,11 +120,11 @@ public class PayoutServiceTests : ServiceTestBase
     {
         // Arrange
         var request = CreateValidBankTransferRequest();
-        var expectedTransaction = CreateTestPayoutTransaction();
-        var apiResponse = CreateSuccessfulApiResponse(expectedTransaction);
+        var expectedReference = CreateTestStringId(prefix: "EMB");
+        var apiResponse = CreateSuccessfulApiResponse(expectedReference);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<BankTransferRequest, PayoutTransaction>(
+            .Setup(x => x.PostAsync<BankTransferRequest, string>(
                 It.IsAny<string>(),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -133,10 +135,8 @@ public class PayoutServiceTests : ServiceTestBase
 
         // Assert
         result.Should().NotBeNull();
-        result.Success.Should().BeTrue();
+        result.Succeeded.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Id.Should().Be(expectedTransaction.Id);
-        result.Data.Amount.Should().Be(expectedTransaction.Amount);
     }
 
     [Test]
@@ -150,12 +150,19 @@ public class PayoutServiceTests : ServiceTestBase
     public async Task GetTransactionStatusAsync_WithValidReference_ReturnsTransactionStatus()
     {
         // Arrange
-        var transactionReference = "TXN-123456789";
-        var expectedTransaction = CreateTestPayoutTransaction();
-        var apiResponse = CreateSuccessfulApiResponse(expectedTransaction);
+        var transactionReference = CreateTestStringId(prefix: "EMB");
+        var expectedTransactionStatus = new PayoutTransactionStatus
+        {
+            PaymentReference = CreateTestLongId().ToString(),
+            ProviderReference = CreateTestLongId().ToString(),
+            SessionId = CreateTestLongId().ToString(),
+            Status = "success",
+            TransactionReference = transactionReference
+        };
+        var apiResponse = CreateSuccessfulApiResponse(expectedTransactionStatus);
 
         MockHttpClient
-            .Setup(x => x.GetAsync<PayoutTransaction>(
+            .Setup(x => x.GetAsync<PayoutTransactionStatus>(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
@@ -167,7 +174,7 @@ public class PayoutServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.Reference.Should().Be(expectedTransaction.Reference);
+        result.Data!.TransactionReference.Should().Be(expectedTransactionStatus.TransactionReference);
     }
 
     [Test]
@@ -386,8 +393,6 @@ public class PayoutServiceTests : ServiceTestBase
         {
             BankCode = code,
             BankName = name,
-            IsActive = true,
-            Type = "Commercial"
         };
     }
 
@@ -404,13 +409,10 @@ public class PayoutServiceTests : ServiceTestBase
     {
         return new NameEnquiryResponse
         {
-            Status = "success",
-            Data = new BankAccountVerificationData
-            {
-                DestinationBankCode = "000010",
-                AccountNumber = "1111111111",
-                AccountName = "CHECKING ACCOUNT"
-            }
+            DestinationInstitutionCode = "000010",
+            AccountName = "CHECKING ACCOUNT",
+            AccountNumber = "1111111111",
+            SessionId = CreateTestLongId().ToString()
         };
     }
 

@@ -47,23 +47,23 @@ internal sealed class PayoutService : BaseService, IPayoutService
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<PayoutTransaction>> InterBankTransferAsync(BankTransferRequest request,
+    public async Task<ApiResponse<string>> InterBankTransferAsync(BankTransferRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Payout, "api/Payout/inter-bank-transfer");
-        return await HttpClient.PostAsync<BankTransferRequest, PayoutTransaction>(url, request, cancellationToken);
+        return await HttpClient.PostAsync<BankTransferRequest, string>(url, request, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<PayoutTransaction>> GetTransactionStatusAsync(string transactionReference,
+    public async Task<ApiResponse<PayoutTransactionStatus>> GetTransactionStatusAsync(string transactionReference,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNullOrWhiteSpace(transactionReference, nameof(transactionReference));
 
         var url = BuildUrl(ServiceUrls.Payout, $"api/Payout/status/{transactionReference}");
-        return await HttpClient.GetAsync<PayoutTransaction>(url, cancellationToken);
+        return await HttpClient.GetAsync<PayoutTransactionStatus>(url, cancellationToken);
     }
 
     /// <inheritdoc />

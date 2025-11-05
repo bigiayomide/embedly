@@ -28,22 +28,4 @@ public sealed class AddressVerificationRequest
     [Required(ErrorMessage = "The house address is required")]
     [JsonPropertyName("houseAddress")]
     public string HouseAddress { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the postal code.
-    /// </summary>
-    [JsonPropertyName("postalCode")]
-    public string? PostalCode { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the country code.
-    /// </summary>
-    [JsonPropertyName("country")]
-    public string Country { get; set; } = "NG";
-
-    /// <summary>
-    ///     Gets or sets the verification document or evidence.
-    /// </summary>
-    [JsonPropertyName("verificationDocument")]
-    public string? VerificationDocument { get; set; }
 }

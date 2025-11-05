@@ -78,7 +78,7 @@ public class CustomerExamples(
             logger.LogInformation("Customer retrieved: {CustomerName}. Correlation: {CorrelationId}",
                 $"{response.Data.FirstName} {response.Data.LastName}", correlationId);
 
-            return $"Customer: {response.Data.FirstName} {response.Data.LastName} ({response.Data.Email})";
+            return $"Customer: {response.Data.FirstName} {response.Data.LastName} ({response.Data.EmailAddress})";
         }, "GetCustomer");
     }
 
@@ -100,7 +100,7 @@ public class CustomerExamples(
                 throw new InvalidOperationException($"Customer listing failed: {customers.Error?.Message}");
 
             var customerList = customers.Data
-                .Select(c => $"{c.FirstName} {c.LastName} - {c.Email}")
+                .Select(c => $"{c.FirstName} {c.LastName} - {c.EmailAddress}")
                 .ToList();
 
             logger.LogInformation("Retrieved {Count} customers. Correlation: {CorrelationId}",

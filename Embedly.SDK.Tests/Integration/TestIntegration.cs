@@ -63,7 +63,7 @@ public class TestIntegration : IntegrationTestBase
         getResponse.Data!.Id.Should().Be(customerId);
         getResponse.Data.FirstName.Should().Be(createRequest.FirstName);
         getResponse.Data.LastName.Should().Be(createRequest.LastName);
-        getResponse.Data.Email.Should().Be(createRequest.EmailAddress);
+        getResponse.Data.EmailAddress.Should().Be(createRequest.EmailAddress);
 
         LogSuccess("Customer retrieved successfully with matching data");
 
@@ -82,7 +82,7 @@ public class TestIntegration : IntegrationTestBase
 
         if (updateResponse.Success)
         {
-            updateResponse.Data.Should().NotBeNull();
+            updateResponse.Data.Should().BeTrue();
             LogSuccess("Customer name updated successfully");
         }
         else
@@ -94,8 +94,8 @@ public class TestIntegration : IntegrationTestBase
         LogStep("Updating customer contact information");
         var updateContactRequest = new UpdateCustomerContactRequest
         {
-            Email = CreateTestEmail("updated"),
-            PhoneNumber = CreateTestPhoneNumber()
+            EmailAddress = CreateTestEmail("updated"),
+            MobileNumber = CreateTestPhoneNumber()
         };
         LogApiCall("Update Customer Contact", updateContactRequest);
 
@@ -104,7 +104,7 @@ public class TestIntegration : IntegrationTestBase
 
         if (contactResponse.Success)
         {
-            contactResponse.Data.Should().NotBeNull();
+            contactResponse.Data.Should().BeTrue();
             LogSuccess("Customer contact updated successfully");
         }
         else
@@ -189,7 +189,8 @@ public class TestIntegration : IntegrationTestBase
         var bvnUpgradeRequest = new BvnKycUpgradeRequest
         {
             CustomerId = customerId,
-            Bvn = "12345678901" // Test BVN
+            Bvn = "12345678901", // Test BVN
+            Verify = 1 // No. of Verification Attempts
         };
 
         LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);
@@ -212,8 +213,7 @@ public class TestIntegration : IntegrationTestBase
         {
             CustomerId = customerId,
             HouseAddress = "123 Integration Test Street",
-            PostalCode = "12345",
-            Country = "NG",
+            MeterNumber = "67492874901"
         };
 
         LogApiCall("Address Verification", addressRequest);

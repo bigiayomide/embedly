@@ -68,11 +68,11 @@ public abstract class ServiceTestBase : TestBase
     /// <param name="message">Optional success message.</param>
     /// <returns>A successful API response.</returns>
     protected static ApiResponse<T> CreateSuccessfulApiResponse<T>(T data, string? message = null)
-        where T : class
     {
         return new ApiResponse<T>
         {
             Success = true,
+            Succeeded = true,
             Data = data,
             Message = message ?? "Operation completed successfully",
             RequestId = "test-request-id",
@@ -155,7 +155,6 @@ public abstract class ServiceTestBase : TestBase
         TRequest request,
         Times? times = null)
         where TRequest : class
-        where TResponse : class
     {
         MockHttpClient.Verify(
             x => x.PatchAsync<TRequest, TResponse>(

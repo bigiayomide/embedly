@@ -52,7 +52,7 @@ public class CustomerServiceTests : ServiceTestBase
         result.Data!.Id.Should().Be(expectedCustomer.Id);
         result.Data.FirstName.Should().Be(request.FirstName);
         result.Data.LastName.Should().Be(request.LastName);
-        result.Data.Email.Should().Be(request.EmailAddress);
+        result.Data.EmailAddress.Should().Be(request.EmailAddress);
         result.Data.MobileNumber.Should().Be(request.MobileNumber);
 
         VerifyHttpClientPostCall<CreateCustomerRequest, Customer>("api/v1/customers/add", request);
@@ -232,13 +232,10 @@ public class CustomerServiceTests : ServiceTestBase
         var customerId = CreateTestGuid().ToString();
         const string firstName = "Updated";
         const string lastName = "Name";
-        var expectedCustomer = CreateTestCustomer(customerId);
-        expectedCustomer.FirstName = firstName;
-        expectedCustomer.LastName = lastName;
-        var apiResponse = CreateSuccessfulApiResponse(expectedCustomer);
+        var apiResponse = CreateSuccessfulApiResponse(true);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<UpdateCustomerNameRequest, Customer>(
+            .Setup(x => x.PatchAsync<UpdateCustomerNameRequest, bool>(
                 It.Is<string>(url => url.Contains($"api/v1/customers/customer/{customerId}/updatename")),
                 It.IsAny<UpdateCustomerNameRequest>(),
                 It.IsAny<CancellationToken>()))
@@ -250,12 +247,10 @@ public class CustomerServiceTests : ServiceTestBase
         // Assert
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.FirstName.Should().Be(firstName);
-        result.Data.LastName.Should().Be(lastName);
+        result.Data.Should().BeTrue();
 
         MockHttpClient.Verify(
-            x => x.PatchAsync<UpdateCustomerNameRequest, Customer>(
+            x => x.PatchAsync<UpdateCustomerNameRequest, bool>(
                 It.Is<string>(url => url.Contains($"api/v1/customers/customer/{customerId}/updatename")),
                 It.Is<UpdateCustomerNameRequest>(r =>
                     r.CustomerId == customerId &&
@@ -275,11 +270,10 @@ public class CustomerServiceTests : ServiceTestBase
             FirstName = "NewFirst",
             LastName = "NewLast"
         };
-        var expectedCustomer = CreateTestCustomer(request.CustomerId);
-        var apiResponse = CreateSuccessfulApiResponse(expectedCustomer);
+        var apiResponse = CreateSuccessfulApiResponse(true);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<UpdateCustomerNameRequest, Customer>(
+            .Setup(x => x.PatchAsync<UpdateCustomerNameRequest, bool>(
                 It.IsAny<string>(),
                 It.IsAny<UpdateCustomerNameRequest>(),
                 It.IsAny<CancellationToken>()))
@@ -292,7 +286,7 @@ public class CustomerServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
 
-        VerifyHttpClientPatchCall<UpdateCustomerNameRequest, Customer>(
+        VerifyHttpClientPatchCall<UpdateCustomerNameRequest, bool>(
             $"api/v1/customers/customer/{request.CustomerId}/updatename", request);
     }
 
@@ -303,14 +297,13 @@ public class CustomerServiceTests : ServiceTestBase
         var customerId = CreateTestGuid().ToString();
         var request = new UpdateCustomerContactRequest
         {
-            Email = "updated@test.com",
-            PhoneNumber = "+2348012345678"
+            EmailAddress = "updated@test.com",
+            MobileNumber = "+2348012345678"
         };
-        var expectedCustomer = CreateTestCustomer(customerId);
-        var apiResponse = CreateSuccessfulApiResponse(expectedCustomer);
+        var apiResponse = CreateSuccessfulApiResponse(true);
 
         MockHttpClient
-            .Setup(x => x.PatchAsync<UpdateCustomerContactRequest, Customer>(
+            .Setup(x => x.PatchAsync<UpdateCustomerContactRequest, bool>(
                 It.Is<string>(url => url.Contains($"api/v1/customers/customer/{customerId}/updatecontact")),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -323,7 +316,7 @@ public class CustomerServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
 
-        VerifyHttpClientPatchCall<UpdateCustomerContactRequest, Customer>(
+        VerifyHttpClientPatchCall<UpdateCustomerContactRequest, bool>(
             $"api/v1/customers/customer/{customerId}/updatecontact", request);
     }
 
@@ -439,7 +432,8 @@ public class CustomerServiceTests : ServiceTestBase
         var request = new BvnKycUpgradeRequest
         {
             CustomerId = CreateTestGuid().ToString(),
-            Bvn = "12345678901"
+            Bvn = "12345678901",
+            Verify = 1 // No. of verification attempts
         };
 
         var expectedResult = new BvnKycUpgradeResponse
@@ -566,8 +560,8 @@ public class CustomerServiceTests : ServiceTestBase
         var expectedProperties = new CustomerVerificationProperties
         {
             CustomerId = customerId,
-            KycLevel = "TIER_1",
-            CompletedVerifications = new List<string> { "NIN", "BVN", "EMAIL", "PHONE" }
+            CustomerTierId = 1,
+            HasNin = true
         };
         var apiResponse = CreateSuccessfulApiResponse(expectedProperties);
 
@@ -585,7 +579,7 @@ public class CustomerServiceTests : ServiceTestBase
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
         result.Data!.CustomerId.Should().Be(customerId);
-        result.Data.KycLevel.Should().Be("TIER_1");
+        result.Data.CustomerTierId.Should().Be(1);
 
         VerifyHttpClientGetCall<CustomerVerificationProperties>(
             $"api/v1/customers/customer-verification-properties/{customerId}");
@@ -692,7 +686,7 @@ public class CustomerServiceTests : ServiceTestBase
     public void UpdateContactAsync_WithNullCustomerId_ThrowsArgumentException()
     {
         // Arrange
-        var request = new UpdateCustomerContactRequest { Email = "test@test.com" };
+        var request = new UpdateCustomerContactRequest { EmailAddress = "test@test.com" };
 
         // Act & Assert
         var exception =
@@ -733,10 +727,10 @@ public class CustomerServiceTests : ServiceTestBase
             Id = customerId ?? CreateTestGuid().ToString(),
             FirstName = "John",
             LastName = "Doe",
-            Email = CreateTestEmail("john.doe"),
+            EmailAddress = CreateTestEmail("john.doe"),
             MobileNumber = CreateTestPhoneNumber("1234"),
             DateOfBirth = DateTime.UtcNow.AddYears(-25),
-            CreatedAt = DateTimeOffset.UtcNow,
+            DateCreated = DateTimeOffset.UtcNow,
             CustomerTierId = 0,
             Status = CustomerStatus.Active
         };
