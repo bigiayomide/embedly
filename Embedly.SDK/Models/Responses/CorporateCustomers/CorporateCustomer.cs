@@ -93,6 +93,12 @@ public sealed class CorporateCustomer
     /// </summary>
     [JsonPropertyName("dateModified")]
     public DateTimeOffset? UpdatedAt { get; set; }
+    
+    /// <summary>
+    ///     Gets corperate customer account verification status.
+    /// </summary>
+    [JsonPropertyName("isCorporateVerified")]
+    public string? IsCorporateVerified { get; set; }
 }
 
 /// <summary>
