@@ -155,6 +155,7 @@ public class CorporateCustomerServiceTests : ServiceTestBase
         var request = CreateValidAddDirectorRequest();
         var expectedDirector = CreateTestDirector();
         var apiResponse = CreateSuccessfulApiResponse(expectedDirector);
+        var expectedDirectorResponse = CreateTestDirectorResponse();
 
         MockHttpClient
             .Setup(x => x.PostAsync<AddDirectorRequest, Director>(
@@ -169,7 +170,7 @@ public class CorporateCustomerServiceTests : ServiceTestBase
         // Assert
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
-        result.Data.Should().BeEquivalentTo(expectedDirector);
+        result.Data.Should().BeEquivalentTo(expectedDirectorResponse);
     }
 
     [Test]
@@ -457,6 +458,15 @@ public class CorporateCustomerServiceTests : ServiceTestBase
             Nin = "12345678901",
             MeterNumber = "MTR123456",
             CreatedAt = DateTimeOffset.UtcNow
+        };
+    }
+
+    private static AddDirectorResponse CreateTestDirectorResponse()
+    {
+        return new AddDirectorResponse()
+        {
+            CustomerId = Guid.NewGuid(),
+            DirectorId = Guid.NewGuid()
         };
     }
 

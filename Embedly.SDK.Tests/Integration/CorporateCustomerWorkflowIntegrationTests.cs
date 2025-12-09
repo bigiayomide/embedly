@@ -91,7 +91,7 @@ public class CorporateCustomerWorkflowIntegrationTests : IntegrationTestBase
         addDirectorResponse.Success.Should().BeTrue("Director addition should succeed");
         addDirectorResponse.Data.Should().NotBeNull();
 
-        var directorId = addDirectorResponse.Data!.Id.ToString();
+        var directorId = addDirectorResponse.Data!.DirectorId.ToString();
         LogSuccess($"Added director with ID: {directorId}");
 
         // Step 5: Retrieve directors

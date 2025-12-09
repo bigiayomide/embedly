@@ -55,7 +55,7 @@ public interface ICorporateCustomerService
     /// <param name="request">The add director request.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>The added director.</returns>
-    Task<ApiResponse<Director>> AddDirectorAsync(
+    Task<ApiResponse<AddDirectorResponse>> AddDirectorAsync(
         string corporateCustomerId,
         AddDirectorRequest request,
         CancellationToken cancellationToken = default);
