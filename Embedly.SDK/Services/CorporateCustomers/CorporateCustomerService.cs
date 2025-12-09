@@ -67,7 +67,7 @@ internal sealed class CorporateCustomerService : BaseService, ICorporateCustomer
     #region Director Management
 
     /// <inheritdoc />
-    public async Task<ApiResponse<Director>> AddDirectorAsync(
+    public async Task<ApiResponse<AddDirectorResponse>> AddDirectorAsync(
         string corporateCustomerId,
         AddDirectorRequest request,
         CancellationToken cancellationToken = default)
@@ -76,7 +76,7 @@ internal sealed class CorporateCustomerService : BaseService, ICorporateCustomer
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/corporate/customers/{corporateCustomerId}/directors");
-        return await HttpClient.PostAsync<AddDirectorRequest, Director>(url, request, cancellationToken);
+        return await HttpClient.PostAsync<AddDirectorRequest, AddDirectorResponse>(url, request, cancellationToken);
     }
 
     /// <inheritdoc />
