@@ -88,4 +88,12 @@ public sealed class AddDirectorRequest
     [MaxLength(50, ErrorMessage = "Meter number cannot exceed 50 characters")]
     [JsonPropertyName("meterNumber")]
     public string MeterNumber { get; set; } = string.Empty;
+    
+    /// <summary>
+    ///     Gets or sets the director's meter number.
+    /// </summary>
+    [Required(ErrorMessage = "Disco Code is required")]
+    [MaxLength(50, ErrorMessage = "DiscoCode cannot exceed 50 characters")]
+    [JsonPropertyName("discoCode")]
+    public string DiscoCode { get; set; } = string.Empty;
 }

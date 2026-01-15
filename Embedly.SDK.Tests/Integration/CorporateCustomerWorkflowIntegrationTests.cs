@@ -126,7 +126,8 @@ public class CorporateCustomerWorkflowIntegrationTests : IntegrationTestBase
             Address = addDirectorRequest.Address,
             Bvn = addDirectorRequest.Bvn,
             Nin = addDirectorRequest.Nin,
-            MeterNumber = addDirectorRequest.MeterNumber
+            MeterNumber = addDirectorRequest.MeterNumber,
+            DiscoCode = "OYO"
         };
         LogApiCall("Update Director", updateDirectorRequest);
 
@@ -252,7 +253,8 @@ public class CorporateCustomerWorkflowIntegrationTests : IntegrationTestBase
             Address = $"123 Director Street {timestamp}, Lagos",
             Bvn = $"{timestamp}"[^11..].PadLeft(11, '0'), // Last 11 digits
             Nin = $"{timestamp}"[^11..].PadLeft(11, '1'), // Last 11 digits
-            MeterNumber = $"MTR{timestamp}"
+            MeterNumber = $"MTR{timestamp}",
+            DiscoCode = "OYO"
         };
     }
 

@@ -395,7 +395,8 @@ public class CorporateCustomerServiceTests : ServiceTestBase
             Address = "123 Director Street, Lagos",
             Bvn = "12345678901",
             Nin = "12345678901",
-            MeterNumber = "MTR123456"
+            MeterNumber = "MTR123456",
+            DiscoCode = "OYO"
         };
     }
 
