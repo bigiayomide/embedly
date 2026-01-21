@@ -131,7 +131,7 @@ public enum CorporateVerificationStatus
     Rejected,
     
     /// <summary>
-    ///     Corporate customer verification was rejected.
+    ///     Corporate customer verification was Approved.
     /// </summary>
     [JsonPropertyName("approved")]
     Approved
