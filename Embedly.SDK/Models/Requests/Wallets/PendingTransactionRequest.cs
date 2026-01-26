@@ -31,7 +31,7 @@ public sealed record PendingTransactionRequest
     ///     Gets or sets the transaction amount.
     /// </summary>
     [Required(ErrorMessage = "Amount is required")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
+    [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Amount must be greater than 0")]
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
 

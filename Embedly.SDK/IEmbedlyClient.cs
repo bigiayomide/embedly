@@ -3,10 +3,10 @@ using Embedly.SDK.Services.Checkout;
 using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
-using Embedly.SDK.Services.ProductLimits;
-using Embedly.SDK.Services.Products;
+// using Embedly.SDK.Services.ProductLimits;  // Commented out - not in public API docs
+// using Embedly.SDK.Services.Products;       // Commented out - not in public API docs
 using Embedly.SDK.Services.Utilities;
-using Embedly.SDK.Services.WalletGroups;
+// using Embedly.SDK.Services.WalletGroups;   // Commented out - not in public API docs
 using Embedly.SDK.Services.Wallets;
 
 namespace Embedly.SDK;
@@ -31,20 +31,20 @@ public interface IEmbedlyClient
     /// </summary>
     IWalletService Wallets { get; }
 
-    /// <summary>
-    ///     Gets the wallet group management service.
-    /// </summary>
-    IWalletGroupService WalletGroups { get; }
+    // /// <summary>
+    // ///     Gets the wallet group management service.
+    // /// </summary>
+    // IWalletGroupService WalletGroups { get; }  // Commented out - not in public API docs
 
-    /// <summary>
-    ///     Gets the product management service.
-    /// </summary>
-    IProductService Products { get; }
+    // /// <summary>
+    // ///     Gets the product management service.
+    // /// </summary>
+    // IProductService Products { get; }  // Commented out - not in public API docs
 
-    /// <summary>
-    ///     Gets the product limit management service.
-    /// </summary>
-    IProductLimitService ProductLimits { get; }
+    // /// <summary>
+    // ///     Gets the product limit management service.
+    // /// </summary>
+    // IProductLimitService ProductLimits { get; }  // Commented out - not in public API docs
 
     /// <summary>
     ///     Gets the checkout service.

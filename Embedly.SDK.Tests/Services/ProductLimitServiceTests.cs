@@ -1,3 +1,11 @@
+// ============================================================================
+// COMMENTED OUT - Services not in public API documentation
+// These tests are disabled because ProductLimitService is not in the public Embedly API.
+// To re-enable, remove the #if false / #endif directives.
+// ============================================================================
+
+#if false
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -358,3 +366,5 @@ public class ProductLimitServiceTests : ServiceTestBase
         };
     }
 }
+
+#endif

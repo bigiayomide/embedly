@@ -16,6 +16,8 @@ The official .NET SDK for [Embedly.ng](https://embedly.ng) - Nigeria's leading e
 - 🔄 **Retry Policies** - Automatic retry with exponential backoff
 - 🌍 **Multi-Environment** - Staging and production environment support
 - 💳 **Nigerian Market Focus** - NIN/BVN KYC, Naira currency support
+- 🔔 **Webhook Support** - Built-in webhook validation and processing
+- 💰 **Checkout Integration** - Dynamic account generation for payments
 
 ## Installation
 
@@ -128,22 +130,94 @@ var kycResult = await embedlyClient.Customers.UpgradeKycWithNinAsync(new NinKycU
 });
 ```
 
-### Wallet Operations (Coming Soon)
+### Wallet Operations
 ```csharp
 // Create wallet
-var wallet = await embedlyClient.Wallets.CreateAsync(new CreateWalletRequest
+var wallet = await embedlyClient.Wallets.CreateWalletAsync(new CreateWalletRequest
 {
     CustomerId = "customer-id",
-    Currency = "NGN"
+    CurrencyId = "currency-id"
 });
 
-// Transfer between wallets
-var transfer = await embedlyClient.Wallets.TransferAsync(new WalletTransferRequest
+// Get wallet by ID
+var wallet = await embedlyClient.Wallets.GetWalletAsync("wallet-id");
+
+// Get wallet by account number
+var wallet = await embedlyClient.Wallets.GetWalletByAccountNumberAsync("1234567890");
+
+// Wallet to wallet transfer
+var transfer = await embedlyClient.Wallets.WalletToWalletTransferAsync(new WalletToWalletTransferRequest
 {
-    FromWalletId = "wallet-1",
-    ToWalletId = "wallet-2",
-    Amount = Money.FromNaira(1000.00m)
+    FromAccount = "source-account-number",
+    ToAccount = "destination-account-number",
+    Amount = 5000.00m,  // Uses decimal for precision
+    TransactionReference = "TXN-123456",
+    Remarks = "Payment for services"
 });
+
+// Check transfer status
+var status = await embedlyClient.Wallets.GetWalletTransferStatusAsync("TXN-123456");
+
+// Get wallet transaction history
+var history = await embedlyClient.Wallets.GetWalletHistoryAsync(walletId);
+
+// Simulate inflow (Staging only - for testing)
+var inflow = await embedlyClient.Wallets.SimulateInflowAsync(new SimulateInflowRequest
+{
+    AccountNumber = "1234567890",
+    Amount = 10000.00m,
+    Narration = "Test deposit"
+});
+```
+
+### Checkout (Dynamic Account Generation)
+```csharp
+// Get organization prefix mappings (required for checkout)
+var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(organizationId);
+
+// Create checkout wallet (generates dynamic account for payment)
+var checkout = await embedlyClient.Checkout.CreateCheckoutWalletAsync(new GenerateCheckoutWalletRequest
+{
+    OrganizationId = organizationId,
+    ExpectedAmount = 15000.00m,  // Uses decimal for precision
+    OrganizationPrefixMappingId = prefixes.Data[0].Id,
+    ExpiryDurationMinutes = 30  // Optional, defaults to 30
+});
+
+// Get checkout wallet details
+var checkoutDetails = await embedlyClient.Checkout.GetCheckoutWalletAsync(checkout.Data.Id);
+
+// Get checkout transactions
+var transactions = await embedlyClient.Checkout.GetCheckoutWalletTransactionsAsync(
+    checkout.Data.Id, page: 1, pageSize: 20);
+```
+
+### Payout (Bank Transfers)
+```csharp
+// Get list of banks
+var banks = await embedlyClient.Payout.GetBanksAsync();
+
+// Verify account name
+var nameEnquiry = await embedlyClient.Payout.NameEnquiryAsync(new NameEnquiryRequest
+{
+    AccountNumber = "1234567890",
+    BankCode = "058"  // GTBank
+});
+
+// Initiate bank transfer
+var transfer = await embedlyClient.Payout.InterBankTransferAsync(new BankTransferRequest
+{
+    SourceAccountNumber = "source-account",
+    SourceAccountName = "Source Name",
+    DestinationAccountNumber = "1234567890",
+    DestinationAccountName = nameEnquiry.Data.AccountName,
+    DestinationBankCode = "058",
+    Amount = 5000.00m,  // Uses decimal for precision
+    Remarks = "Payment"
+});
+
+// Check transaction status
+var status = await embedlyClient.Payout.GetTransactionStatusAsync("transaction-reference");
 ```
 
 ## Error Handling
@@ -197,20 +271,74 @@ var half = total / 2;                         // ₦1,250.25
 Console.WriteLine(total.ToString());          // ₦2,500.50
 ```
 
-## Webhook Handling (Coming Soon)
+## Webhook Handling
+
+The SDK provides built-in webhook validation and processing with HMAC-SHA512 signature verification.
 
 ```csharp
+// Register webhook services
+builder.Services.AddEmbedlyWebhooks(options =>
+{
+    options.WebhookSecret = "your-webhook-secret";
+});
+
 // In your webhook controller
 [HttpPost("webhooks/embedly")]
-public async Task<IActionResult> HandleWebhook()
+public async Task<IActionResult> HandleWebhook(
+    [FromServices] IWebhookProcessor webhookProcessor)
 {
-    var signature = Request.Headers["X-Auth-Signature"];
+    var signature = Request.Headers["x-embedly-signature"].ToString();
+    using var reader = new StreamReader(Request.Body);
+    var payload = await reader.ReadToEndAsync();
+
+    var result = await webhookProcessor.ProcessWebhookAsync(payload, signature);
+    return result.Success ? Ok() : BadRequest(result.Error);
+}
+
+// Or use the validator directly
+[HttpPost("webhooks/embedly")]
+public IActionResult HandleWebhook(
+    [FromServices] IWebhookValidator validator)
+{
+    var signature = Request.Headers["x-embedly-signature"].ToString();
     var payload = await ReadBodyAsync();
-    
-    var result = await _webhookProcessor.ProcessWebhookAsync(payload, signature);
-    return result.Success ? Ok() : BadRequest();
+
+    // Validate signature
+    if (!validator.ValidateSignature(payload, signature))
+        return Unauthorized("Invalid signature");
+
+    // Parse event
+    var webhookEvent = validator.ParseEvent(payload, signature);
+
+    // Handle based on event type
+    switch (webhookEvent.Event)
+    {
+        case WebhookEventTypes.CheckoutPaymentSuccess:
+            // Handle checkout payment
+            break;
+        case WebhookEventTypes.Payout:
+            // Handle payout notification
+            break;
+        case WebhookEventTypes.Nip:
+            // Handle NIP transfer notification
+            break;
+    }
+
+    return Ok();
 }
 ```
+
+### Supported Webhook Event Types
+
+| Event Type | Description |
+|------------|-------------|
+| `checkout.payment.success` | Checkout payment completed successfully |
+| `payout` | Payout transaction notification |
+| `nip` | NIP (NIBSS Instant Payment) notification |
+| `card.transaction.atm` | ATM card transaction |
+| `card.transaction.pos` | POS card transaction |
+| `card.management.updateInfo` | Card information updated |
+| `card.management.relink` | Card relinked |
 
 ## Advanced Configuration
 
@@ -255,6 +383,55 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Migration Guide
+
+### Breaking Changes in v2.x
+
+#### Money Fields Changed from `double` to `decimal`
+
+All monetary amount fields have been changed from `double` to `decimal` for better precision in financial calculations. Update your code to use the `m` suffix for decimal literals:
+
+```csharp
+// Before (v1.x)
+var request = new BankTransferRequest { Amount = 5000.00 };
+
+// After (v2.x)
+var request = new BankTransferRequest { Amount = 5000.00m };
+```
+
+**Affected properties:**
+- `WalletToWalletTransferRequest.Amount`
+- `BankTransferRequest.Amount`
+- `GenerateCheckoutWalletRequest.ExpectedAmount`
+- `FundWalletRequest.Amount`
+- `PendingTransactionRequest.Amount`
+- `SimulateInflowRequest.Amount`
+- Various response models (`WalletDetails`, `CheckoutSession`, etc.)
+
+#### KYC Verify Parameter Type Change
+
+The `Verify` parameter in KYC requests changed from `int?` to `string?`:
+
+```csharp
+// Before (v1.x)
+var request = new BvnKycUpgradeRequest { Verify = 1 };
+
+// After (v2.x)
+var request = new BvnKycUpgradeRequest { Verify = "1" };
+```
+
+#### ExpiryDurationMinutes Now Optional
+
+`GenerateCheckoutWalletRequest.ExpiryDurationMinutes` is now optional and defaults to 30 minutes:
+
+```csharp
+// Before - was required
+var request = new GenerateCheckoutWalletRequest { ExpiryDurationMinutes = 30 };
+
+// After - optional, defaults to 30
+var request = new GenerateCheckoutWalletRequest { /* uses default */ };
+```
 
 ## Support
 

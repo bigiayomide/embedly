@@ -198,4 +198,18 @@ public interface IWalletService
     /// </summary>
     Task<ApiResponse<WalletInterest>> GetMonthlyWalletInterestAsync(string walletId,
         CancellationToken cancellationToken = default);
+
+    // ===== STAGING/TESTING OPERATIONS =====
+
+    /// <summary>
+    ///     Simulates an inflow (credit) to a wallet. This endpoint is only available in the staging environment
+    ///     and is intended for testing purposes.
+    ///     POST /api/v1/wallets/simulate/inflow
+    /// </summary>
+    /// <param name="request">The simulate inflow request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The result of the simulated inflow.</returns>
+    /// <remarks>This endpoint is only available in the staging environment.</remarks>
+    Task<ApiResponse<object>> SimulateInflowAsync(SimulateInflowRequest request,
+        CancellationToken cancellationToken = default);
 }

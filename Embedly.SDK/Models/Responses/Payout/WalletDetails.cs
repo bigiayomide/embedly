@@ -24,13 +24,13 @@ public sealed class WalletDetails
     ///     Gets or sets the available balance.
     /// </summary>
     [JsonPropertyName("availableBalance")]
-    public double AvailableBalance { get; set; }
+    public decimal AvailableBalance { get; set; }
 
     /// <summary>
     ///     Gets or sets the ledger balance.
     /// </summary>
     [JsonPropertyName("ledgerBalance")]
-    public double LedgerBalance { get; set; }
+    public decimal LedgerBalance { get; set; }
 
     /// <summary>
     ///     Gets or sets the currency code.

@@ -5,6 +5,28 @@ using System.Text.Json.Serialization;
 namespace Embedly.SDK.Models.Requests.CorporateCustomers;
 
 /// <summary>
+///     Validation attribute that ensures a Guid is not empty.
+/// </summary>
+public sealed class NonEmptyGuidAttribute : ValidationAttribute
+{
+    /// <summary>
+    ///     Determines whether the specified value is a non-empty Guid.
+    /// </summary>
+    /// <param name="value">The value to validate.</param>
+    /// <returns>true if the value is a non-empty Guid; otherwise, false.</returns>
+    public override bool IsValid(object? value)
+    {
+        if (value is null)
+            return true; // Let [Required] handle null
+
+        if (value is Guid guid)
+            return guid != Guid.Empty;
+
+        return false;
+    }
+}
+
+/// <summary>
 ///     Request model for creating a new corporate customer.
 /// </summary>
 public sealed class CreateCorporateCustomerRequest
@@ -44,7 +66,7 @@ public sealed class CreateCorporateCustomerRequest
     /// <summary>
     ///     Gets or sets the country ID.
     /// </summary>
-    [Required(ErrorMessage = "Country ID is required")]
+    [NonEmptyGuid(ErrorMessage = "Country ID is required")]
     [JsonPropertyName("countryId")]
     public Guid CountryId { get; set; }
 

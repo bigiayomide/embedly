@@ -6,10 +6,10 @@ using Embedly.SDK.Services.Checkout;
 using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
-using Embedly.SDK.Services.ProductLimits;
-using Embedly.SDK.Services.Products;
+// using Embedly.SDK.Services.ProductLimits;  // Commented out - not in public API docs
+// using Embedly.SDK.Services.Products;       // Commented out - not in public API docs
 using Embedly.SDK.Services.Utilities;
-using Embedly.SDK.Services.WalletGroups;
+// using Embedly.SDK.Services.WalletGroups;   // Commented out - not in public API docs
 using Embedly.SDK.Services.Wallets;
 using Microsoft.Extensions.Options;
 
@@ -32,9 +32,6 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     /// <param name="customerService">The customer service.</param>
     /// <param name="corporateCustomerService">The corporate customer service.</param>
     /// <param name="walletService">The wallet service.</param>
-    /// <param name="walletGroupService">The wallet group service.</param>
-    /// <param name="productService">The product service.</param>
-    /// <param name="productLimitService">The product limit service.</param>
     /// <param name="checkoutService">The checkout service.</param>
     /// <param name="payoutService">The payout service.</param>
     /// <param name="cardService">The card service.</param>
@@ -45,9 +42,9 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
         ICustomerService customerService,
         ICorporateCustomerService corporateCustomerService,
         IWalletService walletService,
-        IWalletGroupService walletGroupService,
-        IProductService productService,
-        IProductLimitService productLimitService,
+        // IWalletGroupService walletGroupService,  // Commented out - not in public API docs
+        // IProductService productService,          // Commented out - not in public API docs
+        // IProductLimitService productLimitService, // Commented out - not in public API docs
         ICheckoutService checkoutService,
         IPayoutService payoutService,
         ICardService cardService,
@@ -62,9 +59,9 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
         Customers = customerService ?? throw new ArgumentNullException(nameof(customerService));
         CorporateCustomers = corporateCustomerService ?? throw new ArgumentNullException(nameof(corporateCustomerService));
         Wallets = walletService ?? throw new ArgumentNullException(nameof(walletService));
-        WalletGroups = walletGroupService ?? throw new ArgumentNullException(nameof(walletGroupService));
-        Products = productService ?? throw new ArgumentNullException(nameof(productService));
-        ProductLimits = productLimitService ?? throw new ArgumentNullException(nameof(productLimitService));
+        // WalletGroups = walletGroupService ?? throw new ArgumentNullException(nameof(walletGroupService));  // Commented out - not in public API docs
+        // Products = productService ?? throw new ArgumentNullException(nameof(productService));              // Commented out - not in public API docs
+        // ProductLimits = productLimitService ?? throw new ArgumentNullException(nameof(productLimitService)); // Commented out - not in public API docs
         Checkout = checkoutService ?? throw new ArgumentNullException(nameof(checkoutService));
         Payouts = payoutService ?? throw new ArgumentNullException(nameof(payoutService));
         Cards = cardService ?? throw new ArgumentNullException(nameof(cardService));
@@ -90,14 +87,14 @@ public sealed class EmbedlyClient : IEmbedlyClient, IDisposable
     /// <inheritdoc />
     public IWalletService Wallets { get; }
 
-    /// <inheritdoc />
-    public IWalletGroupService WalletGroups { get; }
+    // /// <inheritdoc />
+    // public IWalletGroupService WalletGroups { get; }  // Commented out - not in public API docs
 
-    /// <inheritdoc />
-    public IProductService Products { get; }
+    // /// <inheritdoc />
+    // public IProductService Products { get; }  // Commented out - not in public API docs
 
-    /// <inheritdoc />
-    public IProductLimitService ProductLimits { get; }
+    // /// <inheritdoc />
+    // public IProductLimitService ProductLimits { get; }  // Commented out - not in public API docs
 
     /// <inheritdoc />
     public ICheckoutService Checkout { get; }

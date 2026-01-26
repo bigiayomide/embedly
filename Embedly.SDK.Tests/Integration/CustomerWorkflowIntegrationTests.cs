@@ -167,7 +167,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
         {
             CustomerId = customerId,
             Bvn = "12345678909", // Test BVN
-            Verify = 1 // No. of Verification Attempts
+            Verify = "1" // No. of Verification Attempts
         };
 
         LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);
@@ -193,7 +193,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             DateOfBirth = createRequest.DateOfBirth!.Value,
             FirstName = createRequest.FirstName,
             LastName = createRequest.LastName,
-            Verify = 1 // No. of verification attempts
+            Verify = "1" // No. of verification attempts
         };
 
         LogApiCall("NIN KYC Upgrade", ninUpgradeRequest);
@@ -416,7 +416,7 @@ public class CustomerWorkflowIntegrationTests : IntegrationTestBase
             DateOfBirth = DateTime.UtcNow.AddDays(1), // Future date
             FirstName = "Invalid",
             LastName = "User",
-            Verify = 1 // No. of verification attempts
+            Verify = "1" // No. of verification attempts
         };
 
         LogApiCall("Invalid KYC Upgrade", invalidKycRequest);

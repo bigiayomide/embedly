@@ -351,8 +351,8 @@ public class WebhookIntegrationTests : IntegrationTestBase
             "{\"invalid_json\":}",
             "{\"unclosed_object\":",
             "[{\"array_but_expecting_object\": true}]",
-            "not_json_at_all",
-            ""
+            "not_json_at_all"
+            // Note: Empty string "" is not included because it fails signature validation first
         };
 
         foreach (var malformedPayload in malformedPayloads)

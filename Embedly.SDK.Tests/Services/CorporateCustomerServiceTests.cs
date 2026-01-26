@@ -153,12 +153,11 @@ public class CorporateCustomerServiceTests : ServiceTestBase
         // Arrange
         var corporateCustomerId = Guid.NewGuid().ToString();
         var request = CreateValidAddDirectorRequest();
-        var expectedDirector = CreateTestDirector();
-        var apiResponse = CreateSuccessfulApiResponse(expectedDirector);
         var expectedDirectorResponse = CreateTestDirectorResponse();
+        var apiResponse = CreateSuccessfulApiResponse(expectedDirectorResponse);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<AddDirectorRequest, Director>(
+            .Setup(x => x.PostAsync<AddDirectorRequest, AddDirectorResponse>(
                 It.Is<string>(url => url.Contains($"api/v1/corporate/customers/{corporateCustomerId}/directors")),
                 request,
                 It.IsAny<CancellationToken>()))

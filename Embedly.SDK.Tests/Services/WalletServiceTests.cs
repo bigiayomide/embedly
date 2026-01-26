@@ -370,7 +370,7 @@ public class WalletServiceTests : ServiceTestBase
         {
             FromAccount = "1234567890",
             ToAccount = "0987654321",
-            Amount = 1000.00,
+            Amount = 1000.00m,
             Remarks = "Test transfer",
             TransactionReference = "TXN_TEST_12345"
         };
@@ -433,7 +433,7 @@ public class WalletServiceTests : ServiceTestBase
             TransactionReference = "TXN_12345",
             Status = "successful",
             StatusDescription = "Transfer completed successfully",
-            Amount = 1000.00,
+            Amount = 1000.00m,
             FromAccount = "1234567890",
             ToAccount = "0987654321",
             TransactionDate = CreateTestTimestamp().DateTime

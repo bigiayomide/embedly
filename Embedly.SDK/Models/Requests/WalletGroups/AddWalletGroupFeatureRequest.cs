@@ -27,7 +27,7 @@ public sealed record AddWalletGroupFeatureRequest
     ///     Gets or sets parameter 1.
     /// </summary>
     [JsonPropertyName("param1")]
-    public double? Param1 { get; init; }
+    public decimal? Param1 { get; init; }
 
     /// <summary>
     ///     Gets or sets parameter 2.

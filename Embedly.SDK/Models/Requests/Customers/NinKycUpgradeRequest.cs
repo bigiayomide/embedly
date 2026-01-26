@@ -47,10 +47,10 @@ public sealed class NinKycUpgradeRequest
     public string FirstName { get; set; } = string.Empty;
 
     /// <summary>
-    ///     The number verification attempts to be made.
+    ///     The verification flag. Set to "1" to verify.
     /// </summary>
     [JsonPropertyName("verify")]
-    public int? Verify { get; set; }
+    public string? Verify { get; set; }
 
     /// <summary>
     ///     Adds query parameters to the request endpoint.

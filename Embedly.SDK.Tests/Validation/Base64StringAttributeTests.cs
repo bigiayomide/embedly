@@ -134,9 +134,10 @@ public class Base64StringAttributeTests
     [Test]
     public void IsValid_WithPartialBase64String_ReturnsFalse()
     {
-        // Arrange - Create an incomplete base64 string
+        // Arrange - Create an incomplete base64 string with invalid length (not multiple of 4)
         var validBase64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("Hello World"));
-        var partialBase64 = validBase64.Substring(0, validBase64.Length / 2);
+        // Cut to an odd length that isn't a valid base64 length
+        var partialBase64 = validBase64.Substring(0, 5); // Length 5 is not valid for base64
 
         // Act
         var result = _attribute.IsValid(partialBase64);

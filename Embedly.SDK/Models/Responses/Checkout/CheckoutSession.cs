@@ -60,7 +60,7 @@ public sealed class CheckoutWallet
     ///     Gets or sets the expected amount.
     /// </summary>
     [JsonPropertyName("expectedAmount")]
-    public double ExpectedAmount { get; set; }
+    public decimal ExpectedAmount { get; set; }
 
     /// <summary>
     ///     Gets or sets the wallet status.

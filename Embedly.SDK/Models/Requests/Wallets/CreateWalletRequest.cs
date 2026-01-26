@@ -70,7 +70,7 @@ public sealed class CreateWalletRequest
     ///     Gets or sets the overdraft limit.
     /// </summary>
     [JsonPropertyName("overdraft")]
-    public double? Overdraft { get; set; }
+    public decimal? Overdraft { get; set; }
 
     /// <summary>
     ///     Gets or sets the virtual account information.

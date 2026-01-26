@@ -73,6 +73,47 @@ public sealed class WebhookEvent
 /// </summary>
 public static class WebhookEventTypes
 {
+    // ===== DOCUMENTED API EVENT TYPES =====
+    // These are the official event types from the Embedly API documentation
+
+    /// <summary>
+    ///     Fired for ATM card transactions.
+    /// </summary>
+    public const string CardTransactionAtm = "card.transaction.atm";
+
+    /// <summary>
+    ///     Fired for POS card transactions.
+    /// </summary>
+    public const string CardTransactionPos = "card.transaction.pos";
+
+    /// <summary>
+    ///     Fired when card information is updated.
+    /// </summary>
+    public const string CardManagementUpdateInfo = "card.management.updateInfo";
+
+    /// <summary>
+    ///     Fired when a card is relinked.
+    /// </summary>
+    public const string CardManagementRelink = "card.management.relink";
+
+    /// <summary>
+    ///     Fired for payout events.
+    /// </summary>
+    public const string Payout = "payout";
+
+    /// <summary>
+    ///     Fired for NIP (Nigeria Inter-Bank Payment) events.
+    /// </summary>
+    public const string Nip = "nip";
+
+    /// <summary>
+    ///     Fired when a checkout payment is successful.
+    /// </summary>
+    public const string CheckoutPaymentSuccess = "checkout.payment.success";
+
+    // ===== ADDITIONAL EVENT TYPES =====
+    // These are additional event types that may be used internally
+
     // Customer events
     /// <summary>
     ///     Fired when a customer is created.

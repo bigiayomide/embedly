@@ -425,7 +425,7 @@ public class PayoutServiceTests : ServiceTestBase
             DestinationAccountName = "Test Account",
             SourceAccountNumber = "0987654321",
             SourceAccountName = "Source Account",
-            Amount = 50000.0,
+            Amount = 50000.0m,
             Remarks = "Test transfer",
             CustomerTransactionReference = "TEST-REF-123"
         };
@@ -452,7 +452,7 @@ public class PayoutServiceTests : ServiceTestBase
         {
             OrganizationId = CreateTestGuid(),
             OrganizationName = "Test Organization",
-            TotalPayoutAmount = 1000000.0,
+            TotalPayoutAmount = 1000000.0m,
             PayoutCount = 100,
             LastPayoutDate = DateTime.UtcNow
         };
@@ -484,8 +484,8 @@ public class PayoutServiceTests : ServiceTestBase
         {
             WalletId = CreateTestGuid(),
             AccountNumber = "1234567890",
-            AvailableBalance = 100000.0,
-            LedgerBalance = 100000.0,
+            AvailableBalance = 100000.0m,
+            LedgerBalance = 100000.0m,
             Currency = "NGN",
             Status = "Active"
         };
@@ -496,7 +496,7 @@ public class PayoutServiceTests : ServiceTestBase
         return new AddGlobalPayoutLimitRequest
         {
             CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
-            DailyTransactionLimit = 1000000.0,
+            DailyTransactionLimit = 1000000.0m,
             DailyTransactionCount = 100,
             DailyTransactionLimitStatus = true,
             DailyTransactionCountStatus = true
@@ -518,7 +518,7 @@ public class PayoutServiceTests : ServiceTestBase
         {
             GlobalLimitId = CreateTestGuid(),
             CurrencyId = Guid.Parse("fd5e474d-bb42-4db1-ab74-e8d2a01047e9"),
-            DailyTransactionLimit = 1000000.0,
+            DailyTransactionLimit = 1000000.0m,
             DailyTransactionCount = 100,
             DailyTransactionLimitStatus = true,
             DailyTransactionCountStatus = true,

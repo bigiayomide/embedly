@@ -9,10 +9,10 @@ using Embedly.SDK.Services.Checkout;
 using Embedly.SDK.Services.CorporateCustomers;
 using Embedly.SDK.Services.Customers;
 using Embedly.SDK.Services.Payout;
-using Embedly.SDK.Services.ProductLimits;
-using Embedly.SDK.Services.Products;
+// using Embedly.SDK.Services.ProductLimits;  // Commented out - not in public API docs
+// using Embedly.SDK.Services.Products;       // Commented out - not in public API docs
 using Embedly.SDK.Services.Utilities;
-using Embedly.SDK.Services.WalletGroups;
+// using Embedly.SDK.Services.WalletGroups;   // Commented out - not in public API docs
 using Embedly.SDK.Services.Wallets;
 using Embedly.SDK.Webhooks;
 using Microsoft.Extensions.Configuration;
@@ -94,9 +94,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<ICustomerService, CustomerService>();
         services.TryAddScoped<ICorporateCustomerService, CorporateCustomerService>();
         services.TryAddScoped<IWalletService, WalletService>();
-        services.TryAddScoped<IWalletGroupService, WalletGroupService>();
-        services.TryAddScoped<IProductService, ProductService>();
-        services.TryAddScoped<IProductLimitService, ProductLimitService>();
+        // services.TryAddScoped<IWalletGroupService, WalletGroupService>();  // Commented out - not in public API docs
+        // services.TryAddScoped<IProductService, ProductService>();          // Commented out - not in public API docs
+        // services.TryAddScoped<IProductLimitService, ProductLimitService>();// Commented out - not in public API docs
         services.TryAddScoped<ICheckoutService, CheckoutService>();
         services.TryAddScoped<IPayoutService, PayoutService>();
         services.TryAddScoped<IPinEncryptionService, PinEncryptionService>();

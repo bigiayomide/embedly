@@ -59,9 +59,9 @@ public sealed class BankTransferRequest
     ///     Gets or sets the amount to transfer.
     /// </summary>
     [Required(ErrorMessage = "Amount is required")]
-    [Range(1.5, double.MaxValue, ErrorMessage = "Amount must be at least 1.5")]
+    [Range(typeof(decimal), "1.5", "79228162514264337593543950335", ErrorMessage = "Amount must be at least 1.5")]
     [JsonPropertyName("amount")]
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 
     /// <summary>
     ///     Gets or sets the currency ID.

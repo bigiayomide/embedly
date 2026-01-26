@@ -24,7 +24,7 @@ public sealed class OrganizationPayoutData
     ///     Gets or sets the total payout amount.
     /// </summary>
     [JsonPropertyName("totalPayoutAmount")]
-    public double TotalPayoutAmount { get; set; }
+    public decimal TotalPayoutAmount { get; set; }
 
     /// <summary>
     ///     Gets or sets the payout count.

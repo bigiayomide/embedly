@@ -24,7 +24,7 @@ public sealed class GlobalPayoutLimit
     ///     Gets or sets the daily transaction limit.
     /// </summary>
     [JsonPropertyName("dailyTransactionLimit")]
-    public double DailyTransactionLimit { get; set; }
+    public decimal DailyTransactionLimit { get; set; }
 
     /// <summary>
     ///     Gets or sets the daily transaction count.

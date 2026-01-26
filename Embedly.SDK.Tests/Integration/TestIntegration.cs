@@ -190,7 +190,7 @@ public class TestIntegration : IntegrationTestBase
         {
             CustomerId = customerId,
             Bvn = "12345678901", // Test BVN
-            Verify = 1 // No. of Verification Attempts
+            Verify = "1" // No. of Verification Attempts
         };
 
         LogApiCall("BVN KYC Upgrade", bvnUpgradeRequest);

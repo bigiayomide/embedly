@@ -40,4 +40,13 @@ public interface ICheckoutService
     /// <returns>The checkout wallet with transactions.</returns>
     Task<ApiResponse<CheckoutWallet>> GetCheckoutWalletWithTransactionsAsync(Guid walletId, Guid organizationId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets organization prefix mappings. These mappings are required to create checkout wallets.
+    /// </summary>
+    /// <param name="organizationId">The organization ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of organization prefix mappings.</returns>
+    Task<ApiResponse<List<OrganizationPrefixMapping>>> GetOrganizationPrefixMappingsAsync(Guid organizationId,
+        CancellationToken cancellationToken = default);
 }

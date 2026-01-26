@@ -1,3 +1,11 @@
+// ============================================================================
+// COMMENTED OUT - Services not in public API documentation
+// These tests are disabled because WalletGroupService is not in the public Embedly API.
+// To re-enable, remove the #if false / #endif directives.
+// ============================================================================
+
+#if false
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -277,7 +285,7 @@ public class WalletGroupServiceTests : ServiceTestBase
         {
             GroupId = CreateTestGuid(),
             FeatureId = CreateTestGuid(),
-            Param1 = 50.0,
+            Param1 = 50.0m,
             Param2 = 100000
         };
     }
@@ -292,3 +300,5 @@ public class WalletGroupServiceTests : ServiceTestBase
         };
     }
 }
+
+#endif

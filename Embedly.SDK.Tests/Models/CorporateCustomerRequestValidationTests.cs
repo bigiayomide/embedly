@@ -270,7 +270,8 @@ public class CorporateCustomerRequestValidationTests
             Address = "123 Director Street, Lagos",
             Bvn = "12345678901",
             Nin = "12345678901",
-            MeterNumber = "MTR123456"
+            MeterNumber = "MTR123456",
+            DiscoCode = "DISCO001"
         };
 
         // Act
@@ -433,7 +434,8 @@ public class CorporateCustomerRequestValidationTests
             Address = "123 Director Street, Lagos",
             Bvn = "12345678901",
             Nin = "12345678901",
-            MeterNumber = "MTR123456"
+            MeterNumber = "MTR123456",
+            DiscoCode = "DISCO001"
         };
     }
 

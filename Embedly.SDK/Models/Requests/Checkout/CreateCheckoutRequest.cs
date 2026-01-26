@@ -20,9 +20,9 @@ public sealed record GenerateCheckoutWalletRequest
     ///     Gets or sets the expected amount.
     /// </summary>
     [Required(ErrorMessage = "Expected amount is required")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Expected amount must be greater than 0")]
+    [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Expected amount must be greater than 0")]
     [JsonPropertyName("expectedAmount")]
-    public double ExpectedAmount { get; init; }
+    public decimal ExpectedAmount { get; init; }
 
     /// <summary>
     ///     Gets or sets the organization prefix mapping ID.
@@ -30,4 +30,10 @@ public sealed record GenerateCheckoutWalletRequest
     [Required(ErrorMessage = "Organization prefix mapping ID is required")]
     [JsonPropertyName("organizationPrefixMappingId")]
     public Guid OrganizationPrefixMappingId { get; init; }
+    
+    /// <summary>
+    ///     Gets or sets the expiry duration in minutes. Defaults to 30 minutes if not specified.
+    /// </summary>
+    [JsonPropertyName("expiryDurationMinutes")]
+    public int? ExpiryDurationMinutes { get; init; } = 30;
 }

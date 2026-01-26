@@ -21,7 +21,7 @@ public sealed record AddGlobalPayoutLimitRequest
     /// </summary>
     [Required(ErrorMessage = "Daily transaction limit is required")]
     [JsonPropertyName("dailyTransactionLimit")]
-    public double DailyTransactionLimit { get; init; }
+    public decimal DailyTransactionLimit { get; init; }
 
     /// <summary>
     ///     Gets or sets the daily transaction count.

@@ -30,7 +30,7 @@ public sealed class WalletTransferStatus
     ///     Gets or sets the transfer amount.
     /// </summary>
     [JsonPropertyName("amount")]
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
 
     /// <summary>
     ///     Gets or sets the source account.

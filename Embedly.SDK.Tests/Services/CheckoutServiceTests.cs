@@ -116,7 +116,8 @@ public class CheckoutServiceTests : ServiceTestBase
         {
             OrganizationId = CreateTestGuid(),
             ExpectedAmount = 2000,
-            OrganizationPrefixMappingId = default
+            OrganizationPrefixMappingId = default,
+            ExpiryDurationMinutes = 60
         };
     }
 

@@ -61,4 +61,17 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
         var url = BuildUrl(ServiceUrls.Checkout, $"api/v1/checkout-wallet/{walletId}/transactions");
         return await HttpClient.GetAsync<CheckoutWallet>(url, queryParams, cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<List<OrganizationPrefixMapping>>> GetOrganizationPrefixMappingsAsync(
+        Guid organizationId, CancellationToken cancellationToken = default)
+    {
+        var queryParams = new Dictionary<string, object?>
+        {
+            ["organizationId"] = organizationId
+        };
+
+        var url = BuildUrl(ServiceUrls.Checkout, "api/v1/organization-prefix-mappings");
+        return await HttpClient.GetAsync<List<OrganizationPrefixMapping>>(url, queryParams, cancellationToken);
+    }
 }

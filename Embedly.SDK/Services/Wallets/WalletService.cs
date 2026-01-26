@@ -284,4 +284,16 @@ internal sealed class WalletService : BaseService, IWalletService
         var url = BuildUrl(ServiceUrls.Base, $"api/v1/interests/get/month/wallet/{walletId}");
         return await HttpClient.GetAsync<WalletInterest>(url, cancellationToken);
     }
+
+    // ===== STAGING/TESTING OPERATIONS =====
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<object>> SimulateInflowAsync(SimulateInflowRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+
+        var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/simulate/inflow");
+        return await HttpClient.PostAsync<SimulateInflowRequest, object>(url, request, cancellationToken);
+    }
 }
