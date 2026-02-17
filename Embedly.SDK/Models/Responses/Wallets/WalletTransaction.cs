@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Embedly.SDK.Models.Common;
 
 namespace Embedly.SDK.Models.Responses.Wallets;
 
 /// <summary>
-///     Represents a wallet transaction.
+///     Represents a wallet transaction as returned by the API.
 /// </summary>
 public sealed class WalletTransaction
 {
@@ -17,112 +15,82 @@ public sealed class WalletTransaction
     public string Id { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the transaction reference.
-    /// </summary>
-    [JsonPropertyName("reference")]
-    public string Reference { get; set; } = string.Empty;
-
-    /// <summary>
     ///     Gets or sets the wallet ID.
     /// </summary>
     [JsonPropertyName("walletId")]
     public string WalletId { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the transaction amount in the smallest currency unit.
+    ///     Gets or sets the product ID.
+    /// </summary>
+    [JsonPropertyName("productId")]
+    public string? ProductId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the transaction remarks.
+    /// </summary>
+    [JsonPropertyName("remarks")]
+    public string? Remarks { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the transaction amount.
     /// </summary>
     [JsonPropertyName("amount")]
-    public long Amount { get; set; }
+    public decimal Amount { get; set; }
 
     /// <summary>
-    ///     Gets or sets the currency code.
+    ///     Gets or sets the debit/credit indicator ("D" for debit, "C" for credit).
     /// </summary>
-    [JsonPropertyName("currency")]
-    public string Currency { get; set; } = "NGN";
-
-    /// <summary>
-    ///     Gets or sets the transaction type.
-    /// </summary>
-    [JsonPropertyName("transactionType")]
-    public TransactionType TransactionType { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the transaction direction (debit/credit).
-    /// </summary>
-    [JsonPropertyName("direction")]
-    public TransactionDirection Direction { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the transaction status.
-    /// </summary>
-    [JsonPropertyName("status")]
-    public TransactionStatus Status { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the transaction description.
-    /// </summary>
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the counterpart wallet ID (for transfers).
-    /// </summary>
-    [JsonPropertyName("counterpartWalletId")]
-    public string? CounterpartWalletId { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the balance before this transaction.
-    /// </summary>
-    [JsonPropertyName("balanceBefore")]
-    public long BalanceBefore { get; set; }
+    [JsonPropertyName("debitCreditIndicator")]
+    public string? DebitCreditIndicator { get; set; }
 
     /// <summary>
     ///     Gets or sets the balance after this transaction.
     /// </summary>
-    [JsonPropertyName("balanceAfter")]
-    public long BalanceAfter { get; set; }
+    [JsonPropertyName("balance")]
+    public decimal Balance { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the transaction reference.
+    /// </summary>
+    [JsonPropertyName("transactionReference")]
+    public string? TransactionReference { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the transaction ID.
+    /// </summary>
+    [JsonPropertyName("transactionId")]
+    public string? TransactionId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets whether this transaction is active.
+    /// </summary>
+    [JsonPropertyName("isActive")]
+    public bool IsActive { get; set; }
 
     /// <summary>
     ///     Gets or sets the date when the transaction was created.
     /// </summary>
-    [JsonPropertyName("createdAt")]
-    public DateTimeOffset CreatedAt { get; set; }
+    [JsonPropertyName("dateCreated")]
+    public DateTime? DateCreated { get; set; }
 
     /// <summary>
-    ///     Gets or sets the date when the transaction was processed.
+    ///     Gets or sets the mobile number associated with the transaction.
     /// </summary>
-    [JsonPropertyName("processedAt")]
-    public DateTimeOffset? ProcessedAt { get; set; }
+    [JsonPropertyName("mobileNumber")]
+    public string? MobileNumber { get; set; }
 
     /// <summary>
-    ///     Gets or sets additional metadata for the transaction.
+    ///     Gets or sets the account number associated with the transaction.
     /// </summary>
-    [JsonPropertyName("metadata")]
-    public Dictionary<string, object?>? Metadata { get; set; }
+    [JsonPropertyName("accountNumber")]
+    public string? AccountNumber { get; set; }
 
     /// <summary>
-    ///     Gets the transaction amount as a Money object.
+    ///     Gets or sets the name associated with the transaction.
     /// </summary>
-    public Money GetAmount()
-    {
-        return new Money(Amount, Currency);
-    }
-
-    /// <summary>
-    ///     Gets the balance before as a Money object.
-    /// </summary>
-    public Money GetBalanceBefore()
-    {
-        return new Money(BalanceBefore, Currency);
-    }
-
-    /// <summary>
-    ///     Gets the balance after as a Money object.
-    /// </summary>
-    public Money GetBalanceAfter()
-    {
-        return new Money(BalanceAfter, Currency);
-    }
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
 }
 
 /// <summary>

@@ -522,7 +522,7 @@ public class WebhookValidatorTests : TestBase
         var keyBytes = Encoding.UTF8.GetBytes(TestWebhookSecret);
         var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
-        using var hmac = new HMACSHA256(keyBytes);
+        using var hmac = new HMACSHA512(keyBytes);
         var hash = hmac.ComputeHash(payloadBytes);
         return Convert.ToHexString(hash).ToLowerInvariant();
     }

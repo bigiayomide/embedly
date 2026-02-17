@@ -82,4 +82,17 @@ public interface ICardService
     /// <returns>The operation result.</returns>
     Task<ApiResponse<AfrigoCard>> UnblockCardAsync(UnblockCardRequest request,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Simulates a debit card transaction. This endpoint is only available in the staging environment
+    ///     and is intended for testing purposes.
+    ///     POST /api/v1/operations/cards/afrigo/simulate-debit-card-transaction
+    /// </summary>
+    /// <param name="request">The simulate debit card transaction request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The result of the simulated transaction.</returns>
+    /// <remarks>This endpoint is only available in the staging environment.</remarks>
+    Task<ApiResponse<SimulateDebitCardTransactionResponse>> SimulateDebitCardTransactionAsync(
+        SimulateDebitCardTransactionRequest request,
+        CancellationToken cancellationToken = default);
 }

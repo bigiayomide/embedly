@@ -8,44 +8,20 @@ namespace Embedly.SDK.Models.Responses.Payout;
 public sealed class NameEnquiryResponse
 {
     /// <summary>
-    ///     Gets or sets the unique session identifier for the transaction.
+    ///     Gets or sets the destination bank code.
     /// </summary>
-    [JsonPropertyName("sessionID")]
-    public string SessionId { get; set; } = string.Empty;
+    [JsonPropertyName("destinationBankCode")]
+    public string DestinationBankCode { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the destination institution code associated with the transaction.
-    /// </summary>
-    [JsonPropertyName("destinationInstitutionCode")]
-    public string DestinationInstitutionCode { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the channel code used for the transaction.
-    /// </summary>
-    [JsonPropertyName("channelCode")]
-    public int ChannelCode { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the customer's account number.
+    ///     Gets or sets the account number.
     /// </summary>
     [JsonPropertyName("accountNumber")]
     public string AccountNumber { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer's account name.
+    ///     Gets or sets the account name.
     /// </summary>
     [JsonPropertyName("accountName")]
     public string AccountName { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the customer's KYC (Know Your Customer) level.
-    /// </summary>
-    [JsonPropertyName("kycLevel")]
-    public string KycLevel { get; set; } = string.Empty;
-
-    /// <summary>
-    ///     Gets or sets the response code indicating the outcome of the verification.
-    /// </summary>
-    [JsonPropertyName("responseCode")]
-    public string ResponseCode { get; set; } = string.Empty;
 }

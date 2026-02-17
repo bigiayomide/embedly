@@ -30,13 +30,13 @@ internal sealed class WalletService : BaseService, IWalletService
     // ===== WALLET CREATION =====
 
     /// <inheritdoc />
-    public async Task<ApiResponse<Wallet>> CreateWalletAsync(CreateWalletRequest request,
+    public async Task<ApiResponse<CreateWalletResponse>> CreateWalletAsync(CreateWalletRequest request,
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/add");
-        return await HttpClient.PostAsync<CreateWalletRequest, Wallet>(url, request, cancellationToken);
+        return await HttpClient.PostAsync<CreateWalletRequest, CreateWalletResponse>(url, request, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -136,23 +136,23 @@ internal sealed class WalletService : BaseService, IWalletService
     // ===== WALLET HISTORY & TRANSACTIONS =====
 
     /// <inheritdoc />
-    public async Task<ApiResponse<List<WalletTransaction>>> GetWalletHistoryAsync(Guid walletId,
+    public async Task<ApiResponse<WalletHistoryResponse>> GetWalletHistoryAsync(GetWalletHistoryRequest request,
         CancellationToken cancellationToken = default)
     {
-        var queryParams = new Dictionary<string, object?> { { "WalletId", walletId } };
+        Guard.ThrowIfNull(request, nameof(request));
+
         var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/history");
-        return await HttpClient.GetAsync<List<WalletTransaction>>(url, queryParams, cancellationToken);
+        return await HttpClient.GetAsync<WalletHistoryResponse>(url, request.ToQueryParameters(), cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<List<WalletTransaction>>> GetWalletHistoryByAccountNumberAsync(string accountNumber,
-        CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<WalletHistoryResponse>> GetWalletHistoryByAccountNumberAsync(
+        GetWalletHistoryByAccountRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(accountNumber, nameof(accountNumber));
+        Guard.ThrowIfNull(request, nameof(request));
 
-        var queryParams = new Dictionary<string, object?> { { "AccountNumber", accountNumber } };
         var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/account-number/history");
-        return await HttpClient.GetAsync<List<WalletTransaction>>(url, queryParams, cancellationToken);
+        return await HttpClient.GetAsync<WalletHistoryResponse>(url, request.ToQueryParameters(), cancellationToken);
     }
 
     /// <inheritdoc />
@@ -213,18 +213,19 @@ internal sealed class WalletService : BaseService, IWalletService
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/wallet/transaction/v2/wallet-to-wallet");
-        return await HttpClient.PutAsync<WalletToWalletTransferRequest, WalletTransferResult>(url, request,
+        return await HttpClient.PostAsync<WalletToWalletTransferRequest, WalletTransferResult>(url, request,
             cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<ApiResponse<WalletTransferStatus>> GetWalletTransferStatusAsync(string reference,
-        CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<WalletTransferStatus>> GetWalletTransferStatusAsync(
+        GetWalletTransferStatusRequest request, CancellationToken cancellationToken = default)
     {
-        Guard.ThrowIfNullOrWhiteSpace(reference, nameof(reference));
+        Guard.ThrowIfNull(request, nameof(request));
 
-        var url = BuildUrl(ServiceUrls.Base, $"api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{reference}");
-        return await HttpClient.GetAsync<WalletTransferStatus>(url, cancellationToken);
+        var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/wallet/transaction/wallet-to-wallet/status");
+        return await HttpClient.PostAsync<GetWalletTransferStatusRequest, WalletTransferStatus>(url, request,
+            cancellationToken);
     }
 
     // ===== WALLET RESTRICTIONS =====

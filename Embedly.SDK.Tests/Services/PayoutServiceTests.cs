@@ -105,7 +105,7 @@ public class PayoutServiceTests : ServiceTestBase
         result.Data.Should().NotBeNull();
         result.Data!.AccountName.Should().NotBeNullOrEmpty();
         result.Data!.AccountNumber.Should().NotBeNullOrEmpty();
-        result.Data!.DestinationInstitutionCode.Should().NotBeNullOrEmpty();
+        result.Data!.DestinationBankCode.Should().NotBeNullOrEmpty();
     }
 
     [Test]
@@ -409,10 +409,9 @@ public class PayoutServiceTests : ServiceTestBase
     {
         return new NameEnquiryResponse
         {
-            DestinationInstitutionCode = "000010",
+            DestinationBankCode = "000010",
             AccountName = "CHECKING ACCOUNT",
-            AccountNumber = "1111111111",
-            SessionId = CreateTestLongId().ToString()
+            AccountNumber = "1111111111"
         };
     }
 
@@ -425,7 +424,7 @@ public class PayoutServiceTests : ServiceTestBase
             DestinationAccountName = "Test Account",
             SourceAccountNumber = "0987654321",
             SourceAccountName = "Source Account",
-            Amount = 50000.0m,
+            Amount = 50000,
             Remarks = "Test transfer",
             CustomerTransactionReference = "TEST-REF-123"
         };

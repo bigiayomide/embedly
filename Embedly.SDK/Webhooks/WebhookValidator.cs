@@ -71,7 +71,7 @@ public sealed class WebhookValidator : IWebhookValidator
         var keyBytes = Encoding.UTF8.GetBytes(_webhookSecret);
         var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
-        using var hmac = new HMACSHA256(keyBytes);
+        using var hmac = new HMACSHA512(keyBytes);
         var hash = hmac.ComputeHash(payloadBytes);
         return Convert.ToHexString(hash).ToLowerInvariant();
     }

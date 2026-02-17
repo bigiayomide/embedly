@@ -18,16 +18,18 @@ public sealed record ActivateAfrigoCardRequest
     public string AccountNumber { get; init; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the card number.
+    ///     Gets or sets the card number (masked format: first 6 digits + asterisks + last 4 digits).
     /// </summary>
+    [Required(ErrorMessage = "Card number is required")]
     [JsonPropertyName("cardNumber")]
-    public string? CardNumber { get; init; }
+    public string CardNumber { get; init; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the 4-digit PIN for the card.
+    ///     Gets or sets the PIN for the card (will be encrypted automatically using RSA).
     /// </summary>
+    [Required(ErrorMessage = "PIN is required")]
     [JsonPropertyName("pin")]
-    public string? Pin { get; set; }
+    public string Pin { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the organization ID.

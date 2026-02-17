@@ -480,8 +480,7 @@ public class CardServiceTests : ServiceTestBase
     {
         return new ResetCardPinRequest
         {
-            CustomerId = CreateTestGuid(),
-            WalletId = CreateTestGuid(),
+            AccountNumber = "1234567890",
             CardNumber = "1234567890123456",
             Pin = "5678"
         };

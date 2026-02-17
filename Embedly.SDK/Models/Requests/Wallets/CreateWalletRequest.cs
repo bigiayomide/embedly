@@ -38,7 +38,6 @@ public sealed class CreateWalletRequest
     /// <summary>
     ///     Gets or sets the customer type ID.
     /// </summary>
-    [Required(ErrorMessage = "Customer type ID is required")]
     [JsonPropertyName("customerTypeId")]
     public string? CustomerTypeId { get; set; }
 

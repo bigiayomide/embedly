@@ -31,11 +31,11 @@ public class WalletServiceTests : ServiceTestBase
     {
         // Arrange
         var request = CreateValidWalletRequest();
-        var expectedWallet = CreateTestWallet();
-        var apiResponse = CreateSuccessfulApiResponse(expectedWallet);
+        var expectedResponse = CreateTestCreateWalletResponse();
+        var apiResponse = CreateSuccessfulApiResponse(expectedResponse);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<CreateWalletRequest, Wallet>(
+            .Setup(x => x.PostAsync<CreateWalletRequest, CreateWalletResponse>(
                 It.Is<string>(url => url.Contains("api/v1/wallets/add")),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -48,10 +48,10 @@ public class WalletServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.CustomerId.Should().Be(expectedWallet.CustomerId);
-        result.Data.Name.Should().Be(expectedWallet.Name);
+        result.Data!.WalletId.Should().Be(expectedResponse.WalletId);
+        result.Data.Message.Should().Be(expectedResponse.Message);
 
-        VerifyHttpClientPostCall<CreateWalletRequest, Wallet>("api/v1/wallets/add", request);
+        VerifyHttpClientPostCall<CreateWalletRequest, CreateWalletResponse>("api/v1/wallets/add", request);
     }
 
     [Test]
@@ -224,7 +224,7 @@ public class WalletServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
-            .Setup(x => x.PutAsync<WalletToWalletTransferRequest, WalletTransferResult>(
+            .Setup(x => x.PostAsync<WalletToWalletTransferRequest, WalletTransferResult>(
                 It.Is<string>(url => url.Contains("api/v1/wallets/wallet/transaction/v2/wallet-to-wallet")),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -241,22 +241,26 @@ public class WalletServiceTests : ServiceTestBase
     }
 
     [Test]
-    public async Task GetWalletTransferStatusAsync_WithValidReference_ReturnsTransferStatus()
+    public async Task GetWalletTransferStatusAsync_WithValidRequest_ReturnsTransferStatus()
     {
         // Arrange
-        var reference = "TXN_12345";
+        var request = new GetWalletTransferStatusRequest
+        {
+            TransactionReference = "TXN_12345"
+        };
         var expectedStatus = CreateTestWalletTransferStatus();
         var apiResponse = CreateSuccessfulApiResponse(expectedStatus);
 
         MockHttpClient
-            .Setup(x => x.GetAsync<WalletTransferStatus>(
+            .Setup(x => x.PostAsync<GetWalletTransferStatusRequest, WalletTransferStatus>(
                 It.Is<string>(url =>
-                    url.Contains($"api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{reference}")),
+                    url.Contains("api/v1/wallets/wallet/transaction/wallet-to-wallet/status")),
+                request,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
         // Act
-        var result = await _walletService.GetWalletTransferStatusAsync(reference);
+        var result = await _walletService.GetWalletTransferStatusAsync(request);
 
         // Assert
         result.Should().NotBeNull();
@@ -437,6 +441,17 @@ public class WalletServiceTests : ServiceTestBase
             FromAccount = "1234567890",
             ToAccount = "0987654321",
             TransactionDate = CreateTestTimestamp().DateTime
+        };
+    }
+
+    private CreateWalletResponse CreateTestCreateWalletResponse()
+    {
+        return new CreateWalletResponse
+        {
+            Message = "Wallet created successfully",
+            WalletId = CreateTestGuid().ToString(),
+            VirtualAccount = "1234567890",
+            MobNum = "+2348012345678"
         };
     }
 

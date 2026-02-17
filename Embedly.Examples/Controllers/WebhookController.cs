@@ -34,7 +34,7 @@ public class WebhookController(
             }
 
             // Get the signature
-            var signature = Request.Headers["X-Auth-Signature"].FirstOrDefault();
+            var signature = Request.Headers["X-Embedly-Signature"].FirstOrDefault();
             if (string.IsNullOrEmpty(signature))
             {
                 logger.LogWarning("Missing webhook signature");

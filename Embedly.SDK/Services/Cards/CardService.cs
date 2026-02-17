@@ -76,13 +76,9 @@ internal sealed class CardService : BaseService, ICardService
     {
         Guard.ThrowIfNull(request, nameof(request));
 
-        // Encrypt PIN if provided
-        var processedRequest = request;
-        if (!string.IsNullOrEmpty(request.Pin))
-        {
-            var encryptedPin = _pinEncryptionService.EncryptPin(request.Pin);
-            processedRequest = request with { Pin = encryptedPin };
-        }
+        // Encrypt PIN
+        var encryptedPin = _pinEncryptionService.EncryptPin(request.Pin);
+        var processedRequest = request with { Pin = encryptedPin };
 
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/reset-card-pin");
         return await HttpClient.PostAsync<ResetCardPinRequest, CardPinOperationResult>(url, processedRequest,
@@ -152,5 +148,16 @@ internal sealed class CardService : BaseService, ICardService
 
         var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/unblock-card");
         return await HttpClient.PostAsync<UnblockCardRequest, AfrigoCard>(url, request, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<SimulateDebitCardTransactionResponse>> SimulateDebitCardTransactionAsync(
+        SimulateDebitCardTransactionRequest request, CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+
+        var url = BuildUrl(ServiceUrls.Cards, "api/v1/operations/cards/afrigo/simulate-debit-card-transaction");
+        return await HttpClient.PostAsync<SimulateDebitCardTransactionRequest, SimulateDebitCardTransactionResponse>(
+            url, request, cancellationToken);
     }
 }

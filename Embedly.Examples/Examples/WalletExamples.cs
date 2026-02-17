@@ -48,9 +48,9 @@ public class WalletExamples(
                 throw new InvalidOperationException($"Wallet creation failed: {response.Error?.Message}");
 
             logger.LogInformation("Wallet created successfully: {WalletId}. Correlation: {CorrelationId}",
-                response.Data.Id, correlationId);
+                response.Data.WalletId, correlationId);
 
-            return response.Data.Id.ToString();
+            return response.Data.WalletId!;
         }, "CreateWallet");
     }
 

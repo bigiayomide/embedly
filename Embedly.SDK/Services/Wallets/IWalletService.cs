@@ -19,7 +19,7 @@ public interface IWalletService
     ///     Creates a new wallet.
     ///     POST /api/v1/wallets/add
     /// </summary>
-    Task<ApiResponse<Wallet>> CreateWalletAsync(CreateWalletRequest request,
+    Task<ApiResponse<CreateWalletResponse>> CreateWalletAsync(CreateWalletRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -93,14 +93,15 @@ public interface IWalletService
     ///     Gets wallet transaction history.
     ///     GET /api/v1/wallets/history
     /// </summary>
-    Task<ApiResponse<List<WalletTransaction>>> GetWalletHistoryAsync(Guid walletId,
+    Task<ApiResponse<WalletHistoryResponse>> GetWalletHistoryAsync(GetWalletHistoryRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets wallet history by account number.
     ///     GET /api/v1/wallets/account-number/history
     /// </summary>
-    Task<ApiResponse<List<WalletTransaction>>> GetWalletHistoryByAccountNumberAsync(string accountNumber,
+    Task<ApiResponse<WalletHistoryResponse>> GetWalletHistoryByAccountNumberAsync(
+        GetWalletHistoryByAccountRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -142,16 +143,16 @@ public interface IWalletService
 
     /// <summary>
     ///     Performs wallet-to-wallet transfer (v2).
-    ///     PUT /api/v1/wallets/wallet/transaction/v2/wallet-to-wallet
+    ///     POST /api/v1/wallets/wallet/transaction/v2/wallet-to-wallet
     /// </summary>
     Task<ApiResponse<WalletTransferResult>> WalletToWalletTransferAsync(WalletToWalletTransferRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets wallet-to-wallet transfer status.
-    ///     GET /api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{reference}
+    ///     POST /api/v1/wallets/wallet/transaction/wallet-to-wallet/status
     /// </summary>
-    Task<ApiResponse<WalletTransferStatus>> GetWalletTransferStatusAsync(string reference,
+    Task<ApiResponse<WalletTransferStatus>> GetWalletTransferStatusAsync(GetWalletTransferStatusRequest request,
         CancellationToken cancellationToken = default);
 
     // ===== WALLET RESTRICTIONS =====

@@ -9,47 +9,30 @@ namespace Embedly.SDK.Models.Requests.Wallets;
 public sealed record SimulateInflowRequest
 {
     /// <summary>
-    ///     Gets or sets the destination account number.
+    ///     Gets or sets the beneficiary account name.
     /// </summary>
-    [Required(ErrorMessage = "Account number is required")]
-    [JsonPropertyName("accountNumber")]
-    public string AccountNumber { get; init; } = string.Empty;
+    [Required(ErrorMessage = "Beneficiary account name is required")]
+    [JsonPropertyName("beneficiaryAccountName")]
+    public string BeneficiaryAccountName { get; init; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the beneficiary account number.
+    /// </summary>
+    [Required(ErrorMessage = "Beneficiary account number is required")]
+    [JsonPropertyName("beneficiaryAccountNumber")]
+    public string BeneficiaryAccountNumber { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the amount to credit.
     /// </summary>
     [Required(ErrorMessage = "Amount is required")]
-    [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Amount must be greater than 0")]
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the transaction reference.
-    /// </summary>
-    [JsonPropertyName("transactionReference")]
-    public string? TransactionReference { get; init; }
+    public string Amount { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the narration/remarks for the transaction.
     /// </summary>
+    [Required(ErrorMessage = "Narration is required")]
     [JsonPropertyName("narration")]
-    public string? Narration { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the sender's name.
-    /// </summary>
-    [JsonPropertyName("senderName")]
-    public string? SenderName { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the sender's account number.
-    /// </summary>
-    [JsonPropertyName("senderAccountNumber")]
-    public string? SenderAccountNumber { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the sender's bank name.
-    /// </summary>
-    [JsonPropertyName("senderBankName")]
-    public string? SenderBankName { get; init; }
+    public string Narration { get; init; } = string.Empty;
 }

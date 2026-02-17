@@ -1,37 +1,31 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Embedly.SDK.Models.Requests.Cards;
 
 /// <summary>
-///     Request model for resetting an Afrigo card PIN based on CardResetPinRequestDto schema.
+///     Request model for resetting an Afrigo card PIN.
 /// </summary>
 public sealed record ResetCardPinRequest
 {
     /// <summary>
-    ///     Gets or sets the customer ID.
+    ///     Gets or sets the account number.
     /// </summary>
-    [Required(ErrorMessage = "Customer ID is required")]
-    [JsonPropertyName("customerId")]
-    public Guid CustomerId { get; init; }
-
-    /// <summary>
-    ///     Gets or sets the wallet ID.
-    /// </summary>
-    [Required(ErrorMessage = "Wallet ID is required")]
-    [JsonPropertyName("walletId")]
-    public Guid WalletId { get; init; }
+    [Required(ErrorMessage = "Account number is required")]
+    [JsonPropertyName("accountNumber")]
+    public string AccountNumber { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the card number.
     /// </summary>
+    [Required(ErrorMessage = "Card number is required")]
     [JsonPropertyName("cardNumber")]
-    public string? CardNumber { get; init; }
+    public string CardNumber { get; init; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the new PIN.
+    ///     Gets or sets the new PIN (will be encrypted automatically).
     /// </summary>
+    [Required(ErrorMessage = "PIN is required")]
     [JsonPropertyName("pin")]
-    public string? Pin { get; init; }
+    public string Pin { get; init; } = string.Empty;
 }

@@ -275,8 +275,8 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
                 return (customerId, Guid.Empty, null);
             }
 
-            var walletId = walletResponse.Data.Id;
-            var accountNumber = walletResponse.Data.VirtualAccount?.AccountNumber;
+            var walletId = Guid.Parse(walletResponse.Data.WalletId!);
+            var accountNumber = walletResponse.Data.VirtualAccount;
 
             return (customerId, walletId, accountNumber);
         }
@@ -420,8 +420,7 @@ public class CardPinWorkflowIntegrationTests : IntegrationTestBase
 
         var resetRequest = new ResetCardPinRequest
         {
-            CustomerId = customerId,
-            WalletId = walletId,
+            AccountNumber = cardNumber,
             CardNumber = cardNumber,
             Pin = newPin
         };

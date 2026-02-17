@@ -12,8 +12,9 @@ public sealed class BankTransferRequest
     /// <summary>
     ///     Gets or sets the destination bank code.
     /// </summary>
+    [Required(ErrorMessage = "Destination bank code is required")]
     [JsonPropertyName("destinationBankCode")]
-    public string? DestinationBankCode { get; set; }
+    public string DestinationBankCode { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the destination account number.
@@ -26,8 +27,9 @@ public sealed class BankTransferRequest
     /// <summary>
     ///     Gets or sets the destination account name.
     /// </summary>
+    [Required(ErrorMessage = "Destination account name is required")]
     [JsonPropertyName("destinationAccountName")]
-    public string? DestinationAccountName { get; set; }
+    public string DestinationAccountName { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the source account number.
@@ -40,38 +42,41 @@ public sealed class BankTransferRequest
     /// <summary>
     ///     Gets or sets the source account name.
     /// </summary>
+    [Required(ErrorMessage = "Source account name is required")]
     [JsonPropertyName("sourceAccountName")]
-    public string? SourceAccountName { get; set; }
+    public string SourceAccountName { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the transfer remarks.
     /// </summary>
+    [Required(ErrorMessage = "Remarks is required")]
     [JsonPropertyName("remarks")]
-    public string? Remarks { get; set; }
+    public string Remarks { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the customer transaction reference.
+    ///     Gets or sets the amount to transfer (in smallest currency unit, e.g., kobo).
+    /// </summary>
+    [Required(ErrorMessage = "Amount is required")]
+    [JsonPropertyName("amount")]
+    public int Amount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the currency ID.
+    /// </summary>
+    [Required(ErrorMessage = "Currency ID is required")]
+    [JsonPropertyName("currencyId")]
+    public Guid CurrencyId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the customer transaction reference (optional).
     /// </summary>
     [JsonPropertyName("customerTransactionReference")]
     public string? CustomerTransactionReference { get; set; }
 
     /// <summary>
-    ///     Gets or sets the amount to transfer.
+    ///     Gets or sets the staging status for testing. Only used in staging environment.
+    ///     Valid values: "success", "failed".
     /// </summary>
-    [Required(ErrorMessage = "Amount is required")]
-    [Range(typeof(decimal), "1.5", "79228162514264337593543950335", ErrorMessage = "Amount must be at least 1.5")]
-    [JsonPropertyName("amount")]
-    public decimal Amount { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the currency ID.
-    /// </summary>
-    [JsonPropertyName("currencyId")]
-    public Guid? CurrencyId { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the webhook URL.
-    /// </summary>
-    [JsonPropertyName("webhookUrl")]
-    public string? WebhookUrl { get; set; }
+    [JsonPropertyName("stagingStatus")]
+    public string? StagingStatus { get; set; }
 }
