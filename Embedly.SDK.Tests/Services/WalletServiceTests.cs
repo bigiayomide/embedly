@@ -224,7 +224,7 @@ public class WalletServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedResult);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<WalletToWalletTransferRequest, WalletTransferResult>(
+            .Setup(x => x.PutAsync<WalletToWalletTransferRequest, WalletTransferResult>(
                 It.Is<string>(url => url.Contains("api/v1/wallets/wallet/transaction/v2/wallet-to-wallet")),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -372,8 +372,8 @@ public class WalletServiceTests : ServiceTestBase
     {
         return new WalletToWalletTransferRequest
         {
-            FromAccount = "1234567890",
-            ToAccount = "0987654321",
+            SourceAccountNumber = "1234567890",
+            DestinationAccountNumber = "0987654321",
             Amount = 1000.00m,
             Remarks = "Test transfer",
             TransactionReference = "TXN_TEST_12345"

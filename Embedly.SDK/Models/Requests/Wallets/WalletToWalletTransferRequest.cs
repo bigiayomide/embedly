@@ -11,16 +11,16 @@ public sealed record WalletToWalletTransferRequest
     /// <summary>
     ///     Gets or sets the source account number.
     /// </summary>
-    [Required(ErrorMessage = "FromAccount is required")]
-    [JsonPropertyName("fromAccount")]
-    public string FromAccount { get; init; } = string.Empty;
+    [Required(ErrorMessage = "SourceAccountNumber is required")]
+    [JsonPropertyName("sourceAccountNumber")]
+    public string SourceAccountNumber { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the destination account number.
     /// </summary>
-    [Required(ErrorMessage = "ToAccount is required")]
-    [JsonPropertyName("toAccount")]
-    public string ToAccount { get; init; } = string.Empty;
+    [Required(ErrorMessage = "DestinationAccountNumber is required")]
+    [JsonPropertyName("destinationAccountNumber")]
+    public string DestinationAccountNumber { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the transfer amount.

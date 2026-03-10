@@ -213,7 +213,7 @@ internal sealed class WalletService : BaseService, IWalletService
         Guard.ThrowIfNull(request, nameof(request));
 
         var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/wallet/transaction/v2/wallet-to-wallet");
-        return await HttpClient.PostAsync<WalletToWalletTransferRequest, WalletTransferResult>(url, request,
+        return await HttpClient.PutAsync<WalletToWalletTransferRequest, WalletTransferResult>(url, request,
             cancellationToken);
     }
 
