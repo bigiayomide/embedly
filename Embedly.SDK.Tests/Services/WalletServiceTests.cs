@@ -220,11 +220,10 @@ public class WalletServiceTests : ServiceTestBase
     {
         // Arrange
         var request = CreateValidWalletTransferRequest();
-        var expectedResult = CreateTestWalletTransferResult();
-        var apiResponse = CreateSuccessfulApiResponse(expectedResult);
+        var apiResponse = CreateSuccessfulApiResponse(0);
 
         MockHttpClient
-            .Setup(x => x.PutAsync<WalletToWalletTransferRequest, WalletTransferResult>(
+            .Setup(x => x.PutAsync<WalletToWalletTransferRequest, int>(
                 It.Is<string>(url => url.Contains("api/v1/wallets/wallet/transaction/v2/wallet-to-wallet")),
                 request,
                 It.IsAny<CancellationToken>()))
@@ -236,8 +235,7 @@ public class WalletServiceTests : ServiceTestBase
         // Assert
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.TransactionReference.Should().Be(expectedResult.TransactionReference);
+        result.Data.Should().Be(0);
     }
 
     [Test]
@@ -416,17 +414,6 @@ public class WalletServiceTests : ServiceTestBase
             AccountNumber = "1234567890",
             BankName = "Test Bank",
             BankCode = "001"
-        };
-    }
-
-    private WalletTransferResult CreateTestWalletTransferResult()
-    {
-        return new WalletTransferResult
-        {
-            TransactionReference = "TXN_12345",
-            Success = true,
-            Message = "Transfer completed successfully",
-            TransactionId = CreateTestGuid()
         };
     }
 
