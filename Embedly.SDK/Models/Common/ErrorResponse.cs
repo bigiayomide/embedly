@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Embedly.SDK.Models.Common;
@@ -40,9 +41,20 @@ public sealed class ErrorResponse
 
     /// <summary>
     ///     Gets the first available error message in order of preference.
+    ///     Includes validation errors from the <see cref="Errors"/> dictionary when present.
     /// </summary>
     public string? GetErrorMessage()
     {
-        return Message ?? Error ?? ErrorCapital;
+        var baseMessage = Message ?? Error ?? ErrorCapital;
+
+        if (Errors is not { Count: > 0 })
+            return baseMessage;
+
+        var validationDetails = string.Join("; ",
+            Errors.Select(e => $"{e.Key}: {string.Join(", ", e.Value)}"));
+
+        return string.IsNullOrEmpty(baseMessage)
+            ? validationDetails
+            : $"{baseMessage} — {validationDetails}";
     }
 }

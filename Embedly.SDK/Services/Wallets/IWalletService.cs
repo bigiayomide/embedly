@@ -145,7 +145,7 @@ public interface IWalletService
     ///     Performs wallet-to-wallet transfer (v2).
     ///     PUT /api/v1/wallets/wallet/transaction/v2/wallet-to-wallet
     /// </summary>
-    Task<ApiResponse<WalletTransferResult>> WalletToWalletTransferAsync(WalletToWalletTransferRequest request,
+    Task<ApiResponse<int>> WalletToWalletTransferAsync(WalletToWalletTransferRequest request,
         CancellationToken cancellationToken = default);
 
     /// <summary>

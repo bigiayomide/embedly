@@ -12,7 +12,7 @@ public sealed record SimulateDebitCardTransactionRequest
     ///     Gets or sets the account number.
     /// </summary>
     [Required(ErrorMessage = "Account number is required")]
-    [JsonPropertyName("AccountNumber")]
+    [JsonPropertyName("accountNumber")]
     public string AccountNumber { get; init; } = string.Empty;
 
     /// <summary>
@@ -26,6 +26,6 @@ public sealed record SimulateDebitCardTransactionRequest
     ///     Gets or sets the transaction type. Valid values: "POS", "ATM".
     /// </summary>
     [Required(ErrorMessage = "Transaction type is required")]
-    [JsonPropertyName("TransactionType")]
+    [JsonPropertyName("transactionType")]
     public string TransactionType { get; init; } = string.Empty;
 }

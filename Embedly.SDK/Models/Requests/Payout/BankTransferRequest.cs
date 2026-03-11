@@ -58,7 +58,7 @@ public sealed class BankTransferRequest
     /// </summary>
     [Required(ErrorMessage = "Amount is required")]
     [JsonPropertyName("amount")]
-    public int Amount { get; set; }
+    public long Amount { get; set; }
 
     /// <summary>
     ///     Gets or sets the currency ID.

@@ -17,5 +17,5 @@ public sealed class GetPayoutLimitsRequest
     ///     Gets or sets the page size.
     /// </summary>
     [Range(1, 100, ErrorMessage = "Page size must be between 1 and 100")]
-    public int PageSize { get; set; } = 1;
+    public int PageSize { get; set; } = 20;
 }
