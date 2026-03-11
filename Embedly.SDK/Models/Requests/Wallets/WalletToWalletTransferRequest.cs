@@ -12,14 +12,14 @@ public sealed record WalletToWalletTransferRequest
     ///     Gets or sets the source account number.
     /// </summary>
     [Required(ErrorMessage = "SourceAccountNumber is required")]
-    [JsonPropertyName("sourceAccountNumber")]
+    [JsonPropertyName("fromAccount")]
     public string SourceAccountNumber { get; init; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the destination account number.
     /// </summary>
     [Required(ErrorMessage = "DestinationAccountNumber is required")]
-    [JsonPropertyName("destinationAccountNumber")]
+    [JsonPropertyName("toAccount")]
     public string DestinationAccountNumber { get; init; } = string.Empty;
 
     /// <summary>
