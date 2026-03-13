@@ -64,11 +64,6 @@ public sealed class ApiResponse<T>
     [JsonPropertyName("code")]
     public string? Code { get; set; }
     
-    /// <summary>
-    ///     Gets or sets a value indicating whether the request succeeded.
-    /// </summary>
-    [JsonPropertyName("succeeded")]
-    public bool Succeeded { get; set; }
 }
 
 /// <summary>

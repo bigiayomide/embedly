@@ -135,7 +135,7 @@ public class PayoutServiceTests : ServiceTestBase
 
         // Assert
         result.Should().NotBeNull();
-        result.Succeeded.Should().BeTrue();
+        result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
     }
 
