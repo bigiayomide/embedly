@@ -72,7 +72,6 @@ public abstract class ServiceTestBase : TestBase
         return new ApiResponse<T>
         {
             Success = true,
-            Succeeded = true,
             Data = data,
             Message = message ?? "Operation completed successfully",
             RequestId = "test-request-id",
