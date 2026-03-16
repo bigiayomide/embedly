@@ -242,9 +242,7 @@ public class UtilityServiceTests : ServiceTestBase
         {
             Code = "CA",
             Name = "Canada",
-            Code3 = "CAN",
-            DialCode = "+1",
-            IsActive = true
+            Code3 = "CAN"
         };
     }
 
@@ -255,9 +253,7 @@ public class UtilityServiceTests : ServiceTestBase
             Id = CreateTestGuid().ToString(),
             Code = code,
             Name = name,
-            Code3 = code == "NG" ? "NGA" : "USA",
-            DialCode = code == "NG" ? "+234" : "+1",
-            IsActive = true
+            Code3 = code == "NG" ? "NGA" : "USA"
         };
     }
 

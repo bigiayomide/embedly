@@ -22,24 +22,12 @@ public sealed class Country
     /// <summary>
     ///     Gets or sets the country code (ISO 2-letter).
     /// </summary>
-    [JsonPropertyName("code")]
+    [JsonPropertyName("countryCodeTwo")]
     public string Code { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the country code (ISO 3-letter).
     /// </summary>
-    [JsonPropertyName("code3")]
+    [JsonPropertyName("countryCodeThree")]
     public string? Code3 { get; set; }
-
-    /// <summary>
-    ///     Gets or sets whether the country is active.
-    /// </summary>
-    [JsonPropertyName("isActive")]
-    public bool IsActive { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the country dial code.
-    /// </summary>
-    [JsonPropertyName("dialCode")]
-    public string? DialCode { get; set; }
 }

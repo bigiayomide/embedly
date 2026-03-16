@@ -207,9 +207,6 @@ internal sealed class EmbedlyHttpClient : IEmbedlyHttpClient, IDisposable
 
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
 
-        // Add authentication header
-        request.Headers.Add("Authorization", $"Bearer {_options.ApiKey}");
-
         // Create multipart content
         using var multipartContent = new MultipartFormDataContent();
         using var streamContent = new StreamContent(fileStream);

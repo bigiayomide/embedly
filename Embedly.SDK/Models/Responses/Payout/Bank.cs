@@ -10,12 +10,12 @@ public sealed class Bank
     /// <summary>
     ///     Gets or sets the bank code.
     /// </summary>
-    [JsonPropertyName("bankcode")]
+    [JsonPropertyName("bankCode")]
     public string BankCode { get; set; } = string.Empty;
 
     /// <summary>
     ///     Gets or sets the bank name.
     /// </summary>
-    [JsonPropertyName("bankname")]
+    [JsonPropertyName("bankName")]
     public string BankName { get; set; } = string.Empty;
 }

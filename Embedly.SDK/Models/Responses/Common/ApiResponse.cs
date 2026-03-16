@@ -12,9 +12,21 @@ public sealed class ApiResponse<T>
 {
     /// <summary>
     ///     Gets or sets a value indicating whether the request was successful.
+    ///     Maps to "success" (WaaS API) — also set by <see cref="Succeeded"/> for Payout API compatibility.
     /// </summary>
     [JsonPropertyName("success")]
     public bool Success { get; set; }
+
+    /// <summary>
+    ///     Payout API uses "succeeded" instead of "success". This property ensures
+    ///     both response formats are handled correctly.
+    /// </summary>
+    [JsonPropertyName("succeeded")]
+    public bool Succeeded
+    {
+        get => Success;
+        set => Success = value;
+    }
 
     /// <summary>
     ///     Gets or sets the response message.
