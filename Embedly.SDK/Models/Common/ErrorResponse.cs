@@ -16,16 +16,10 @@ public sealed class ErrorResponse
     public string? Message { get; set; }
 
     /// <summary>
-    ///     Gets or sets the error.
+    ///     Gets or sets the error field (handles both "error" and "Error" via case-insensitive deserialization).
     /// </summary>
     [JsonPropertyName("error")]
     public string? Error { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the Error with capital E.
-    /// </summary>
-    [JsonPropertyName("Error")]
-    public string? ErrorCapital { get; set; }
 
     /// <summary>
     ///     Gets or sets the error code.
@@ -45,7 +39,7 @@ public sealed class ErrorResponse
     /// </summary>
     public string? GetErrorMessage()
     {
-        var baseMessage = Message ?? Error ?? ErrorCapital;
+        var baseMessage = Message ?? Error;
 
         if (Errors is not { Count: > 0 })
             return baseMessage;

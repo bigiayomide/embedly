@@ -137,8 +137,10 @@ internal sealed class LoggingHandler : DelegatingHandler
                     sb.AppendLine($"    {header.Key}: {string.Join(", ", header.Value)}");
             }
 
-            // Log response body if enabled
-            if (_options.LogRequestBodies && response.Content != null)
+            // Always log response body on errors (critical for debugging);
+            // only log success bodies when LogRequestBodies is enabled (may contain sensitive data)
+            var shouldLogBody = !response.IsSuccessStatusCode || _options.LogRequestBodies;
+            if (shouldLogBody && response.Content != null)
                 try
                 {
                     var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
