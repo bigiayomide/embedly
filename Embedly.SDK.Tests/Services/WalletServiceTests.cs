@@ -250,10 +250,9 @@ public class WalletServiceTests : ServiceTestBase
         var apiResponse = CreateSuccessfulApiResponse(expectedStatus);
 
         MockHttpClient
-            .Setup(x => x.PostAsync<GetWalletTransferStatusRequest, WalletTransferStatus>(
+            .Setup(x => x.GetAsync<WalletTransferStatus>(
                 It.Is<string>(url =>
-                    url.Contains("api/v1/wallets/wallet/transaction/wallet-to-wallet/status")),
-                request,
+                    url.Contains("api/v1/wallets/wallet/transaction/wallet-to-wallet/status/TXN_12345")),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(apiResponse);
 
@@ -264,7 +263,7 @@ public class WalletServiceTests : ServiceTestBase
         result.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.TransactionReference.Should().Be(expectedStatus.TransactionReference);
+        result.Data!.Reference.Should().Be(expectedStatus.Reference);
     }
 
     [Test]
@@ -421,13 +420,9 @@ public class WalletServiceTests : ServiceTestBase
     {
         return new WalletTransferStatus
         {
-            TransactionReference = "TXN_12345",
-            Status = "successful",
-            StatusDescription = "Transfer completed successfully",
-            Amount = 1000.00m,
-            FromAccount = "1234567890",
-            ToAccount = "0987654321",
-            TransactionDate = CreateTestTimestamp().DateTime
+            Reference = "TXN_12345",
+            Status = "Success",
+            Timestamp = CreateTestTimestamp().DateTime
         };
     }
 

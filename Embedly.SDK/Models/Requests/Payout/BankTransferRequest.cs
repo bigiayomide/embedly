@@ -54,7 +54,8 @@ public sealed class BankTransferRequest
     public string Remarks { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the amount to transfer (in smallest currency unit, e.g., kobo).
+    ///     Gets or sets the amount to transfer in the major currency unit (e.g., naira).
+    ///     The API expects whole naira amounts, not kobo.
     /// </summary>
     [Required(ErrorMessage = "Amount is required")]
     [JsonPropertyName("amount")]

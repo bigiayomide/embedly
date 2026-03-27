@@ -222,10 +222,10 @@ internal sealed class WalletService : BaseService, IWalletService
         GetWalletTransferStatusRequest request, CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfNullOrWhiteSpace(request.TransactionReference, nameof(request.TransactionReference));
 
-        var url = BuildUrl(ServiceUrls.Base, "api/v1/wallets/wallet/transaction/wallet-to-wallet/status");
-        return await HttpClient.PostAsync<GetWalletTransferStatusRequest, WalletTransferStatus>(url, request,
-            cancellationToken);
+        var url = BuildUrl(ServiceUrls.Base, $"api/v1/wallets/wallet/transaction/wallet-to-wallet/status/{request.TransactionReference}");
+        return await HttpClient.GetAsync<WalletTransferStatus>(url, cancellationToken);
     }
 
     // ===== WALLET RESTRICTIONS =====
