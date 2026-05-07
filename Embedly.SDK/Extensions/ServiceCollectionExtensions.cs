@@ -4,6 +4,7 @@ using System.Net.Http;
 using Embedly.SDK.Configuration;
 using Embedly.SDK.Http;
 using Embedly.SDK.Http.Handlers;
+using Embedly.SDK.Notifications;
 using Embedly.SDK.Services.Cards;
 using Embedly.SDK.Services.Checkout;
 using Embedly.SDK.Services.CorporateCustomers;
@@ -77,6 +78,12 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<AuthenticationHandler>();
         services.TryAddTransient<LoggingHandler>();
 
+        // Default no-op availability notifier. Apps that want circuit-state alerts override
+        // this with their own singleton implementation BEFORE calling AddEmbedly (TryAdd is
+        // a no-op when something is already registered) — or the SDK's TryAdd registers the
+        // null implementation as a fallback.
+        services.TryAddSingleton<IEmbedlyAvailabilityNotifier, NullEmbedlyAvailabilityNotifier>();
+
         services.AddHttpClient<IEmbedlyHttpClient, EmbedlyHttpClient>((serviceProvider, client) =>
             {
                 var options = serviceProvider.GetRequiredService<IOptions<EmbedlyOptions>>().Value;
@@ -88,7 +95,7 @@ public static class ServiceCollectionExtensions
             .AddHttpMessageHandler<AuthenticationHandler>()
             .AddHttpMessageHandler<LoggingHandler>()
             .AddPolicyHandler(GetRetryPolicy())
-            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            .AddPolicyHandler((sp, _) => GetCircuitBreakerPolicy(sp));
 
         // Register all services
         services.TryAddScoped<ICustomerService, CustomerService>();
@@ -123,13 +130,53 @@ public static class ServiceCollectionExtensions
                 });
     }
 
-    private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+    // Polly's circuit breaker is stateful — every HTTP call must hit the SAME policy
+    // instance for break/half-open/reset transitions to work correctly. AddPolicyHandler's
+    // factory overload is invoked per-request, so we cache the policy in a static field
+    // (lock-protected) on first resolution. The cached policy holds a captured reference
+    // to the IEmbedlyAvailabilityNotifier resolved from DI.
+    private static readonly object _circuitBreakerLock = new();
+    private static IAsyncPolicy<HttpResponseMessage>? _cachedCircuitBreakerPolicy;
+
+    private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(IServiceProvider serviceProvider)
     {
-        return HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .CircuitBreakerAsync(
-                5,
-                TimeSpan.FromSeconds(30));
+        if (_cachedCircuitBreakerPolicy is { } cached) return cached;
+
+        lock (_circuitBreakerLock)
+        {
+            if (_cachedCircuitBreakerPolicy is { } cachedAfterLock) return cachedAfterLock;
+
+            var notifier = serviceProvider.GetRequiredService<IEmbedlyAvailabilityNotifier>();
+
+            _cachedCircuitBreakerPolicy = HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .CircuitBreakerAsync(
+                    handledEventsAllowedBeforeBreaking: 5,
+                    durationOfBreak: TimeSpan.FromSeconds(30),
+                    onBreak: (outcome, breakDuration) =>
+                    {
+                        notifier.OnCircuitBreak(new EmbedlyCircuitBreakInfo(
+                            outcome.Exception,
+                            (int?)outcome.Result?.StatusCode,
+                            breakDuration));
+                    },
+                    onReset: () => notifier.OnCircuitReset(),
+                    onHalfOpen: () => notifier.OnCircuitHalfOpen());
+
+            return _cachedCircuitBreakerPolicy;
+        }
+    }
+
+    /// <summary>
+    ///     Test hook: clears the cached circuit-breaker policy so each test gets a fresh
+    ///     instance. Production code never calls this.
+    /// </summary>
+    internal static void ResetCircuitBreakerPolicyCache()
+    {
+        lock (_circuitBreakerLock)
+        {
+            _cachedCircuitBreakerPolicy = null;
+        }
     }
 }
 
