@@ -1,8 +1,9 @@
 namespace Embedly.SDK.Notifications;
 
 /// <summary>
-///     Default no-op notifier. Registered by the SDK via <see cref="Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton" />,
-///     so apps that don't provide their own implementation get silent behaviour.
+///     Default no-op notifier. The SDK registers this via <c>TryAddSingleton</c> so apps that
+///     don't provide their own <see cref="IEmbedlyAvailabilityNotifier" /> implementation get
+///     silent behaviour.
 /// </summary>
 internal sealed class NullEmbedlyAvailabilityNotifier : IEmbedlyAvailabilityNotifier
 {
