@@ -172,24 +172,93 @@ var inflow = await embedlyClient.Wallets.SimulateInflowAsync(new SimulateInflowR
 
 ### Checkout (Dynamic Account Generation)
 ```csharp
-// Get organization prefix mappings (required for checkout)
-var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(organizationId);
+var organizationId = Guid.Parse("your-organization-id");
 
-// Create checkout wallet (generates dynamic account for payment)
-var checkout = await embedlyClient.Checkout.CreateCheckoutWalletAsync(new GenerateCheckoutWalletRequest
+// Get organization prefix mappings (required to create checkout wallets)
+var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(
+    organizationId, page: 1, pageSize: 10, search: null);  // page, pageSize and search are optional
+
+// Create a checkout wallet (generates a temporary account for a one-time payment)
+var checkout = await embedlyClient.Checkout.GenerateCheckoutWalletAsync(new GenerateCheckoutWalletRequest
 {
     OrganizationId = organizationId,
     ExpectedAmount = 15000.00m,  // Uses decimal for precision
-    OrganizationPrefixMappingId = prefixes.Data[0].Id,
-    ExpiryDurationMinutes = 30  // Optional, defaults to 30
+    OrganizationPrefixMappingId = prefixes.Data![0].Id,
+    ExpiryDurationMinutes = 30,  // Optional, defaults to 30
+    // Optional details
+    InvoiceReference = "INV-001",
+    Description = "Order #1234",
+    CurrencyCode = "NGN",
+    CustomerEmail = "customer@example.com",
+    CustomerName = "Jane Doe"
+});
+Console.WriteLine($"Pay into {checkout.Data!.WalletNumber} (ref: {checkout.Data.CheckoutRef})");
+
+// List checkout wallets (paginated and filterable)
+var wallets = await embedlyClient.Checkout.GetCheckoutWalletsAsync(new GetCheckoutWalletsRequest
+{
+    OrganizationId = organizationId,
+    Page = 1,          // Optional, defaults to 1
+    PageSize = 10,     // Optional, defaults to 10
+    Status = "Used"    // Optional: Used, Failed, Reversed, Completed or Expired
+    // Also: StartDate, EndDate, WalletNumber, OrganizationPrefixMappingId
+});
+Console.WriteLine($"{wallets.Pagination?.TotalItems} wallets in total");
+
+// Get a checkout wallet with its checkout history and received payments
+var details = await embedlyClient.Checkout.GetCheckoutWalletWithTransactionsAsync(
+    checkout.Data.Id, organizationId);
+foreach (var payment in details.Data!.Transactions ?? new())
+    Console.WriteLine($"{payment.SenderName} paid {payment.Amount} ({payment.Status})");
+```
+
+#### Split Payments
+A checkout wallet's payment can be split across split beneficiaries.
+```csharp
+// Create a split beneficiary
+var beneficiary = await embedlyClient.Checkout.CreateSplitBeneficiaryAsync(new CreateSplitBeneficiaryRequest
+{
+    OrganizationId = organizationId,
+    BeneficiaryName = "John Doe",
+    AccountNumber = "0123456789",
+    // Optional details
+    BankCode = "000013",
+    BankName = "GTBank Plc",
+    BeneficiaryAlias = "Supplier"
 });
 
-// Get checkout wallet details
-var checkoutDetails = await embedlyClient.Checkout.GetCheckoutWalletAsync(checkout.Data.Id);
+// Create a checkout wallet whose payment is split
+var splitCheckout = await embedlyClient.Checkout.GenerateCheckoutWalletAsync(new GenerateCheckoutWalletRequest
+{
+    OrganizationId = organizationId,
+    ExpectedAmount = 20000.00m,
+    OrganizationPrefixMappingId = prefixes.Data[0].Id,
+    SplitType = "Fixed",  // "Fixed" or "Percentage"
+    IncomeSplitConfig = new List<IncomeSplitConfig>
+    {
+        new() { BeneficiaryId = beneficiary.Data!.Id, SplitValue = 5000.00m, FeeValue = 0m, FeeBearer = false }
+    }
+});
 
-// Get checkout transactions
-var transactions = await embedlyClient.Checkout.GetCheckoutWalletTransactionsAsync(
-    checkout.Data.Id, page: 1, pageSize: 20);
+// List split beneficiaries (paginated and filterable)
+var beneficiaries = await embedlyClient.Checkout.GetSplitBeneficiariesAsync(new GetSplitBeneficiariesRequest
+{
+    OrganizationId = organizationId,
+    Page = 1,           // Optional, defaults to 1
+    PageSize = 10,      // Optional, defaults to 10
+    IsActive = true,    // Optional
+    SearchTerm = "John" // Optional
+});
+Console.WriteLine($"{beneficiaries.Data!.TotalCount} beneficiaries in total");
+
+// Deactivate or reactivate a split beneficiary
+var statusRequest = new SplitBeneficiaryStatusRequest
+{
+    BeneficiaryId = beneficiary.Data.Id,
+    OrganizationId = organizationId
+};
+await embedlyClient.Checkout.DeactivateSplitBeneficiaryAsync(statusRequest);
+await embedlyClient.Checkout.ActivateSplitBeneficiaryAsync(statusRequest);
 ```
 
 ### Payout (Bank Transfers)
@@ -407,7 +476,7 @@ var request = new BankTransferRequest { Amount = 5000.00m };
 - `FundWalletRequest.Amount`
 - `PendingTransactionRequest.Amount`
 - `SimulateInflowRequest.Amount`
-- Various response models (`WalletDetails`, `CheckoutSession`, etc.)
+- Various response models (`WalletDetails`, `CheckoutWallet`, etc.)
 
 #### KYC Verify Parameter Type Change
 
@@ -432,6 +501,61 @@ var request = new GenerateCheckoutWalletRequest { ExpiryDurationMinutes = 30 };
 // After - optional, defaults to 30
 var request = new GenerateCheckoutWalletRequest { /* uses default */ };
 ```
+
+### Breaking Changes in the Checkout API Update
+
+The Checkout service was updated to match the current [Checkout API documentation](https://developer.embedly.ng/api-reference/checkout). See the [Checkout section](#checkout-dynamic-account-generation) for full examples, including the new split payment methods.
+
+#### Organization Prefix Mappings Use a New Endpoint and Response
+
+`GetOrganizationPrefixMappingsAsync` now calls `GET /api/v1/prefix-map/me` and supports pagination and search. The optional `page`, `pageSize` and `search` parameters come before the cancellation token, so a token passed positionally must now be named:
+
+```csharp
+// Before
+var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(organizationId, cancellationToken);
+
+// After
+var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(
+    organizationId, cancellationToken: cancellationToken);
+
+// Or with the new request object
+var prefixes = await embedlyClient.Checkout.GetOrganizationPrefixMappingsAsync(
+    new GetOrganizationPrefixMappingsRequest { OrganizationId = organizationId, Page = 1, PageSize = 10 });
+```
+
+`OrganizationPrefixMapping` now matches the new response:
+
+- **Removed:** `PrimaryPrefix`, `BankName`, `BankCode`, `IsActive`, `CreatedAt`, `UpdatedAt`
+- **Added:** `PrimaryPrefixId`, `Alias`, `OrganizationName`, `OrganizationIsActive` (a string such as `"active"`, not a `bool`)
+
+#### `GetCheckoutWalletsRequest` Changes
+
+- `PageSize` now defaults to `10` (was `20`).
+- `StartDate` and `EndDate` changed from `DateTime?` to `string?` and are sent to the API as given, rather than being formatted by the SDK.
+- New optional `OrganizationPrefixMappingId` (`Guid?`) filter.
+
+```csharp
+// Before
+var request = new GetCheckoutWalletsRequest { OrganizationId = organizationId, StartDate = new DateTime(2025, 11, 1) };
+
+// After
+var request = new GetCheckoutWalletsRequest { OrganizationId = organizationId, StartDate = "2025-11-01" };
+```
+
+#### `CheckoutWallet` Properties Removed
+
+`OrganizationPrefixMappingId`, `PrimaryPrefix`, `SecondaryPrefix` and `AutoGeneratedSuffix` were removed. The Checkout API no longer returns them.
+
+`CheckoutWallet` also gained new properties: `CheckoutRef`, `InvoiceReference`, `Description`, `CurrencyCode`, `CustomerEmail`, `CustomerName`, `Metadata`, `SplitType`, `SplitConfigurations`, `WalletHistories` and `Transactions` (the last is populated by `GetCheckoutWalletWithTransactionsAsync`).
+
+#### Empty Organization IDs Are Rejected
+
+All Checkout methods now throw `ArgumentException` (parameter name `organizationId`) when the organization ID is `Guid.Empty`, instead of sending it to the API. The split beneficiary activate/deactivate methods do the same for an empty `BeneficiaryId`.
+
+#### Behavior Changes
+
+- **`ApiResponse<T>.Success` for Checkout responses.** The Checkout API returns `statusCode` but no `success` field, so these responses previously always reported `Success == false`. When a response has neither `success` nor `succeeded`, `Success` is now `true` for a 2xx `statusCode`. Responses that include `success` or `succeeded` are unaffected.
+- **Checkout pagination.** `ApiResponse<T>.Pagination` is now populated from the Checkout API's `currentPage`, `totalCount`, `hasNextPage` and `hasPreviousPage` fields (exposed through the existing `Page`, `TotalItems`, `HasNext` and `HasPrevious` properties). When a `PaginationInfo` is serialized, both sets of names are written.
 
 ## Support
 

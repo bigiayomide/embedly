@@ -15,50 +15,38 @@ public sealed class OrganizationPrefixMapping
     public Guid Id { get; set; }
 
     /// <summary>
-    ///     Gets or sets the organization ID.
-    /// </summary>
-    [JsonPropertyName("organizationId")]
-    public Guid OrganizationId { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the primary prefix.
-    /// </summary>
-    [JsonPropertyName("primaryPrefix")]
-    public string? PrimaryPrefix { get; set; }
-
-    /// <summary>
     ///     Gets or sets the secondary prefix.
     /// </summary>
     [JsonPropertyName("secondaryPrefix")]
     public string? SecondaryPrefix { get; set; }
 
     /// <summary>
-    ///     Gets or sets the bank name.
+    ///     Gets or sets the primary prefix ID.
     /// </summary>
-    [JsonPropertyName("bankName")]
-    public string? BankName { get; set; }
+    [JsonPropertyName("primaryPrefixId")]
+    public Guid PrimaryPrefixId { get; set; }
 
     /// <summary>
-    ///     Gets or sets the bank code.
+    ///     Gets or sets the organization ID.
     /// </summary>
-    [JsonPropertyName("bankCode")]
-    public string? BankCode { get; set; }
+    [JsonPropertyName("organizationId")]
+    public Guid OrganizationId { get; set; }
 
     /// <summary>
-    ///     Gets or sets whether this mapping is active.
+    ///     Gets or sets the mapping alias.
     /// </summary>
-    [JsonPropertyName("isActive")]
-    public bool IsActive { get; set; }
+    [JsonPropertyName("alias")]
+    public string? Alias { get; set; }
 
     /// <summary>
-    ///     Gets or sets the creation date.
+    ///     Gets or sets the organization name.
     /// </summary>
-    [JsonPropertyName("createdAt")]
-    public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("organizationName")]
+    public string? OrganizationName { get; set; }
 
     /// <summary>
-    ///     Gets or sets the last updated date.
+    ///     Gets or sets the organization's active status (e.g. "active").
     /// </summary>
-    [JsonPropertyName("updatedAt")]
-    public DateTime? UpdatedAt { get; set; }
+    [JsonPropertyName("organizationIsActive")]
+    public string? OrganizationIsActive { get; set; }
 }

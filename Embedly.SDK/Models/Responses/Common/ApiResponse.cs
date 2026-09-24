@@ -10,12 +10,19 @@ namespace Embedly.SDK.Models.Responses.Common;
 /// <typeparam name="T">The type of the response data.</typeparam>
 public sealed class ApiResponse<T>
 {
+    private bool? _success;
+
     /// <summary>
     ///     Gets or sets a value indicating whether the request was successful.
     ///     Maps to "success" (WaaS API) — also set by <see cref="Succeeded"/> for Payout API compatibility.
+    ///     When neither is present (e.g. Checkout API), falls back to a 2xx <see cref="StatusCode"/>.
     /// </summary>
     [JsonPropertyName("success")]
-    public bool Success { get; set; }
+    public bool Success
+    {
+        get => _success ?? StatusCode is >= 200 and < 300;
+        set => _success = value;
+    }
 
     /// <summary>
     ///     Payout API uses "succeeded" instead of "success". This property ensures
@@ -172,6 +179,46 @@ public sealed class PaginationInfo
     /// </summary>
     [JsonPropertyName("hasPrevious")]
     public bool HasPrevious { get; set; }
+
+    /// <summary>
+    ///     Checkout API uses "currentPage" instead of "page".
+    /// </summary>
+    [JsonPropertyName("currentPage")]
+    public int CurrentPage
+    {
+        get => Page;
+        set => Page = value;
+    }
+
+    /// <summary>
+    ///     Checkout API uses "totalCount" instead of "totalItems".
+    /// </summary>
+    [JsonPropertyName("totalCount")]
+    public long TotalCount
+    {
+        get => TotalItems;
+        set => TotalItems = value;
+    }
+
+    /// <summary>
+    ///     Checkout API uses "hasNextPage" instead of "hasNext".
+    /// </summary>
+    [JsonPropertyName("hasNextPage")]
+    public bool HasNextPage
+    {
+        get => HasNext;
+        set => HasNext = value;
+    }
+
+    /// <summary>
+    ///     Checkout API uses "hasPreviousPage" instead of "hasPrevious".
+    /// </summary>
+    [JsonPropertyName("hasPreviousPage")]
+    public bool HasPreviousPage
+    {
+        get => HasPrevious;
+        set => HasPrevious = value;
+    }
 }
 
 /// <summary>

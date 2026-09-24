@@ -29,6 +29,16 @@ internal static class Guard
     }
 
     /// <summary>
+    ///     Throws ArgumentException if the argument is <see cref="Guid.Empty" />.
+    /// </summary>
+    public static Guid ThrowIfEmpty(Guid argument, string? paramName = null)
+    {
+        if (argument == Guid.Empty)
+            throw new ArgumentException("Value cannot be an empty GUID.", paramName);
+        return argument;
+    }
+
+    /// <summary>
     ///     Creates a readonly wrapper for a dictionary.
     /// </summary>
     public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this Dictionary<TKey, TValue>? dictionary)

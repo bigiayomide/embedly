@@ -32,6 +32,7 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
 
         var url = BuildUrl(ServiceUrls.Checkout, "api/v1/checkout-wallet");
         return await HttpClient.PostAsync<GenerateCheckoutWalletRequest, CheckoutWallet>(url, request,
@@ -43,6 +44,7 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
         CancellationToken cancellationToken = default)
     {
         Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
 
         var url = BuildUrl(ServiceUrls.Checkout, "api/v1/checkout-wallet");
         var queryParams = request.ToQueryParameters();
@@ -53,6 +55,8 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
     public async Task<ApiResponse<CheckoutWallet>> GetCheckoutWalletWithTransactionsAsync(Guid walletId,
         Guid organizationId, CancellationToken cancellationToken = default)
     {
+        Guard.ThrowIfEmpty(organizationId, nameof(organizationId));
+
         var queryParams = new Dictionary<string, object?>
         {
             ["organizationId"] = organizationId
@@ -64,14 +68,82 @@ internal sealed class CheckoutService : BaseService, ICheckoutService
 
     /// <inheritdoc />
     public async Task<ApiResponse<List<OrganizationPrefixMapping>>> GetOrganizationPrefixMappingsAsync(
-        Guid organizationId, CancellationToken cancellationToken = default)
+        Guid organizationId, int page = 1, int pageSize = 10, string? search = null,
+        CancellationToken cancellationToken = default)
     {
-        var queryParams = new Dictionary<string, object?>
+        var request = new GetOrganizationPrefixMappingsRequest
         {
-            ["organizationId"] = organizationId
+            OrganizationId = organizationId,
+            Page = page,
+            PageSize = pageSize,
+            Search = search
         };
 
-        var url = BuildUrl(ServiceUrls.Checkout, "api/v1/organization-prefix-mappings");
+        return await GetOrganizationPrefixMappingsAsync(request, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<List<OrganizationPrefixMapping>>> GetOrganizationPrefixMappingsAsync(
+        GetOrganizationPrefixMappingsRequest request, CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
+
+        var url = BuildUrl(ServiceUrls.Checkout, "api/v1/prefix-map/me");
+        var queryParams = request.ToQueryParameters();
         return await HttpClient.GetAsync<List<OrganizationPrefixMapping>>(url, queryParams, cancellationToken);
+    }
+
+    // ===== SPLIT BENEFICIARIES =====
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<SplitBeneficiary>> CreateSplitBeneficiaryAsync(
+        CreateSplitBeneficiaryRequest request, CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
+        Guard.ThrowIfNullOrWhiteSpace(request.BeneficiaryName, "beneficiaryName");
+        Guard.ThrowIfNullOrWhiteSpace(request.AccountNumber, "accountNumber");
+
+        var url = BuildUrl(ServiceUrls.Checkout, "api/v1/split-beneficiaries");
+        return await HttpClient.PostAsync<CreateSplitBeneficiaryRequest, SplitBeneficiary>(url, request,
+            cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<ApiResponse<SplitBeneficiaryListResponse>> GetSplitBeneficiariesAsync(
+        GetSplitBeneficiariesRequest request, CancellationToken cancellationToken = default)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
+
+        var url = BuildUrl(ServiceUrls.Checkout, "api/v1/split-beneficiaries");
+        var queryParams = request.ToQueryParameters();
+        return await HttpClient.GetAsync<SplitBeneficiaryListResponse>(url, queryParams, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<ApiResponse<object>> ActivateSplitBeneficiaryAsync(SplitBeneficiaryStatusRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return SetSplitBeneficiaryStatusAsync(request, "activate", cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<ApiResponse<object>> DeactivateSplitBeneficiaryAsync(SplitBeneficiaryStatusRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return SetSplitBeneficiaryStatusAsync(request, "deactivate", cancellationToken);
+    }
+
+    private async Task<ApiResponse<object>> SetSplitBeneficiaryStatusAsync(SplitBeneficiaryStatusRequest request,
+        string action, CancellationToken cancellationToken)
+    {
+        Guard.ThrowIfNull(request, nameof(request));
+        Guard.ThrowIfEmpty(request.BeneficiaryId, "beneficiaryId");
+        Guard.ThrowIfEmpty(request.OrganizationId, "organizationId");
+
+        var url = BuildUrl(ServiceUrls.Checkout, $"api/v1/split-beneficiaries/{request.BeneficiaryId}/{action}");
+        return await HttpClient.PatchAsync<SplitBeneficiaryStatusRequest, object>(url, request, cancellationToken);
     }
 }
