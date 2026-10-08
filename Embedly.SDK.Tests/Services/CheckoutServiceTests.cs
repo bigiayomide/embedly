@@ -399,6 +399,79 @@ public class CheckoutServiceTests : ServiceTestBase
     }
 
     [Test]
+    public async Task GetCheckoutWalletsAsync_WithCurrentResponse_DeserializesPrefixMappingCreatedAt()
+    {
+        // Arrange - current Get Checkout Wallets response
+        const string responseJson = @"{
+            ""statusCode"": 200,
+            ""message"": ""success"",
+            ""data"": [
+                {
+                    ""id"": ""5191badc-380e-437b-afed-c639dc9ff747"",
+                    ""walletNumber"": ""9810335883"",
+                    ""organizationId"": ""999ad029-903e-11f0-a7cf-0274f77d4a81"",
+                    ""walletName"": ""Cert College Product Store Checkout"",
+                    ""status"": ""Active"",
+                    ""createdAt"": ""2026-10-08T15:08:45.604774Z"",
+                    ""expiresAt"": ""2026-10-08T15:38:45.604774Z"",
+                    ""usedAt"": null,
+                    ""expiredAt"": null,
+                    ""reactivatedAt"": null,
+                    ""expectedAmount"": 24000.00,
+                    ""invoiceReference"": null,
+                    ""description"": null,
+                    ""currencyCode"": ""NGN"",
+                    ""customerEmail"": null,
+                    ""customerName"": null,
+                    ""metadata"": null,
+                    ""splitType"": null,
+                    ""organizationPrefixMappingCreatedAt"": ""2026-09-28T10:11:01.061601Z"",
+                    ""splitConfigurations"": []
+                }
+            ],
+            ""pagination"": {
+                ""currentPage"": 1,
+                ""pageSize"": 10,
+                ""totalCount"": 1,
+                ""totalPages"": 1,
+                ""hasNextPage"": false,
+                ""hasPreviousPage"": false
+            }
+        }";
+
+        var handler = new StubHttpMessageHandler(responseJson);
+        var service = new CheckoutService(
+            new EmbedlyHttpClient(new HttpClient(handler), MockOptions.Object), MockOptions.Object);
+
+        // Act
+        var result = await service.GetCheckoutWalletsAsync(
+            new GetCheckoutWalletsRequest { OrganizationId = Guid.Parse("999ad029-903e-11f0-a7cf-0274f77d4a81") });
+
+        // Assert
+        result.Success.Should().BeTrue();
+        var wallet = result.Data.Should().ContainSingle().Subject;
+        wallet.Id.Should().Be(Guid.Parse("5191badc-380e-437b-afed-c639dc9ff747"));
+        wallet.WalletNumber.Should().Be("9810335883");
+        wallet.WalletName.Should().Be("Cert College Product Store Checkout");
+        wallet.Status.Should().Be("Active");
+        wallet.CreatedAt.Should().Be(new DateTime(2026, 10, 8, 15, 8, 45, DateTimeKind.Utc).AddTicks(6047740));
+        wallet.ExpiresAt.Should().Be(new DateTime(2026, 10, 8, 15, 38, 45, DateTimeKind.Utc).AddTicks(6047740));
+        wallet.UsedAt.Should().BeNull();
+        wallet.ExpiredAt.Should().BeNull();
+        wallet.ReactivatedAt.Should().BeNull();
+        wallet.ExpectedAmount.Should().Be(24000m);
+        wallet.CurrencyCode.Should().Be("NGN");
+        wallet.SplitType.Should().BeNull();
+        wallet.OrganizationPrefixMappingCreatedAt.Should()
+            .Be(new DateTime(2026, 9, 28, 10, 11, 1, DateTimeKind.Utc).AddTicks(616010));
+        wallet.SplitConfigurations.Should().BeEmpty();
+        wallet.CheckoutRef.Should().BeNull();
+
+        result.Pagination!.TotalItems.Should().Be(1);
+        result.Pagination.HasNext.Should().BeFalse();
+    }
+
+    [Test]
     public void GenerateCheckoutWalletAsync_WithEmptyOrganizationId_ThrowsArgumentException()
     {
         // Arrange
@@ -961,19 +1034,46 @@ public class CheckoutServiceTests : ServiceTestBase
               ""message"": ""success"",
               ""data"": [
                 {
-                  ""id"": ""8b4432bc-f3c7-4055-b5e5-e232707e79af"",
-                  ""secondaryPrefix"": ""56"",
-                  ""primaryPrefixId"": ""2c316406-87ee-494b-a43a-d24629f4eeea"",
-                  ""organizationId"": ""02600494-1a3c-11f0-a818-6045bd97b81d"",
-                  ""alias"": ""Embedly Check Demo"",
-                  ""organizationName"": ""Gentlemens Club"",
-                  ""organizationIsActive"": ""active""
+                  ""id"": ""3a96a187-c07d-48f9-97ed-372834275bf6"",
+                  ""secondaryPrefix"": ""03"",
+                  ""primaryPrefixId"": ""984fc64f-b923-4e7c-8ef6-34034ef5724d"",
+                  ""primaryPrefixCode"": ""981"",
+                  ""organizationId"": ""999ad029-903e-11f0-a7cf-0274f77d4a81"",
+                  ""alias"": ""Cert College Product Store Checkout"",
+                  ""organizationName"": ""Tranarc"",
+                  ""organizationIsActive"": ""active"",
+                  ""settlementWalletId"": ""9635e355-187c-11f1-97df-02789e000022"",
+                  ""settlementAccountNumber"": ""9710023794"",
+                  ""checkoutTypeId"": ""5c4f2d0b-a320-4a75-9b55-0376ab724a47"",
+                  ""checkoutTypeCode"": ""GENERIC"",
+                  ""checkoutTypeName"": ""Generic Checkout Type"",
+                  ""disbursementFrequency"": null,
+                  ""autoReversalForAmountMismatch"": true,
+                  ""createdAt"": ""2026-09-28T10:11:01.061601Z""
+                },
+                {
+                  ""id"": ""8744f302-3366-4077-8bec-03a24ea58dc2"",
+                  ""secondaryPrefix"": ""16"",
+                  ""primaryPrefixId"": ""d0f56540-52fd-49be-b8dd-95ca5242f859"",
+                  ""primaryPrefixCode"": ""911"",
+                  ""organizationId"": ""999ad029-903e-11f0-a7cf-0274f77d4a81"",
+                  ""alias"": ""Cert College Fees Checkout"",
+                  ""organizationName"": ""Tranarc"",
+                  ""organizationIsActive"": ""active"",
+                  ""settlementWalletId"": ""9b8402e0-184e-11f1-97df-02789e000022"",
+                  ""settlementAccountNumber"": ""9710023721"",
+                  ""checkoutTypeId"": null,
+                  ""checkoutTypeCode"": null,
+                  ""checkoutTypeName"": null,
+                  ""disbursementFrequency"": null,
+                  ""autoReversalForAmountMismatch"": false,
+                  ""createdAt"": ""2026-09-28T10:09:51.173391Z""
                 }
               ],
               ""pagination"": {
                 ""currentPage"": 1,
                 ""pageSize"": 10,
-                ""totalCount"": 1,
+                ""totalCount"": 2,
                 ""totalPages"": 1,
                 ""hasNextPage"": false,
                 ""hasPreviousPage"": false
@@ -986,33 +1086,49 @@ public class CheckoutServiceTests : ServiceTestBase
 
         // Act
         var result = await service.GetOrganizationPrefixMappingsAsync(
-            Guid.Parse("02600494-1a3c-11f0-a818-6045bd97b81d"), search: "Embedly Check");
+            Guid.Parse("999ad029-903e-11f0-a7cf-0274f77d4a81"), search: "Cert College");
 
         // Assert - request
         handler.LastRequestUri.Should().NotBeNull();
         handler.LastRequestUri!.AbsoluteUri.Should().StartWith("https://checkout-staging.embedly.ng/api/v1/prefix-map/me?");
         handler.LastRequestUri.Query.Should()
-            .Be("?organizationId=02600494-1a3c-11f0-a818-6045bd97b81d&page=1&pageSize=10&search=Embedly%20Check");
+            .Be("?organizationId=999ad029-903e-11f0-a7cf-0274f77d4a81&page=1&pageSize=10&search=Cert%20College");
 
         // Assert - response
         result.Success.Should().BeTrue();
         result.StatusCode.Should().Be(200);
         result.Message.Should().Be("success");
 
-        result.Data.Should().ContainSingle();
+        result.Data.Should().HaveCount(2);
         var mapping = result.Data![0];
-        mapping.Id.Should().Be(Guid.Parse("8b4432bc-f3c7-4055-b5e5-e232707e79af"));
-        mapping.SecondaryPrefix.Should().Be("56");
-        mapping.PrimaryPrefixId.Should().Be(Guid.Parse("2c316406-87ee-494b-a43a-d24629f4eeea"));
-        mapping.OrganizationId.Should().Be(Guid.Parse("02600494-1a3c-11f0-a818-6045bd97b81d"));
-        mapping.Alias.Should().Be("Embedly Check Demo");
-        mapping.OrganizationName.Should().Be("Gentlemens Club");
+        mapping.Id.Should().Be(Guid.Parse("3a96a187-c07d-48f9-97ed-372834275bf6"));
+        mapping.SecondaryPrefix.Should().Be("03");
+        mapping.PrimaryPrefixId.Should().Be(Guid.Parse("984fc64f-b923-4e7c-8ef6-34034ef5724d"));
+        mapping.PrimaryPrefixCode.Should().Be("981");
+        mapping.OrganizationId.Should().Be(Guid.Parse("999ad029-903e-11f0-a7cf-0274f77d4a81"));
+        mapping.Alias.Should().Be("Cert College Product Store Checkout");
+        mapping.OrganizationName.Should().Be("Tranarc");
         mapping.OrganizationIsActive.Should().Be("active");
+        mapping.SettlementWalletId.Should().Be(Guid.Parse("9635e355-187c-11f1-97df-02789e000022"));
+        mapping.SettlementAccountNumber.Should().Be("9710023794");
+        mapping.CheckoutTypeId.Should().Be(Guid.Parse("5c4f2d0b-a320-4a75-9b55-0376ab724a47"));
+        mapping.CheckoutTypeCode.Should().Be("GENERIC");
+        mapping.CheckoutTypeName.Should().Be("Generic Checkout Type");
+        mapping.DisbursementFrequency.Should().BeNull();
+        mapping.AutoReversalForAmountMismatch.Should().BeTrue();
+        mapping.CreatedAt.Should().Be(new DateTime(2026, 9, 28, 10, 11, 1, DateTimeKind.Utc).AddTicks(616010));
+
+        // Mapping without an assigned checkout type
+        var untyped = result.Data[1];
+        untyped.CheckoutTypeId.Should().BeNull();
+        untyped.CheckoutTypeCode.Should().BeNull();
+        untyped.CheckoutTypeName.Should().BeNull();
+        untyped.AutoReversalForAmountMismatch.Should().BeFalse();
 
         result.Pagination.Should().NotBeNull();
         result.Pagination!.Page.Should().Be(1);
         result.Pagination.PageSize.Should().Be(10);
-        result.Pagination.TotalItems.Should().Be(1);
+        result.Pagination.TotalItems.Should().Be(2);
         result.Pagination.TotalPages.Should().Be(1);
         result.Pagination.HasNext.Should().BeFalse();
         result.Pagination.HasPrevious.Should().BeFalse();

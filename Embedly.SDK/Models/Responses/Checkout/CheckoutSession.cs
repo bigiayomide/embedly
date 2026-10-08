@@ -124,6 +124,12 @@ public sealed class CheckoutWallet
     public string? SplitType { get; set; }
 
     /// <summary>
+    ///     Gets or sets the creation date of the organization prefix mapping the wallet was generated under.
+    /// </summary>
+    [JsonPropertyName("organizationPrefixMappingCreatedAt")]
+    public DateTime? OrganizationPrefixMappingCreatedAt { get; set; }
+
+    /// <summary>
     ///     Gets or sets how payments to this wallet are split across beneficiaries.
     /// </summary>
     [JsonPropertyName("splitConfigurations")]
