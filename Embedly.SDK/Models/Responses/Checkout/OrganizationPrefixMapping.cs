@@ -49,4 +49,58 @@ public sealed class OrganizationPrefixMapping
     /// </summary>
     [JsonPropertyName("organizationIsActive")]
     public string? OrganizationIsActive { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the primary prefix code (e.g. "981").
+    /// </summary>
+    [JsonPropertyName("primaryPrefixCode")]
+    public string? PrimaryPrefixCode { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the ID of the wallet that checkout payments are settled into.
+    /// </summary>
+    [JsonPropertyName("settlementWalletId")]
+    public Guid? SettlementWalletId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the account number of the settlement wallet.
+    /// </summary>
+    [JsonPropertyName("settlementAccountNumber")]
+    public string? SettlementAccountNumber { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the checkout type ID, if a checkout type is assigned.
+    /// </summary>
+    [JsonPropertyName("checkoutTypeId")]
+    public Guid? CheckoutTypeId { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the checkout type code (e.g. "GENERIC"), if a checkout type is assigned.
+    /// </summary>
+    [JsonPropertyName("checkoutTypeCode")]
+    public string? CheckoutTypeCode { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the checkout type name (e.g. "Generic Checkout Type"), if a checkout type is assigned.
+    /// </summary>
+    [JsonPropertyName("checkoutTypeName")]
+    public string? CheckoutTypeName { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the disbursement frequency, if configured.
+    /// </summary>
+    [JsonPropertyName("disbursementFrequency")]
+    public string? DisbursementFrequency { get; set; }
+
+    /// <summary>
+    ///     Gets or sets whether payments that don't match the expected amount are automatically reversed.
+    /// </summary>
+    [JsonPropertyName("autoReversalForAmountMismatch")]
+    public bool AutoReversalForAmountMismatch { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the date when the mapping was created.
+    /// </summary>
+    [JsonPropertyName("createdAt")]
+    public DateTime CreatedAt { get; set; }
 }
